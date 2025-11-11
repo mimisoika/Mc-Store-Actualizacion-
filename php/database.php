@@ -1,9 +1,10 @@
 <?php
 //Script de coneccion a mysql
 $servidor = "31.220.96.192";
-$usuario = "admin_comercial@MC";
+$usuario = "admin_comercial";
 $password = "ComerzialMC@12";
 $bd = "comercializadora";
+
 //linea de conexxion a bd
 $conexion = new mysqli($servidor, $usuario, $password, $bd);
 
