@@ -63,18 +63,31 @@ $categorias = obtenerCategorias();
                             <span class="badge bg-info position-absolute top-0 end-0 m-2 z-1">
                                 <?= ucfirst(htmlspecialchars($producto['categoria'])) ?>
                             </span>
-                            <img src="../img_productos/<?= htmlspecialchars($producto['imagen']) ?>" 
-                                class="img-fluid" 
-                                alt="<?= htmlspecialchars($producto['nombre']) ?>">
+                            <a href="producto.php?id=<?= $producto['id'] ?>" class="text-decoration-none text-dark">
+                                <img src="../img_productos/<?= htmlspecialchars($producto['imagen']) ?>" 
+                                    class="img-fluid" 
+                                    alt="<?= htmlspecialchars($producto['nombre']) ?>">
+                            </a>
                             <div class="card-body">
-                                <h5 class="card-title"><?= htmlspecialchars($producto['nombre']) ?></h5>
+                                <a href="producto.php?id=<?= $producto['id'] ?>" class="text-decoration-none text-dark">
+                                    <h5 class="card-title"><?= htmlspecialchars($producto['nombre']) ?></h5>
+                                </a>
                                 <p class="card-text text-muted"><?= htmlspecialchars($producto['descripcion']) ?></p>
                             </div>
                             <div class="card-footer bg-white border-0">
-                                <div class="text-primary fw-bold fs-5 mb-2">$<?= number_format($producto['precio'], 2) ?></div>
-                                <button class="btn btn-outline-primary w-100" onclick="agregarAlCarrito(<?= $producto['id'] ?>)">
-                                    <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
-                                </button>
+                                <div class="d-flex align-items-center gap-2">
+                                    <?php
+                                        $favoritos = isset($_SESSION['favoritos']) ? $_SESSION['favoritos'] : [];
+                                        $isFav = in_array($producto['id'], $favoritos);
+                                    ?>
+                                    <button class="btn <?= $isFav ? 'btn-danger' : 'btn-outline-danger' ?> btn-sm" onclick="toggleFavorito(<?= $producto['id'] ?>, this)" title="Añadir a favoritos">
+                                        <i class="<?= $isFav ? 'fas' : 'far' ?> fa-heart"></i>
+                                    </button>
+                                    <div class="text-primary fw-bold fs-5 mb-0 me-2">$<?= number_format($producto['precio'], 2) ?></div>
+                                    <button class="btn btn-outline-primary flex-grow-1" onclick="agregarAlCarrito(<?= $producto['id'] ?>)">
+                                        <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
