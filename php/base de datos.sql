@@ -147,3 +147,12 @@ INSERT INTO pedidos (usuario_id, direccion_id, total, estado, metodo_pago) VALUE
 
 INSERT INTO detalles_pedido (pedido_id, producto_id, nombre_producto, cantidad, precio_unitario, total) VALUES
 (2, 5, 'Laptop Elite', 1, 18999.00, 18999.00);
+
+INSERT INTO productos_favoritos (usuario_id, producto_id) VALUES
+(1, 5), -- Juan: favorita la Laptop Elite
+(1, 1), -- Juan: Smartphone X
+(2, 2), -- María: Tablet Pro
+(2, 3), -- María: Juego de sábanas
+(3, 1), -- Carlos: Smartphone X
+(3, 5); -- Carlos: Laptop Elite
+
