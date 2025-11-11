@@ -93,6 +93,18 @@ CREATE TABLE IF NOT EXISTS detalles_pedido (
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
     FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE SET NULL
 );
+
+-- Tabla Productos Favoritos
+CREATE TABLE IF NOT EXISTS productos_favoritos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    producto_id INT NOT NULL,
+    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
+    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
+    UNIQUE KEY usuario_producto_fav (usuario_id, producto_id)
+);
+
 -- todas son "password" hasheadas
 INSERT INTO usuarios (nombre, apellido_paterno, apellido_materno, email, contraseña, telefono, rol) VALUES
 ('Juan', 'Pérez', 'Gómez', 'juan@comercializadora.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '5512345678', 'admin'),
