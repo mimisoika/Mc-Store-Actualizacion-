@@ -21,34 +21,50 @@
     
     <section class="inicio bg-primary text-white py-5" id="inicio">
         <div class="container">
-            <div class="row align-items-center min-vh-75">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h1 class="display-4 fw-bold mb-4">Tu Tienda de Repostería</h1>
-                    <p class="lead mb-4">Herramientas, ingredientes y decoraciones para tus creaciones</p>
-                    <div class="row justify-content-center">
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-check-circle me-2 fs-4"></i>
-                                <span class="fw-semibold">Calidad Garantizada</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-clock me-2 fs-4"></i>
-                                <span class="fw-semibold">Entrega Rápida</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4">
-                        <a href="#productos" class="btn btn-light btn-lg me-3">Ver Productos</a>
-                        <a href="#contacto" class="btn btn-outline-light btn-lg">Contáctanos</a>
-                    </div>
+            <div id="carouselInicio" class="carousel slide carrusel-inicio" data-bs-ride="carousel">
+                <div class="carousel-inner">
+
+                    <?php
+                    // URL de la API REST de WordPress
+                    $api_url = 'http://31.220.96.192/cms/wp-json/wp/v2/media';
+
+                    // Obtener los datos JSON
+                    $response = @file_get_contents($api_url);
+
+                    if ($response !== false) {
+                        $images = json_decode($response, true);
+                        $active = 'active';
+
+                        // Mostrar cada imagen como un slide
+                        foreach ($images as $img) {
+                            echo '<div class="carousel-item ' . $active . '">';
+                            echo '<img src="' . $img['source_url'] . '" class="d-block w-100" alt="' . htmlspecialchars($img['title']['rendered']) . '" style="height: 300px; width: 100%; object-fit: contain; background-color: #fff;">';
+                            echo '</div>';
+                            $active = ''; // solo la primera es activa
+                        }
+                    } else {
+                        echo '<div class="text-center p-5">No se pudieron cargar las imágenes del carrusel.</div>';
+                    }
+                    ?>
+
                 </div>
+
+                <!-- Controles -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselInicio" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselInicio" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
             </div>
         </div>
     </section>
 
+
     <section class="productos-destacados py-5" id="productos">
+        <!-- EN ESTA SECCION QUIERO QUE SEA UN CARRUCEL CON LOS PRODUCTOS -->
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center mb-5">
@@ -62,13 +78,13 @@
         </div>
     </section>
 
-    <!-- Sección de Servicios -->
-    <section class="servicios bg-light py-5 text-center justify-content-center align-items-center" id="servicios">
+    <!-- Sección de algunos productos -->
+    <section class="muestras bg-light py-5 text-center justify-content-center align-items-center" id="muestras">
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center mb-5">
-                    <h2 class="display-5 fw-bold">Nuestros Servicios</h2>
-                    <p class="lead text-muted">Beneficios que ofrecemos a nuestros clientes</p>
+                    <h2 class="display-5 fw-bold">Explora nuestros productos...</h2>
+                    <p class="lead text-muted">Un poco de nuestro catalogo</p>
                 </div>
             </div>
             <div class="row g-4">
@@ -104,7 +120,7 @@
         </div>
     </section>
 
-    <!-- Sección Acerca de -->
+    <!-- Sección acerca de  -->
     <section class="acerca-de py-5" id="acerca">
         <div class="container">
             <div class="row align-items-center">
@@ -133,7 +149,7 @@
             </div>
         </div>
     </section>
-
+    <!-- Contacto -->
     <section class="contacto py-5" id="contacto">
         <div class="container">
             <div class="row">
@@ -167,6 +183,10 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="row g-4">
                         <div class="col-12">
                             <div class="d-flex align-items-center">
                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
@@ -181,7 +201,7 @@
                         <div class="col-12">
                             <div class="d-flex align-items-center">
                                 <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
-                                    <i class="fas fa-clock"></i>
+                                        <i class="fas fa-clock"></i>
                                 </div>
                                 <div>
                                     <h5 class="mb-1">Horarios</h5>
@@ -190,27 +210,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-6">
-                    <form class="bg-light p-4 rounded">
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre completo</label>
-                            <input type="text" class="form-control" id="nombre" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo electrónico</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="asunto" class="form-label">Asunto</label>
-                            <input type="text" class="form-control" id="asunto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mensaje" class="form-label">Mensaje</label>
-                            <textarea class="form-control" id="mensaje" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100">Enviar Mensaje</button>
-                    </form>
                 </div>
             </div>
         </div>
