@@ -19,29 +19,51 @@
     require_once 'pages/functions/f_index.php';
     ?>
     
-    <section class="inicio bg-primary text-white py-5" id="inicio">
+    <section class="inicio" id="inicio">
         <div class="container">
-            <div class="row align-items-center min-vh-75">
-                <div class="col-lg-8 mx-auto text-center">
-                    <h1 class="display-4 fw-bold mb-4">Tu Tienda de Repostería</h1>
-                    <p class="lead mb-4">Herramientas, ingredientes y decoraciones para tus creaciones</p>
-                    <div class="row justify-content-center">
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-check-circle me-2 fs-4"></i>
-                                <span class="fw-semibold">Calidad Garantizada</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4 mb-3">
-                            <div class="d-flex align-items-center justify-content-center">
-                                <i class="fas fa-clock me-2 fs-4"></i>
-                                <span class="fw-semibold">Entrega Rápida</span>
-                            </div>
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-7">
+                    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="pages/img/slider/slide1.jpg" class="d-block w-100" alt="Repostería Slide 1">
+                    <div class="carousel-caption">
+                        <h1 class="display-4 fw-bold mb-4">Tu Tienda de Repostería</h1>
+                        <p class="lead mb-4">Herramientas, ingredientes y decoraciones para tus creaciones</p>
+                        <div class="mb-4">
+                            <a href="#productos" class="btn btn-light btn-lg me-3">Ver Productos</a>
+                            <a href="#contacto" class="btn btn-outline-light btn-lg">Contáctanos</a>
                         </div>
                     </div>
-                    <div class="mt-4">
-                        <a href="#productos" class="btn btn-light btn-lg me-3">Ver Productos</a>
-                        <a href="#contacto" class="btn btn-outline-light btn-lg">Contáctanos</a>
+                </div>
+                <div class="carousel-item">
+                    <img src="pages/img/slider/slide2.jpg" class="d-block w-100" alt="Repostería Slide 2">
+                    <div class="carousel-caption">
+                        <h2 class="display-4 fw-bold mb-4">Calidad Garantizada</h2>
+                        <p class="lead mb-4">Los mejores productos para tus creaciones</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="pages/img/slider/slide3.jpg" class="d-block w-100" alt="Repostería Slide 3">
+                    <div class="carousel-caption">
+                        <h2 class="display-4 fw-bold mb-4">Entrega Rápida</h2>
+                        <p class="lead mb-4">Recibe tus productos en tiempo récord</p>
+                    </div>
+                </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
                     </div>
                 </div>
             </div>

@@ -1,14 +1,18 @@
 <?php
-//Script de coneccion a mysql
-$servidor = "31.220.96.192";
-$usuario = "admin_comercial";
-$password = "ComerzialMC@12";
-$bd = "comercializadora";
+$host = "localhost";
+$usuario = "root";
+$contrasena = "Ramirez034";
+$baseDeDatos = "comercializadora";
+$puerto = 3306;
 
-//linea de conexxion a bd
-$conexion = new mysqli($servidor, $usuario, $password, $bd);
+$conexion = mysqli_connect($host, $usuario, $contrasena, $baseDeDatos, $puerto);
 
-if($conexion->connect_error){
-    die("Error de conexion:" . $conexion->connect_error);
+if (!$conexion) {
+    die("Error de conexión: " . mysqli_connect_error());
 }
+//prueba
+
+mysqli_set_charset($conexion, "utf8mb4");
 ?>
+
+

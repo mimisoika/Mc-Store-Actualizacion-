@@ -101,7 +101,54 @@ if ($_POST) {
     $accion = $_POST['accion'];
     
     if ($accion == 'obtener_productos') {
+        $filtroCategoria = isset($_POST['filtroCategoria']) ? trim($_POST['filtroCategoria']) : '';
+        $filtroEstado = isset($_POST['filtroEstado']) ? trim($_POST['filtroEstado']) : '';
+        $busqueda = isset($_POST['busqueda']) ? trim($_POST['busqueda']) : '';
+
+        // Normalizar valores de estado enviados desde el frontend
+        $estadoMap = [
+            'activo' => 'disponible',
+            'inactivo' => 'suspendido',
+            'disponible' => 'disponible',
+            'suspendido' => 'suspendido',
+            'agotado' => 'agotado'
+        ];
+
+        if ($filtroEstado !== '' && $filtroEstado !== 'todos') {
+            $filtroEstado = isset($estadoMap[$filtroEstado]) ? $estadoMap[$filtroEstado] : $filtroEstado;
+        } else {
+            $filtroEstado = '';
+        }
+
+        // Obtener productos con filtros aplicados
         $productos = obtenerProductos();
+
+        // Filtrar por categoría (por nombre) si se especifica
+        if ($filtroCategoria !== '' && $filtroCategoria !== 'todas') {
+            $productos = array_filter($productos, function($p) use ($filtroCategoria) {
+                return isset($p['categoria']) && mb_strtolower($p['categoria']) === mb_strtolower($filtroCategoria);
+            });
+        }
+
+        // Filtrar por estado si se especifica
+        if ($filtroEstado !== '') {
+            $productos = array_filter($productos, function($p) use ($filtroEstado) {
+                return isset($p['estado']) && $p['estado'] === $filtroEstado;
+            });
+        }
+
+        // Filtrar por búsqueda en nombre o descripción
+        if ($busqueda !== '') {
+            $q = mb_strtolower($busqueda);
+            $productos = array_filter($productos, function($p) use ($q) {
+                $nombre = isset($p['nombre']) ? mb_strtolower($p['nombre']) : '';
+                $descripcion = isset($p['descripcion']) ? mb_strtolower($p['descripcion']) : '';
+                return mb_strpos($nombre, $q) !== false || mb_strpos($descripcion, $q) !== false;
+            });
+        }
+
+        // Reindexar array y devolver
+        $productos = array_values($productos);
         echo json_encode(['success' => true, 'productos' => $productos]);
     }
     

@@ -63,9 +63,10 @@ $categorias = obtenerCategorias();
                             <span class="badge bg-info position-absolute top-0 end-0 m-2 z-1">
                                 <?= ucfirst(htmlspecialchars($producto['categoria'])) ?>
                             </span>
-                            <img src="../img_productos/<?= htmlspecialchars($producto['imagen']) ?>" 
-                                class="img-fluid" 
-                                alt="<?= htmlspecialchars($producto['nombre']) ?>">
+                            <?php 
+                            $imagen = !empty($producto['imagen']) ? htmlspecialchars($producto['imagen']) : 'img_productos/producto-default.jpg';
+                            ?>
+                            <img src="<?= $imagen ?>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="<?= htmlspecialchars($producto['nombre']) ?>">
                             <div class="card-body">
                                 <h5 class="card-title"><?= htmlspecialchars($producto['nombre']) ?></h5>
                                 <p class="card-text text-muted"><?= htmlspecialchars($producto['descripcion']) ?></p>

@@ -93,18 +93,6 @@ CREATE TABLE IF NOT EXISTS detalles_pedido (
     FOREIGN KEY (pedido_id) REFERENCES pedidos(id) ON DELETE CASCADE,
     FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE SET NULL
 );
-
--- Tabla Productos Favoritos
-CREATE TABLE IF NOT EXISTS productos_favoritos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    usuario_id INT NOT NULL,
-    producto_id INT NOT NULL,
-    fecha_agregado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-    FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
-    UNIQUE KEY usuario_producto_fav (usuario_id, producto_id)
-);
-
 -- todas son "password" hasheadas
 INSERT INTO usuarios (nombre, apellido_paterno, apellido_materno, email, contraseña, telefono, rol) VALUES
 ('Juan', 'Pérez', 'Gómez', 'juan@comercializadora.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '5512345678', 'admin'),
@@ -148,11 +136,19 @@ INSERT INTO pedidos (usuario_id, direccion_id, total, estado, metodo_pago) VALUE
 INSERT INTO detalles_pedido (pedido_id, producto_id, nombre_producto, cantidad, precio_unitario, total) VALUES
 (2, 5, 'Laptop Elite', 1, 18999.00, 18999.00);
 
-INSERT INTO productos_favoritos (usuario_id, producto_id) VALUES
-(1, 5), -- Juan: favorita la Laptop Elite
-(1, 1), -- Juan: Smartphone X
-(2, 2), -- María: Tablet Pro
-(2, 3), -- María: Juego de sábanas
-(3, 1), -- Carlos: Smartphone X
-(3, 5); -- Carlos: Laptop Elite
+-- Ver todos los usuarios
+SELECT * FROM usuarios;
 
+-- Ver productos disponibles
+SELECT id, nombre, precio FROM productos WHERE estado = 'disponible';
+
+-- Ver pedidos de un usuario
+SELECT p.id, p.total, p.estado, d.alias AS direccion 
+FROM pedidos p
+JOIN direcciones d ON p.direccion_id = d.id
+WHERE p.usuario_id = 2;
+
+-- Ver detalles de un pedido
+SELECT dp.nombre_producto, dp.cantidad, dp.precio_unitario, dp.total
+FROM detalles_pedido dp
+WHERE dp.pedido_id = 1;
