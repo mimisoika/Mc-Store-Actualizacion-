@@ -54,13 +54,10 @@ manejarAccionesCarrito();
                         if (verificarSesionUsuario()) {
                             $totales = calcularTotales($conexion, $_SESSION['usuario_id']);
                             echo generarHTMLResumenPedido($totales);
-                            
                         } else {
                             echo '<p class="text-muted">Inicia sesión para ver el resumen</p>';
                         }
                         ?>
-                        <a href="pago.php" class="btn btn-warning w-100">Proceder al Pago</a>
-
                     </div>
                 </div>
             </div>

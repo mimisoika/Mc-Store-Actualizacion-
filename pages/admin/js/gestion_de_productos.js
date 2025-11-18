@@ -102,7 +102,7 @@ function mostrarProductos(productos) {
     let html = '';
     productos.forEach(producto => {
         const estadoBadge = getEstadoBadge(producto.estado);
-        const imagenSrc = producto.imagen ? `../../../img_productos/${producto.imagen}` : 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
+        const imagenSrc = producto.imagen ? `../../img_productos/${producto.imagen}` : 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
         
         html += `
             <div class="col-md-6 col-lg-4 mb-4">
@@ -182,6 +182,9 @@ function agregarProducto() {
                 alert('Error: ' + (response.mensaje || 'No se pudo agregar el producto'));
             }
         },
+        error: function() {
+            alert('Error de conexión');
+        }
     });
 }
 
@@ -206,7 +209,7 @@ function editarProducto(id) {
                 $('#editCantidad').val(p.cantidad);
                 
                 if (p.imagen) {
-                    $('#editPreviewImagen').attr('src', `../../../img_productos/${p.imagen}`).show();
+                    $('#editPreviewImagen').attr('src', `../../img_productos/${p.imagen}`).show();
                 } else {
                     $('#editPreviewImagen').hide();
                 }
@@ -250,7 +253,7 @@ function actualizarProducto() {
             }
         },
         error: function() {
-            alert('Agregado Correctamente');
+            alert('Error de conexión');
         }
     });
 }

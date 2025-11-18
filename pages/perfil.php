@@ -1,7 +1,6 @@
 <?php 
 include '../php/database.php';
 include 'functions/f_perfil.php';
-include 'functions/f_detalles_pedido.php';
 
 // Iniciar sesión y verificar autenticación
 iniciarSesionSegura();
@@ -32,26 +31,6 @@ if (isset($_POST['cerrar_sesion'])) {
     header('Location: login.php');
     exit();
 }
-
-// Guadar una nueva direccion
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_direccion'])) {
-    guardarDireccion(); 
-}
-
-// Editar la direccion que se marca como principal
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPrincipal'])) {
-    $usuario_id = $_POST['usuario_id'];
-    $direccion_id = $_POST['direccion_id'];
-    marcarDireccionComoPrincipal($usuario_id, $direccion_id);
-  
-}
-
-$tabla_detalles_html = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
-    $pedido_id = intval($_POST['ver_detalles']);
-    $tabla_detalles_html = obtenerDetallesPedido($pedido_id);
-}
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -208,8 +187,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
                             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
                                     <i class="fas fa-map-marker-alt me-2"></i>Mis Direcciones
-                                </h5>                           
-                                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalAgregar">
+                                </h5>
+                                <button class="btn btn-light btn-sm">
                                     <i class="fas fa-plus me-1"></i>Agregar
                                 </button>
                             </div>
@@ -219,6 +198,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
                                         <i class="fas fa-map-marker-alt fs-1 text-muted mb-3"></i>
                                         <h5 class="text-muted">No tienes direcciones registradas</h5>
                                         <p class="text-muted">Agrega tu primera dirección para realizar pedidos</p>
+                                        <button class="btn btn-primary">
+                                            <i class="fas fa-plus me-2"></i>Agregar Dirección
+                                        </button>
                                     </div>
                                 <?php else: ?>
                                     <div class="row">
@@ -228,14 +210,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
                                                     <div class="card-body">
                                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                                             <h6 class="card-title mb-0"><?php echo htmlspecialchars($direccion['alias']); ?></h6>
-                                                            <form action="perfil.php" method="POST" class="d-inline">
-                                                                <!--Estos datos proporcionan la informacion necesaria para poder hacer la consulta -->
-                                                                <input type="hidden" name="usuario_id" value="<?php echo $_SESSION['usuario_id']; ?>">
-                                                                <input type="hidden" name="direccion_id" value="<?php echo $direccion['id']; ?>">
-                                                                <button type="submit" name="nuevoPrincipal" class="btn btn-light btn-sm">
-                                                                    <i class="fas fa-check me-1"></i>Principal
+                                                            <div class="dropdown">
+                                                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
+                                                                    <i class="fas fa-ellipsis-v"></i>
                                                                 </button>
-                                                            </form>
+                                                                <ul class="dropdown-menu">
+                                                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Editar</a></li>
+                                                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Eliminar</a></li>
+                                                                </ul>
+                                                            </div>
                                                         </div>
                                                         <p class="card-text text-muted mb-1">
                                                             <i class="fas fa-map-marker-alt me-1"></i>
@@ -302,12 +285,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
                                                             <?php echo generarBadgeEstado($pedido['estado']); ?>
                                                         </td>
                                                         <td>
-                                                            <form method="POST" class="d-inline ver-detalles">
-                                                                <input type="hidden" name="ver_detalles" value="<?php echo $pedido['id']; ?>">
-                                                                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetallesPedido">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </button>
-                                                            </form>
+                                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver detalles">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
                                                             <?php if ($pedido['estado'] == 'pendiente'): ?>
                                                                 <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="tooltip" title="Cancelar">
                                                                     <i class="fas fa-times"></i>
@@ -328,71 +308,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
         </div>
     </div>
 
-<!-- Modal para agregar dirección -->
-<div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <form action="perfil.php" method="POST">
-        <div class="modal-header">
-          <h5 class="modal-title" id="modalAgregarLabel">Nueva dirección</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-        </div>
-        <div class="modal-body">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <input type="text" class="form-control" name="alias" placeholder="Alias (Ej: Casa, Trabajo)" required>
-            </div>
-            <div class="col-md-6">
-              <input type="text" class="form-control" name="ciudad" placeholder="Ciudad" required>
-            </div>
-            <div class="col-12">
-              <textarea class="form-control" name="direccion" placeholder="Dirección completa" rows="2" required></textarea>
-            </div>
-            <div class="col-md-6">
-              <input type="text" class="form-control" name="codigo_postal" placeholder="Código Postal" required>
-            </div>
-            <div class="col-md-6">
-              <input type="text" class="form-control" name="estado" placeholder="Estado" required>
-            </div>
-            <div class="col-12">
-              <textarea class="form-control" name="instrucciones_entrega" placeholder="Instrucciones para entrega" rows="2"></textarea>
-            </div>
-            <div class="col-12">
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" name="es_principal" id="es_principal" value="1">
-                <label class="form-check-label" for="es_principal">Establecer como dirección principal</label>
-              </div>
-            </div>
-            <input type="hidden" name="usuario_id" value="<?php echo $_SESSION['usuario_id']; ?>">
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary btn-Nueva-Direccion" name="guardar_direccion">Guardar</button>
-
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- Modal de Detalles del Pedido -->
-<div class="modal fade" id="modalDetallesPedido" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalDetallesLabel">Detalles del Pedido</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <?php echo $tabla_detalles_html ?: '<p>Selecciona un pedido para ver los detalles.</p>'; ?>
-    </div>
-    </div>
-  </div>
-</div>
-    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="js/perfil.js"></script>
 </body>
 </html>

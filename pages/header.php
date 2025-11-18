@@ -21,6 +21,23 @@ require_once 'functions/f_header.php';
             <img src="../pages/img/logo-mcstore.png" alt="MC Store" width="40" height="40" class="me-2 rounded-circle">
             <span class="fw-bold text-primary fs-4">MC Store</span>
         </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+            <div class="mx-auto d-none d-lg-block" style="max-width: 400px;">
+                <form class="d-flex" action="pages/products.php" method="GET" role="search">
+                    <div class="input-group">
+                        <input class="form-control" type="search" name="search" placeholder="Buscar productos..." aria-label="Buscar">
+                        <button class="btn btn-outline-primary" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
+
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
                     <a class="nav-link" href="../index.php#inicio">
