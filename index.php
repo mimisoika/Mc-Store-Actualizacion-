@@ -19,34 +19,52 @@
     require_once 'pages/functions/f_index.php';
     ?>
     
-    <section class="inicio bg-primary text-white py-5" id="inicio">
+    <section class="inicio" id="inicio">
         <div class="container">
-            <div id="carouselInicio" class="carousel slide carrusel-inicio" data-bs-ride="carousel">
-                <div class="carousel-inner">
-
-                    <?php
-                    // URL de la API REST de WordPress
-                    $api_url = 'http://31.220.96.192/cms/wp-json/wp/v2/media';
-
-                    // Obtener los datos JSON
-                    $response = @file_get_contents($api_url);
-
-                    if ($response !== false) {
-                        $images = json_decode($response, true);
-                        $active = 'active';
-
-                        // Mostrar cada imagen como un slide
-                        foreach ($images as $img) {
-                            echo '<div class="carousel-item ' . $active . '">';
-                            echo '<img src="' . $img['source_url'] . '" class="d-block w-100" alt="' . htmlspecialchars($img['title']['rendered']) . '" style="height: 300px; width: 100%; object-fit: contain; background-color: #fff;">';
-                            echo '</div>';
-                            $active = ''; // solo la primera es activa
-                        }
-                    } else {
-                        echo '<div class="text-center p-5">No se pudieron cargar las imágenes del carrusel.</div>';
-                    }
-                    ?>
-
+            <div class="row justify-content-center">
+                <div class="col-md-10 col-lg-7">
+                    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+                        <div class="carousel-indicators">
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            </div>
+            <div class="carousel-inner">
+                <div class="carousel-item active">
+                    <img src="pages/img/slider/slide1.jpg" class="d-block w-100" alt="Repostería Slide 1">
+                    <div class="carousel-caption">
+                        <h1 class="display-4 fw-bold mb-4">Tu Tienda de Repostería</h1>
+                        <p class="lead mb-4">Herramientas, ingredientes y decoraciones para tus creaciones</p>
+                        <div class="mb-4">
+                            <a href="#productos" class="btn btn-light btn-lg me-3">Ver Productos</a>
+                            <a href="#contacto" class="btn btn-outline-light btn-lg">Contáctanos</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="pages/img/slider/slide2.jpg" class="d-block w-100" alt="Repostería Slide 2">
+                    <div class="carousel-caption">
+                        <h2 class="display-4 fw-bold mb-4">Calidad Garantizada</h2>
+                        <p class="lead mb-4">Los mejores productos para tus creaciones</p>
+                    </div>
+                </div>
+                <div class="carousel-item">
+                    <img src="pages/img/slider/slide3.jpg" class="d-block w-100" alt="Repostería Slide 3">
+                    <div class="carousel-caption">
+                        <h2 class="display-4 fw-bold mb-4">Entrega Rápida</h2>
+                        <p class="lead mb-4">Recibe tus productos en tiempo récord</p>
+                    </div>
+                </div>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    </div>
                 </div>
 
                 <!-- Controles -->

@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../php/database.php';
 // Función auxiliar para iniciar sesión de forma segura
 function iniciarSesionSegura() {
     if (session_status() === PHP_SESSION_NONE) {
-         session_start();
+        session_start();
     }
 }
 
@@ -64,11 +64,8 @@ function iniciarSesion($email, $contraseña) {
 
 function cerrarSesion() {
     iniciarSesionSegura();
-    session_unset();   
     session_destroy();
-    header("Location: index.php"); 
-    exit();
-
+    return "success";
 }
 
 function estaLogueado() {

@@ -86,7 +86,7 @@ function mostrarUsuarios(usuarios) {
                             <button class="btn btn-sm btn-info" onclick="verDetalleUsuario(${usuario.id})" title="Ver detalles">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            <button class="btn btn-sm btn-warning" onclick="editarUsuario(${usuario.id}, '${usuario.nombre}', '${usuario.email}', '${usuario.estado}', '${usuario.rol}')" title="Editar usuario">
+                            <button class="btn btn-sm btn-warning" onclick="editarUio(${usuario.id}, '${usuario.nombre}', '${usuario.email}', '${usuario.estado}', '${usuario.rol}')" title="Editar usuario">
                                 <i class="bi bi-pencil"></i>
                             </button>
                             <button class="btn btn-sm btn-secondary" onclick="confirmarSuspender(${usuario.id}, '${usuario.nombre}')" title="Suspender usuario">

@@ -8,10 +8,10 @@ require_once dirname(__DIR__, 2) . '/php/database.php';
 function obtenerProductosCatalogo($categoria = null) {
     global $conexion;
     
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.cantidad, p.imagen, c.nombre as categoria 
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria 
             FROM productos p 
             LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.estado = 'disponible' and p.cantidad > 0";
+            WHERE p.estado = 'disponible'";
     
     if ($categoria && $categoria !== 'todas') {
         $sql .= " AND c.nombre = ?";

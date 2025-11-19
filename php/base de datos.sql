@@ -104,7 +104,6 @@ CREATE TABLE IF NOT EXISTS productos_favoritos (
     FOREIGN KEY (producto_id) REFERENCES productos(id) ON DELETE CASCADE,
     UNIQUE KEY usuario_producto_fav (usuario_id, producto_id)
 );
-
 -- todas son "password" hasheadas
 INSERT INTO usuarios (nombre, apellido_paterno, apellido_materno, email, contraseña, telefono, rol) VALUES
 ('Juan', 'Pérez', 'Gómez', 'juan@comercializadora.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', '5512345678', 'admin'),
@@ -148,6 +147,7 @@ INSERT INTO pedidos (usuario_id, direccion_id, total, estado, metodo_pago) VALUE
 INSERT INTO detalles_pedido (pedido_id, producto_id, nombre_producto, cantidad, precio_unitario, total) VALUES
 (2, 5, 'Laptop Elite', 1, 18999.00, 18999.00);
 
+
 INSERT INTO productos_favoritos (usuario_id, producto_id) VALUES
 (1, 5), -- Juan: favorita la Laptop Elite
 (1, 1), -- Juan: Smartphone X
@@ -155,4 +155,3 @@ INSERT INTO productos_favoritos (usuario_id, producto_id) VALUES
 (2, 3), -- María: Juego de sábanas
 (3, 1), -- Carlos: Smartphone X
 (3, 5); -- Carlos: Laptop Elite
-
