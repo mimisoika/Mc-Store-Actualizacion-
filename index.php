@@ -21,34 +21,6 @@
     
     <section class="inicio" id="inicio">
         <div class="container">
-<<<<<<< HEAD
-            <div id="carouselInicio" class="carousel slide carrusel-inicio" data-bs-ride="carousel">
-                <div class="carousel-inner">
-
-                    <?php
-                    // URL de la API REST de WordPress
-                    $api_url = 'http://31.220.96.192/cms/wp-json/wp/v2/media';
-
-                    // Obtener los datos JSON
-                    $response = @file_get_contents($api_url);
-
-                    if ($response !== false) {
-                        $images = json_decode($response, true);
-                        $active = 'active';
-
-                        // Mostrar cada imagen como un slide
-                        foreach ($images as $img) {
-                            echo '<div class="carousel-item ' . $active . '">';
-                            echo '<img src="' . $img['source_url'] . '" class="d-block w-100" alt="' . htmlspecialchars($img['title']['rendered']) . '" style="height: 300px; width: 100%; object-fit: contain; background-color: #fff;">';
-                            echo '</div>';
-                            $active = ''; // solo la primera es activa
-                        }
-                    } else {
-                        echo '<div class="text-center p-5">No se pudieron cargar las imágenes del carrusel.</div>';
-                    }
-                    ?>
-
-=======
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-7">
                     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -93,7 +65,6 @@
                             <span class="visually-hidden">Next</span>
                         </button>
                     </div>
->>>>>>> 6d6943384de92d1a061a6132493aaba3416c3bd2
                 </div>
 
                 <!-- Controles -->
