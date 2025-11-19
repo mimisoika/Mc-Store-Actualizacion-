@@ -3,7 +3,9 @@ function agregarAlCarrito(productoId) {
     informacion.append('producto_id', productoId);
     informacion.append('cantidad', 1);
     
-    fetch('agregar_carrito_catalogo.php', {
+    // endpoint base: si la página actual está en /pages/ usamos ruta relativa, si está en raíz usamos pages/
+    const base = window.location.pathname.indexOf('/pages/') !== -1 ? '' : 'pages/';
+    fetch(base + 'agregar_carrito_catalogo.php', {
         method: 'POST',
         body: informacion
     })
@@ -50,6 +52,48 @@ function mostrarMensaje(mensaje, tipo) {
             alerta.remove();
         }
     }, 5000);
+}
+
+// Función para alternar favorito vía AJAX
+function toggleFavorito(productoId, btn) {
+    const informacion = new FormData();
+    informacion.append('producto_id', productoId);
+
+    const base = window.location.pathname.indexOf('/pages/') !== -1 ? '' : 'pages/';
+    fetch(base + 'toggle_favorito.php', {
+        method: 'POST',
+        body: informacion
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            // Actualizar el icono y la clase del botón
+            const icon = btn.querySelector('i');
+            if (data.action === 'added') {
+                if (icon) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas');
+                }
+                btn.classList.remove('btn-outline-danger');
+                btn.classList.add('btn-danger');
+                mostrarMensaje('Producto añadido a favoritos', 'success');
+            } else {
+                if (icon) {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                }
+                btn.classList.remove('btn-danger');
+                btn.classList.add('btn-outline-danger');
+                mostrarMensaje('Producto removido de favoritos', 'success');
+            }
+        } else {
+            mostrarMensaje(data.message || 'Error al actualizar favoritos', 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        mostrarMensaje('Error de conexión', 'error');
+    });
 }
 
 // Opcional: Agregar funcionalidad para cambiar cantidad
