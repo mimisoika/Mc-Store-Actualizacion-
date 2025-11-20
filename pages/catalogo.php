@@ -56,43 +56,9 @@ $categorias = obtenerCategorias();
                     <div class="alert alert-info">No se encontraron productos en esta categoría.</div>
                 </div>
             <?php else: ?>
-                <?php foreach ($productos as $producto): ?>
-                    <div class="col-md-4 mb-4">
-                        <div class="card h-100 shadow-sm border-0 position-relative">
-                            <!-- Badge de categoría -->
-                            <span class="badge bg-info position-absolute top-0 end-0 m-2 z-1">
-                                <?= ucfirst(htmlspecialchars($producto['categoria'])) ?>
-                            </span>
-                            <a href="producto.php?id=<?= $producto['id'] ?>" class="text-decoration-none text-dark">
-                                <?php 
-                                $imagen = !empty($producto['imagen']) ? '../img_productos/' . htmlspecialchars($producto['imagen']) : '../img_productos/producto-default.jpg';
-                                ?>
-                                <img src="<?= $imagen ?>" class="card-img-top" style="height: 200px; object-fit: cover;" alt="<?= htmlspecialchars($producto['nombre']) ?>">
-                            </a>
-                            <div class="card-body">
-                                <a href="producto.php?id=<?= $producto['id'] ?>" class="text-decoration-none text-dark">
-                                    <h5 class="card-title"><?= htmlspecialchars($producto['nombre']) ?></h5>
-                                </a>
-                                <p class="card-text text-muted"><?= htmlspecialchars($producto['descripcion']) ?></p>
-                            </div>
-                            <div class="card-footer bg-white border-0">
-                                <div class="d-flex align-items-center gap-2">
-                                    <?php
-                                        $favoritos = isset($_SESSION['favoritos']) ? $_SESSION['favoritos'] : [];
-                                        $isFav = in_array($producto['id'], $favoritos);
-                                    ?>
-                                    <button class="btn <?= $isFav ? 'btn-danger' : 'btn-outline-danger' ?> btn-sm" onclick="toggleFavorito(<?= $producto['id'] ?>, this)" title="Añadir a favoritos">
-                                        <i class="<?= $isFav ? 'fas' : 'far' ?> fa-heart"></i>
-                                    </button>
-                                    <div class="text-primary fw-bold fs-5 mb-0 me-2">$<?= number_format($producto['precio'], 2) ?></div>
-                                    <button class="btn btn-outline-primary flex-grow-1" onclick="agregarAlCarrito(<?= $producto['id'] ?>)">
-                                        <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                <?php foreach ($productos as $producto): 
+                    mostrarProducto($producto);
+                endforeach; ?>
             <?php endif; ?>
         </div>
     </div>
