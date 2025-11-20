@@ -125,4 +125,27 @@ function generarBadgeEstado($estado) {
     $clase = $badges[$estado] ?? 'bg-secondary';
     return "<span class='badge {$clase}'>" . ucfirst($estado) . "</span>";
 }
+
+/**
+ * Obtiene los productos favoritos del usuario
+ */
+function obtenerProductosFavoritos($usuario_id) {
+    global $conexion;
+    
+    $consulta = "SELECT p.* FROM productos p 
+                 INNER JOIN productos_favoritos pf ON p.id = pf.producto_id 
+                 WHERE pf.usuario_id = ? 
+                 ORDER BY pf.fecha_agregado DESC";
+    
+    $stmt = mysqli_prepare($conexion, $consulta);
+    mysqli_stmt_bind_param($stmt, "i", $usuario_id);
+    mysqli_stmt_execute($stmt);
+    $resultado = mysqli_stmt_get_result($stmt);
+    
+    $favoritos = [];
+    while ($producto = mysqli_fetch_assoc($resultado)) {
+        $favoritos[] = $producto;
+    }
+    return $favoritos;
+}
 ?>
