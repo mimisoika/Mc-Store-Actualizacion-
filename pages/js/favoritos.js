@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let id = this.dataset.id;
             let icono = document.getElementById("icono-fav-" + id);
 
-            fetch("functions/toggle_favorito.php", {
+            fetch("pages/toggle_favorito.php", {
                 method: "POST",
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 body: "id=" + id

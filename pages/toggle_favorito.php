@@ -1,7 +1,7 @@
 <?php
 session_start();
-require_once 'f_favoritos.php';
-require_once 'f_login.php';
+require_once 'functions/f_favoritos.php';
+require_once 'functios/f_login.php';
 
 header('Content-Type: application/json');
 
