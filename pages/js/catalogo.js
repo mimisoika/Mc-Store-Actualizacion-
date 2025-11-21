@@ -103,3 +103,144 @@ document.addEventListener('DOMContentLoaded', function() {
     // - Filtros adicionales
     // - Vista de detalles del producto
 });
+
+// Debounce helper para AJAX
+function debounce(fn, delay) {
+    let timeout;
+    return function(...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => fn(...args), delay);
+    };
+}
+
+// Manejo del slider de precio en la página de catálogo
+document.addEventListener('DOMContentLoaded', function() {
+    const minRange = document.getElementById('minPrecioRange');
+    const maxRange = document.getElementById('maxPrecioRange');
+    const minVal = document.getElementById('minPrecioVal');
+    const maxVal = document.getElementById('maxPrecioVal');
+    const minInput = document.getElementById('minPrecioInput');
+    const maxInput = document.getElementById('maxPrecioInput');
+    const categoriaSelect = document.getElementById('categoria');
+    const ordenSelect = document.getElementById('orden');
+    const filterForm = document.getElementById('filterForm');
+
+    if (!minRange || !maxRange || !minVal || !maxVal || !filterForm) return;
+
+    function formatMoney(v) {
+        return parseFloat(v).toFixed(2);
+    }
+
+    // Función para actualizar valores visuales
+    function updateDisplayValues() {
+        let min = parseFloat(minRange.value);
+        let max = parseFloat(maxRange.value);
+        
+        if (min > max) {
+            if (this === minRange) {
+                maxRange.value = min;
+                max = min;
+            } else {
+                minRange.value = max;
+                min = max;
+            }
+        }
+        minVal.textContent = formatMoney(min);
+        maxVal.textContent = formatMoney(max);
+        
+        // Sincronizar inputs numéricos
+        if (minInput) minInput.value = min;
+        if (maxInput) maxInput.value = max;
+    }
+
+    // Función para sincronizar sliders desde inputs numéricos
+    function syncSlidersFromInputs() {
+        if (minInput && parseFloat(minInput.value)) {
+            minRange.value = minInput.value;
+        }
+        if (maxInput && parseFloat(maxInput.value)) {
+            maxRange.value = maxInput.value;
+        }
+        updateDisplayValues.call(minRange);
+    }
+
+    // Función para hacer AJAX con los filtros
+    async function fetchProductos(pushUrl = true) {
+        const categoria = categoriaSelect?.value || 'todas';
+        const minPrecio = minRange.value;
+        const maxPrecio = maxRange.value;
+        const orden = ordenSelect?.value || '';
+
+        const params = new URLSearchParams({
+            categoria: categoria,
+            min_precio: minPrecio,
+            max_precio: maxPrecio,
+            orden: orden
+        });
+
+        try {
+            const response = await fetch('get_productos.php?' + params.toString());
+            const html = await response.text();
+            const productosGrid = document.getElementById('productosGrid');
+            if (productosGrid) {
+                productosGrid.innerHTML = html;
+            }
+
+            // Actualizar URL sin recargar
+            if (pushUrl) {
+                const newUrl = '?' + params.toString();
+                history.replaceState(null, '', newUrl);
+            }
+        } catch (error) {
+            console.error('Error fetching products:', error);
+        }
+    }
+
+    const debouncedFetch = debounce(fetchProductos, 250);
+
+    // Event listeners para sliders
+    minRange.addEventListener('input', () => {
+        updateDisplayValues.call(minRange);
+        debouncedFetch();
+    });
+
+    maxRange.addEventListener('input', () => {
+        updateDisplayValues.call(maxRange);
+        debouncedFetch();
+    });
+
+    // Event listeners para inputs numéricos
+    if (minInput) {
+        minInput.addEventListener('change', () => {
+            syncSlidersFromInputs();
+            debouncedFetch();
+        });
+    }
+    if (maxInput) {
+        maxInput.addEventListener('change', () => {
+            syncSlidersFromInputs();
+            debouncedFetch();
+        });
+    }
+
+    // Event listeners para category y order (sin debounce)
+    if (categoriaSelect) {
+        categoriaSelect.addEventListener('change', () => {
+            fetchProductos(true);
+        });
+    }
+    if (ordenSelect) {
+        ordenSelect.addEventListener('change', () => {
+            fetchProductos(true);
+        });
+    }
+
+    // Prevenir que el formulario se envíe
+    filterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        fetchProductos(true);
+    });
+
+    // Inicializar valores
+    updateDisplayValues.call(minRange);
+});
