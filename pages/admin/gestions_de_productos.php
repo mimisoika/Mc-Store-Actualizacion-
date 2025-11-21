@@ -23,7 +23,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
 </head>
 <body>
     <div class="admin-container">
-        <!-- Sidebar (copiado desde admin_index.php) -->
+       
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -49,11 +49,11 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-people-fill"></i>
                     <span>Usuarios</span>
                 </a>
-                <a href="#" class="menu-item" data-section="categorias">
+                <a href="gestion_catalogo.php" class="menu-item" data-section="categorias">
                     <i class="bi bi-tag"></i>
                     <span>Categorias</span>
                 </a>
-                <a href="#" class="menu-item" data-section="configuracion">
+                <a href="configuracion.php" class="menu-item" data-section="configuracion">
                     <i class="bi bi-gear"></i>
                     <span>Configuracion</span>
                 </a>
@@ -72,8 +72,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             <!-- Top Bar -->
             <header class="top-bar">
                 <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Buscar ...">
-                    <button class="search-btn"><i class="bi bi-search"></i></button>
+                    
                 </div>
                 
             </header>
