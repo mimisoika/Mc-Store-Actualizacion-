@@ -1,5 +1,6 @@
 <?php
 require_once 'functions/f_catalogo.php';
+require_once 'functions/f_favoritos.php';
 
 $categoriaSeleccionada = isset($_GET['categoria']) ? $_GET['categoria'] : 'todas';
 
@@ -57,7 +58,7 @@ $categorias = obtenerCategorias();
                 </div>
             <?php else: ?>
                 <?php foreach ($productos as $producto): 
-                    mostrarProducto($producto);
+                    mostrarProducto($producto, $favoritosIds);
                 endforeach; ?>
             <?php endif; ?>
         </div>
@@ -65,5 +66,6 @@ $categorias = obtenerCategorias();
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/catalogo.js"></script>
+    <script src="js/favorito.js"></script>
 </body>
 </html>

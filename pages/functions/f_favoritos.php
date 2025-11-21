@@ -21,6 +21,22 @@ function obtenerProductosFavoritos($usuario_id) {
     }
     return $favoritos;
 }
+function obtenerIdsFavoritos($usuario_id) {
+    global $conexion;
+
+    $sql = "SELECT producto_id FROM productos_favoritos WHERE usuario_id = ?";
+    $stmt = mysqli_prepare($conexion, $sql);
+    mysqli_stmt_bind_param($stmt, "i", $usuario_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+
+    $ids = [];
+    while ($row = mysqli_fetch_assoc($result)) {
+        $ids[] = $row['producto_id'];
+    }
+    return $ids;
+}
+
 
 function agregarFavorito($usuario_id, $producto_id) {
     global $conexion;

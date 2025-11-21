@@ -4,6 +4,13 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 require_once dirname(__DIR__, 2) . '/php/database.php';
+require_once 'f_favoritos.php';
+
+
+$usuario_id = $_SESSION['usuario_id'] ?? null;
+
+// Obtener favoritos si hay usuario logueado
+$favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 
 function obtenerProductosCatalogo($categoria = null) {
     global $conexion;
@@ -81,16 +88,18 @@ function obtenerProductoPorId($id) {
     return $producto;
 }
 
-function mostrarProducto($producto) {
+function mostrarProducto($producto, $favoritosIds = []) {
 
     // Imagen segura
     $imagen = !empty($producto['imagen']) 
         ? '../img_productos/' . htmlspecialchars($producto['imagen']) 
         : '../img_productos/producto-default.jpg';
 
-    // Favoritos
-    $favoritos = isset($_SESSION['favoritos']) ? $_SESSION['favoritos'] : [];
-    $isFav = in_array($producto['id'], $favoritos);
+    // Verificar si es favorito
+    $esFavorito = in_array($producto['id'], $favoritosIds);
+
+    // Clases para el icono
+    $icono = $esFavorito ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart';
 
     echo '
     <div class="col-md-3 mb-3">
@@ -117,15 +126,17 @@ function mostrarProducto($producto) {
                         $' . number_format($producto['precio'], 2) . '
                     </div>
 
+                    <!-- BOTÓN CARRITO -->
                     <button class="btn btn-outline-primary"
                         onclick="agregarAlCarrito(' . $producto['id'] . ')">
                         <i class="bi bi-cart-plus"></i>
                     </button>
 
-                    <button class="btn ' . ($isFav ? 'btn-danger' : 'btn-outline-danger') . ' btn-sm"
-                        onclick="toggleFavorito(' . $producto['id'] . ', this)" 
+                    <!-- BOTÓN FAVORITO -->
+                    <button class="btn btn-outline-primary btn-fav"
+                        data-id="' . $producto['id'] . '"
                         title="Añadir a favoritos">
-                        <i class="' . ($isFav ? 'fas' : 'far') . ' fa-heart"></i>
+                        <i class="' . $icono . '" id="icono-fav-' . $producto['id'] . '"></i>
                     </button>
 
                 </div>
@@ -135,5 +146,6 @@ function mostrarProducto($producto) {
     </div>
     ';
 }
+
 
 ?>

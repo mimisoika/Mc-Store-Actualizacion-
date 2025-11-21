@@ -5,6 +5,12 @@ if (session_status() == PHP_SESSION_NONE) {
 
 require_once dirname(__DIR__, 2) . '/php/database.php';
 require_once 'f_catalogo.php';
+require_once 'f_favoritos.php';
+
+$usuario_id = $_SESSION['usuario_id'] ?? null;
+
+// Obtener favoritos si hay usuario logueado
+$favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 
 
 function obtenerProductosDestacados($limite = 4) {
@@ -111,6 +117,8 @@ function obtenerProductosAleatoriosPorCategoria($categoria = null, $limite = 4) 
 }
 
 function mostrarProductosDestacados() {
+
+    global $usuario_id;
     $productos = obtenerProductosDestacados(4);
     
     if (empty($productos)) {
@@ -121,11 +129,14 @@ function mostrarProductosDestacados() {
     }
     
     foreach ($productos as $producto) {
-        mostrarProducto($producto);
+        $favoritosIds = obtenerIdsFavoritos($usuario_id);
+        mostrarProducto($producto, $favoritosIds);
     }
 }
 
 function mostrarProductosAleatorios(){
+
+    global $usuario_id;
     // Obtener todas las categorías y mostrar 4 productos aleatorios por cada una
             $categorias = obtenerCategorias();
             if (!empty($categorias)) {
@@ -142,7 +153,8 @@ function mostrarProductosAleatorios(){
                         echo '<div class="col-12 text-muted">No hay productos disponibles en esta categoría.</div>';
                     } else {
                         foreach ($productosAleatorios as $producto) {
-                            mostrarProducto($producto);
+                            $favoritosIds = obtenerIdsFavoritos($usuario_id);
+                            mostrarProducto($producto, $favoritosIds);
                         }
                     }
 
