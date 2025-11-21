@@ -15,7 +15,10 @@ $favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 function obtenerProductosCatalogo($categoria = null, $minPrecio = null, $maxPrecio = null, $orden = null) {
     global $conexion;
 
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria \n            FROM productos p \n            LEFT JOIN categorias c ON p.categoria_id = c.id \n            WHERE p.estado = 'disponible'";
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria  
+            FROM productos p LEFT JOIN categorias c 
+            ON p.categoria_id = c.id
+            WHERE p.cantidad > 0 AND p.estado = 'disponible'";;
 
     $params = [];
     $types = '';
@@ -122,7 +125,7 @@ function obtenerProductoPorId($id) {
     $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.cantidad, p.imagen, c.nombre as categoria
             FROM productos p
             LEFT JOIN categorias c ON p.categoria_id = c.id
-            WHERE p.id = ? AND p.estado = 'disponible'";
+            WHERE p.id = ? AND p.cantidad > 0 AND p.estado = 'disponible'";
 
     $stmt = mysqli_prepare($conexion, $sql);
     if (!$stmt) return null;

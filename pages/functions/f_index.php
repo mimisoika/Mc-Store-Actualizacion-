@@ -18,7 +18,7 @@ function obtenerProductosDestacados($limite = 4) {
     
     $sql = "SELECT id, nombre, descripcion, precio, imagen 
             FROM productos 
-            WHERE estado = 'disponible' AND destacado = 'si'
+            WHERE estado = 'disponible' AND cantidad > 0 AND destacado = 'si'
             ORDER BY fecha_creacion DESC 
             LIMIT ?";
     
