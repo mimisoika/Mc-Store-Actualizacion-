@@ -93,7 +93,7 @@ function mostrarProducto($producto) {
     $isFav = in_array($producto['id'], $favoritos);
 
     echo '
-    <div class="col-md-3 mb-4">
+    <div class="col-md-3 mb-3">
         <div class="card h-100 shadow-sm border-0 position-relative">
 
             <a href="producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">

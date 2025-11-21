@@ -2,6 +2,8 @@
 include '../php/database.php';
 include 'functions/f_perfil.php';
 include 'functions/f_detalles_pedido.php';
+include 'functions/f_favoritos.php';
+
 
 // Iniciar sesión y verificar autenticación
 iniciarSesionSegura();
@@ -52,6 +54,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
     $pedido_id = intval($_POST['ver_detalles']);
     $tabla_detalles_html = obtenerDetallesPedido($pedido_id);
 }
+
+//eliminar favorito
 
 ?>
 <!DOCTYPE html>
@@ -358,8 +362,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
                                                              class="card-img-top" 
                                                              alt="<?php echo htmlspecialchars($producto['nombre']); ?>" 
                                                              style="height: 100%; object-fit: cover;">
+                                                        <!--Este boton debe de eliminar de favoritos si se presiona -->
                                                         <div class="position-absolute top-0 end-0 p-2">
-                                                            <button class="btn btn-sm btn-danger" onclick="toggleFavorito(<?php echo $producto['id']; ?>, this)" title="Quitar de favoritos">
+                                                            <button class="btn btn-sm btn-danger btn-remove-fav" 
+                                                                    data-id="<?php echo $producto['id']; ?>" 
+                                                                    title="Quitar de favoritos">
                                                                 <i class="fas fa-heart"></i>
                                                             </button>
                                                         </div>
@@ -453,5 +460,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="js/perfil.js"></script>
+    <script src="js/favoritos.js"></script>
 </body>
 </html>

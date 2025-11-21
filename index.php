@@ -20,6 +20,8 @@
     <?php
     require_once 'pages/functions/f_index.php';
     require_once 'pages/functions/f_catalogo.php';
+    require_once 'pages/functions/f_favoritos.php';
+
     ?>
     
     <section class="inicio" id="inicio">
@@ -256,6 +258,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="pages/js/catalogo.js"></script>
     <script src="pages/js/index.js"></script>
+    <script src="pages/js/favorito.js"></script>
+
 
 </body>
 </html>
