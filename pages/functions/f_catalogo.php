@@ -4,6 +4,13 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 require_once dirname(__DIR__, 2) . '/php/database.php';
+require_once 'f_favoritos.php';
+
+
+$usuario_id = $_SESSION['usuario_id'] ?? null;
+
+// Obtener favoritos si hay usuario logueado
+$favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 
 function obtenerProductosCatalogo($categoria = null) {
     global $conexion;
@@ -62,52 +69,6 @@ function agregarProductoAlCarrito($productoId, $cantidad = 1) {
 }
 
 /**
- * Obtener productos aleatorios por categoría
- * @param string|null $categoria Nombre de la categoría (o null/'todas' para cualquier categoría)
- * @param int $limite Cantidad de productos a retornar
- * @return array
- */
-function obtenerProductosAleatoriosPorCategoria($categoria = null, $limite = 4) {
-    global $conexion;
-
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.cantidad, p.imagen, c.nombre as categoria
-        FROM productos p
-        LEFT JOIN categorias c ON p.categoria_id = c.id
-        WHERE p.estado = 'disponible' AND p.cantidad > 0";
-
-    if ($categoria && $categoria !== 'todas') {
-        $sql .= " AND c.nombre = ?";
-    }
-
-    $sql .= " ORDER BY RAND() LIMIT ?";
-
-    $stmt = mysqli_prepare($conexion, $sql);
-    if (!$stmt) {
-        error_log("[f_catalogo] mysqli_prepare failed: " . mysqli_error($conexion) . " -- SQL: " . $sql);
-        return [];
-    }
-
-    if ($categoria && $categoria !== 'todas') {
-        // Bind category (string) and limit (int)
-        mysqli_stmt_bind_param($stmt, "si", $categoria, $limite);
-    } else {
-        // Only limit
-        mysqli_stmt_bind_param($stmt, "i", $limite);
-    }
-
-    mysqli_stmt_execute($stmt);
-    $resultado = mysqli_stmt_get_result($stmt);
-
-    $productos = [];
-    while ($producto = mysqli_fetch_assoc($resultado)) {
-        $productos[] = $producto;
-    }
-
-    mysqli_stmt_close($stmt);
-    return $productos;
-}
-
-/**
  * Obtener un producto por su ID
  */
 function obtenerProductoPorId($id) {
@@ -126,4 +87,65 @@ function obtenerProductoPorId($id) {
     mysqli_stmt_close($stmt);
     return $producto;
 }
+
+function mostrarProducto($producto, $favoritosIds = []) {
+
+    // Imagen segura
+    $imagen = !empty($producto['imagen']) 
+        ? '../img_productos/' . htmlspecialchars($producto['imagen']) 
+        : '../img_productos/producto-default.jpg';
+
+    // Verificar si es favorito
+    $esFavorito = in_array($producto['id'], $favoritosIds);
+
+    // Clases para el icono
+    $icono = $esFavorito ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart';
+
+    echo '
+    <div class="col-md-3 mb-3">
+        <div class="card h-100 shadow-sm border-0 position-relative">
+
+            <a href="producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
+                <img src="' . $imagen . '" 
+                     class="card-img-top" 
+                     style="height: 200px; object-fit: cover;" 
+                     alt="' . htmlspecialchars($producto['nombre']) . '">
+            </a>
+
+            <div class="card-body">
+                <a href="producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
+                    <h5 class="card-title">' . htmlspecialchars($producto['nombre']) . '</h5>
+                </a>
+                <p class="card-text text-muted">' . htmlspecialchars($producto['descripcion']) . '</p>
+            </div>
+
+            <div class="card-footer bg-white border-0">
+                <div class="d-flex align-items-center gap-2">
+
+                    <div class="text-primary fw-bold fs-5 mb-0 me-2">
+                        $' . number_format($producto['precio'], 2) . '
+                    </div>
+
+                    <!-- BOTÓN CARRITO -->
+                    <button class="btn btn-outline-primary"
+                        onclick="agregarAlCarrito(' . $producto['id'] . ')">
+                        <i class="bi bi-cart-plus"></i>
+                    </button>
+
+                    <!-- BOTÓN FAVORITO -->
+                    <button class="btn btn-outline-primary btn-fav"
+                        data-id="' . $producto['id'] . '"
+                        title="Añadir a favoritos">
+                        <i class="' . $icono . '" id="icono-fav-' . $producto['id'] . '"></i>
+                    </button>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+    ';
+}
+
+
 ?>

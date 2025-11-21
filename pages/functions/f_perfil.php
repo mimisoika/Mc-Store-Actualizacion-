@@ -125,4 +125,65 @@ function generarBadgeEstado($estado) {
     $clase = $badges[$estado] ?? 'bg-secondary';
     return "<span class='badge {$clase}'>" . ucfirst($estado) . "</span>";
 }
+
+function guardarDireccion(){
+
+    if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+    }
+    global $conexion;
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $usuario_id = $_SESSION['usuario_id'];
+        $alias = trim($_POST['alias']);
+        $direccion = trim($_POST['direccion']);
+        $ciudad = trim($_POST['ciudad']);
+        $codigo_postal = trim($_POST['codigo_postal']);
+        $estado = trim($_POST['estado']);
+        $pais = !empty($_POST['pais']) ? trim($_POST['pais']) : 'México';
+        $instrucciones = trim($_POST['instrucciones_entrega']);
+        $es_principal = isset($_POST['es_principal']) ? 1 : 0;
+
+        if ($es_principal) {
+            $sql_reset = "UPDATE direcciones SET es_principal = 0 WHERE usuario_id = ?";
+            $stmt_reset = $conexion->prepare($sql_reset);
+            $stmt_reset->bind_param('i', $usuario_id);
+            $stmt_reset->execute();
+        }
+
+        $sql = "INSERT INTO direcciones (
+            usuario_id, alias, direccion, ciudad, codigo_postal, estado, pais, instrucciones_entrega, es_principal
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param('isssssssi', $usuario_id, $alias, $direccion, $ciudad, $codigo_postal, $estado, $pais, $instrucciones, $es_principal);
+
+
+      
+    
+        if ($stmt->execute()) {
+            header("Location: perfil.php?mensaje=Dirección+guardada+correctamente");
+            exit();
+        } else {
+            header("Location: perfil.php?error=Error+al+guardar+la+dirección");
+            exit();
+        }
+    }
+}
+
+function marcarDireccionComoPrincipal($usuario_id, $direccion_id) {
+    global $conexion;
+
+    // DPrimero se desactivas la dirección marcada como principal
+    $sql1 = "UPDATE direcciones SET es_principal = 0 WHERE usuario_id = ?";
+    $stmt1 = $conexion->prepare($sql1);
+    $stmt1->bind_param("i", $usuario_id);
+    $stmt1->execute();
+
+    // Luego se activa la nueva principal
+    $sql2 = "UPDATE direcciones SET es_principal = 1 WHERE id = ? AND usuario_id = ?";
+    $stmt2 = $conexion->prepare($sql2);
+    $stmt2->bind_param("ii", $direccion_id, $usuario_id);
+    $stmt2->execute();
+}
 ?>

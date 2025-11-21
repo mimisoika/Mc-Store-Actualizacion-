@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MC Store | Inicio</title>
     <!-- Bootstrap CSS -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -18,6 +20,8 @@
     <?php
     require_once 'pages/functions/f_index.php';
     require_once 'pages/functions/f_catalogo.php';
+    require_once 'pages/functions/f_favoritos.php';
+
     ?>
     
     <section class="inicio" id="inicio">
@@ -92,51 +96,7 @@
             </div>
 
             <?php
-            // Obtener todas las categorías y mostrar 4 productos aleatorios por cada una
-            $categorias = obtenerCategorias();
-            if (!empty($categorias)) {
-                // favoritos desde sesión
-                $favoritos = isset($_SESSION['favoritos']) ? $_SESSION['favoritos'] : [];
-                foreach ($categorias as $categoria) {
-                    $productosAleatorios = obtenerProductosAleatoriosPorCategoria($categoria, 4);
-                    echo '<div class="row mb-4">';
-                    echo '  <div class="col-12 mb-3">';
-                    echo '    <h3 class="h4">' . htmlspecialchars($categoria) . '</h3>';
-                    echo '  </div>';
-
-                    if (empty($productosAleatorios)) {
-                        echo '<div class="col-12 text-muted">No hay productos disponibles en esta categoría.</div>';
-                    } else {
-                        foreach ($productosAleatorios as $producto) {
-                            $imagen = !empty($producto['imagen']) ? $producto['imagen'] : 'img_productos/producto-default.jpg';
-                            $isFav = in_array($producto['id'], $favoritos);
-                            echo '<div class="col-lg-3 col-md-6 mb-3">';
-                            echo '  <div class="card h-100 shadow-sm">';
-                            // Enlazar a la página de producto (index está en la raíz)
-                            echo '    <a href="pages/producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">';
-                            echo '      <img src="' . htmlspecialchars($imagen) . '" class="card-img-top" alt="' . htmlspecialchars($producto['nombre']) . '" style="height:180px; object-fit:cover;">';
-                            echo '    </a>';
-                            echo '    <div class="card-body d-flex flex-column">';
-                            echo '      <a href="pages/producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">';
-                            echo '        <h5 class="card-title">' . htmlspecialchars($producto['nombre']) . '</h5>';
-                            echo '      </a>';
-                            echo '      <p class="card-text flex-grow-1">' . htmlspecialchars($producto['descripcion']) . '</p>';
-                            echo '      <div class="d-flex justify-content-between align-items-center">';
-                            echo '        <button class="' . ($isFav ? 'btn btn-danger btn-sm' : 'btn btn-outline-danger btn-sm') . '" onclick="toggleFavorito(' . $producto['id'] . ', this)"><i class="' . ($isFav ? 'fas' : 'far') . ' fa-heart"></i></button>';
-                            echo '        <span class="h6 text-primary mb-0">$' . number_format($producto['precio'], 2) . '</span>';
-                            echo '        <button class="btn btn-sm btn-primary" onclick="agregarAlCarrito(' . $producto['id'] . ')">Agregar</button>';
-                            echo '      </div>';
-                            echo '    </div>';
-                            echo '  </div>';
-                            echo '</div>';
-                        }
-                    }
-
-                    echo '</div>'; // .row
-                }
-            } else {
-                echo '<div class="row"><div class="col-12 text-center text-muted">No hay categorías con productos disponibles.</div></div>';
-            }
+            mostrarProductosAleatorios();
             ?>
         </div>
     </section>
@@ -296,8 +256,9 @@
     <?php include 'pages/footer.php'; ?>
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="pages/js/catalogo.js"></script>
     <script src="pages/js/index.js"></script>
+    <script src="pages/js/favoritos.js"></script>
+
 
 </body>
 </html>
