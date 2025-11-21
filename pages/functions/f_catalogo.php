@@ -12,34 +12,80 @@ $usuario_id = $_SESSION['usuario_id'] ?? null;
 // Obtener favoritos si hay usuario logueado
 $favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 
-function obtenerProductosCatalogo($categoria = null) {
+function obtenerProductosCatalogo($categoria = null, $minPrecio = null, $maxPrecio = null, $orden = null) {
     global $conexion;
-    
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria 
-            FROM productos p 
-            LEFT JOIN categorias c ON p.categoria_id = c.id 
-            WHERE p.estado = 'disponible'";
-    
+
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria \n            FROM productos p \n            LEFT JOIN categorias c ON p.categoria_id = c.id \n            WHERE p.estado = 'disponible'";
+
+    $params = [];
+    $types = '';
+
     if ($categoria && $categoria !== 'todas') {
         $sql .= " AND c.nombre = ?";
+        $types .= 's';
+        $params[] = $categoria;
     }
-    
-    $sql .= " ORDER BY p.fecha_creacion DESC";
-    
+
+    if ($minPrecio !== null && $minPrecio !== '') {
+        $sql .= " AND p.precio >= ?";
+        $types .= 'd';
+        $params[] = (float)$minPrecio;
+    }
+
+    if ($maxPrecio !== null && $maxPrecio !== '') {
+        $sql .= " AND p.precio <= ?";
+        $types .= 'd';
+        $params[] = (float)$maxPrecio;
+    }
+
+    // Ordenamiento
+    switch ($orden) {
+        case 'precio_asc':
+            $sql .= " ORDER BY p.precio ASC";
+            break;
+        case 'precio_desc':
+            $sql .= " ORDER BY p.precio DESC";
+            break;
+        case 'nombre_asc':
+            $sql .= " ORDER BY p.nombre ASC";
+            break;
+        case 'nombre_desc':
+            $sql .= " ORDER BY p.nombre DESC";
+            break;
+        case 'mas_reciente':
+            $sql .= " ORDER BY p.fecha_creacion DESC";
+            break;
+        case 'menos_reciente':
+            $sql .= " ORDER BY p.fecha_creacion ASC";
+            break;
+        default:
+            $sql .= " ORDER BY p.fecha_creacion DESC";
+    }
+
     $stmt = mysqli_prepare($conexion, $sql);
-    
-    if ($categoria && $categoria !== 'todas') {
-        mysqli_stmt_bind_param($stmt, "s", $categoria);
+    if (!$stmt) {
+        error_log('[f_catalogo] mysqli_prepare failed: ' . mysqli_error($conexion) . ' -- SQL: ' . $sql);
+        return [];
     }
-    
+
+    if (!empty($types)) {
+        // bind_param requires references
+        $bind_names = [];
+        $bind_names[] = $types;
+        for ($i = 0; $i < count($params); $i++) {
+            $bind_names[] = & $params[$i];
+        }
+        call_user_func_array(array($stmt, 'bind_param'), $bind_names);
+    }
+
     mysqli_stmt_execute($stmt);
     $resultado = mysqli_stmt_get_result($stmt);
-    
+
     $productos = [];
     while ($producto = mysqli_fetch_assoc($resultado)) {
         $productos[] = $producto;
     }
-    
+
     mysqli_stmt_close($stmt);
     return $productos;
 }
@@ -148,4 +194,19 @@ function mostrarProducto($producto, $favoritosIds = []) {
 }
 
 
+/**
+ * Obtiene el rango de precios (min, max) de los productos disponibles
+ */
+function obtenerRangoPrecios() {
+    global $conexion;
+    $sql = "SELECT MIN(precio) as min_precio, MAX(precio) as max_precio FROM productos WHERE estado = 'disponible'";
+    $res = mysqli_query($conexion, $sql);
+    if ($fila = mysqli_fetch_assoc($res)) {
+        return [
+            'min' => (float)$fila['min_precio'],
+            'max' => (float)$fila['max_precio']
+        ];
+    }
+    return ['min' => 0, 'max' => 0];
+}
 ?>
