@@ -55,6 +55,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
     $tabla_detalles_html = obtenerDetallesPedido($pedido_id);
 }
 
+
+
+
 //eliminar favorito
 
 ?>
@@ -354,14 +357,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
                                     </div>
                                 <?php else: ?>
                                     <div class="row g-4">
-                                        <?php foreach ($favoritos as $producto): ?>
+                                        <?php foreach ($favoritos as $producto): 
+                                            // Imagen segura
+                                            $imagen = !empty($producto['imagen']) 
+                                                ? '../img_productos/' . htmlspecialchars($producto['imagen']) 
+                                                : '../img_productos/producto-default.jpg';?>
+                                            
+                                            
                                             <div class="col-lg-4 col-md-6">
                                                 <div class="card h-100 shadow-sm">
                                                     <div class="position-relative overflow-hidden" style="height: 200px;">
-                                                        <img src="<?php echo htmlspecialchars($producto['imagen'] ?? 'img_productos/producto-default.jpg'); ?>" 
-                                                             class="card-img-top" 
-                                                             alt="<?php echo htmlspecialchars($producto['nombre']); ?>" 
-                                                             style="height: 100%; object-fit: cover;">
+                                                        <img src="<?php echo $imagen; ?>" 
+                                                        class="card-img-top" 
+                                                        style="height: 200px; object-fit: cover;"
+                                                        alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
+
+                                                             
                                                         <!--Este boton debe de eliminar de favoritos si se presiona -->
                                                         <div class="position-absolute top-0 end-0 p-2">
                                                             <button class="btn btn-sm btn-danger btn-remove-fav" 
