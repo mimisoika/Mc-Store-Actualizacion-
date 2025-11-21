@@ -3,7 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MC Store | Inicio</title>
+    <?php
+    require_once 'pages/admin/functions/f_configuracion.php';
+    $config = obtenerConfiguracion();
+    ?>
+    <title><?php echo htmlspecialchars($config['nombre_sitio']); ?> | Inicio</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -11,6 +15,10 @@
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="pages/css/header.css">
     <link rel="stylesheet" href="css/index.css">
+    <!-- CSS Dinámico -->
+    <style>
+        <?php echo generarCssDinamico(); ?>
+    </style>
 </head>
 <body>
     <?php include 'pages/header.php'; ?>
@@ -25,36 +33,29 @@
                 <div class="col-md-10 col-lg-7">
                     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
                         <div class="carousel-indicators">
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-            </div>
-            <div class="carousel-inner">
-                <div class="carousel-item active">
-                    <img src="pages/img/slider/slide1.jpg" class="d-block w-100" alt="Repostería Slide 1">
-                    <div class="carousel-caption">
-                        <h1 class="display-4 fw-bold mb-4">Tu Tienda de Repostería</h1>
-                        <p class="lead mb-4">Herramientas, ingredientes y decoraciones para tus creaciones</p>
-                        <div class="mb-4">
-                            <a href="#productos" class="btn btn-light btn-lg me-3">Ver Productos</a>
-                            <a href="#contacto" class="btn btn-outline-light btn-lg">Contáctanos</a>
+                            <?php
+                            $imagenes = obtenerImagenesCarrusel();
+                            foreach ($imagenes as $key => $imagen):
+                            ?>
+                                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="<?php echo $key; ?>" 
+                                    <?php echo $key === 0 ? 'class="active" aria-current="true"' : ''; ?> 
+                                    aria-label="Slide <?php echo $key + 1; ?>"></button>
+                            <?php endforeach; ?>
                         </div>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="pages/img/slider/slide2.jpg" class="d-block w-100" alt="Repostería Slide 2">
-                    <div class="carousel-caption">
-                        <h2 class="display-4 fw-bold mb-4">Calidad Garantizada</h2>
-                        <p class="lead mb-4">Los mejores productos para tus creaciones</p>
-                    </div>
-                </div>
-                <div class="carousel-item">
-                    <img src="pages/img/slider/slide3.jpg" class="d-block w-100" alt="Repostería Slide 3">
-                    <div class="carousel-caption">
-                        <h2 class="display-4 fw-bold mb-4">Entrega Rápida</h2>
-                        <p class="lead mb-4">Recibe tus productos en tiempo récord</p>
-                    </div>
-                </div>
+                        <div class="carousel-inner">
+                            <?php foreach ($imagenes as $key => $imagen): ?>
+                                <div class="carousel-item <?php echo $key === 0 ? 'active' : ''; ?>">
+                                    <img src="<?php echo htmlspecialchars($imagen['imagen_url']); ?>" class="d-block w-100" alt="<?php echo htmlspecialchars($imagen['titulo']); ?>">
+                                    <div class="carousel-caption">
+                                        <h1 class="fw-bold"><?php echo htmlspecialchars($imagen['titulo']); ?></h1>
+                                        <p><?php echo htmlspecialchars($imagen['descripcion']); ?></p>
+                                        <div>
+                                            <a href="#productos" class="btn btn-light me-3">Ver Productos</a>
+                                            <a href="#contacto" class="btn btn-outline-light">Contáctanos</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
                         </div>
                         <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -84,6 +85,8 @@
         </div>
     </section>
 
+
+
     <!-- Sección de Servicios -->
     <section class="servicios bg-light py-5 text-center justify-content-center align-items-center" id="servicios">
         <div class="container">
@@ -92,11 +95,12 @@
                     <h2 class="display-5 fw-bold">Nuestros Servicios</h2>
                     <p class="lead text-muted">Beneficios que ofrecemos a nuestros clientes</p>
                 </div>
+                
             </div>
             <div class="row g-4">
                 <div class="col-lg-3 col-md-6">
                     <div class="text-center">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
                             <i class="fas fa-shipping-fast fs-2"></i>
                         </div>
                         <h4>Envío Gratis</h4>
@@ -105,7 +109,7 @@
                 </div>
                 <div class="col-lg-3 col-md-6">
                     <div class="text-center">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
                             <i class="fas fa-undo-alt fs-2"></i>
                         </div>
                         <h4>Devoluciones</h4>
@@ -115,7 +119,7 @@
                 
                 <div class="col-lg-3 col-md-6">
                     <div class="text-center">
-                        <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
                             <i class="fas fa-shield-alt fs-2"></i>
                         </div>
                         <h4>Compra Segura</h4>
@@ -131,20 +135,19 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h2 class="display-5 fw-bold mb-4">Acerca de MC Store</h2>
-                    <p class="lead mb-4">Somos una tienda especializada en repostería con más de 10 años de experiencia. Nos dedicamos a proporcionar las mejores herramientas, ingredientes y decoraciones para que puedas crear obras maestras culinarias.</p>
-                    <p class="mb-4">Nuestra misión es hacer que la repostería sea accesible para todos, desde principiantes hasta profesionales, ofreciendo productos de alta calidad a precios competitivos.</p>
+                    <h2 class="display-5 fw-bold mb-4">Acerca de <?php echo htmlspecialchars($config['nombre_sitio']); ?></h2>
+                    <p class="lead mb-4"><?php echo nl2br(htmlspecialchars($config['texto_nosotros'])); ?></p>
                     <div class="row text-center">
                         <div class="col-4">
-                            <h3 class="display-6 fw-bold text-primary">5000+</h3>
+                            <h3 class="display-6 fw-bold" style="color: <?php echo htmlspecialchars($config['color_primario']); ?>;">5000+</h3>
                             <p class="text-muted">Clientes Satisfechos</p>
                         </div>
                         <div class="col-4">
-                            <h3 class="display-6 fw-bold text-primary">500+</h3>
+                            <h3 class="display-6 fw-bold" style="color: <?php echo htmlspecialchars($config['color_primario']); ?>;">500+</h3>
                             <p class="text-muted">Productos Disponibles</p>
                         </div>
                         <div class="col-4">
-                            <h3 class="display-6 fw-bold text-primary">10+</h3>
+                            <h3 class="display-6 fw-bold" style="color: <?php echo htmlspecialchars($config['color_primario']); ?>;">10+</h3>
                             <p class="text-muted">Años de Experiencia</p>
                         </div>
                     </div>
@@ -167,72 +170,64 @@
             <div class="row g-5">
                 <div class="col-lg-6">
                     <div class="row g-4">
+                        <?php if (!empty($config['direccion'])): ?>
                         <div class="col-12">
                             <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
                                     <i class="fas fa-map-marker-alt"></i>
                                 </div>
                                 <div>
                                     <h5 class="mb-1">Dirección</h5>
-                                    <p class="text-muted mb-0">Av. Principal 123, Ciudad, País</p>
+                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($config['direccion']); ?></p>
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($config['telefono'])): ?>
                         <div class="col-12">
                             <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
                                     <i class="fas fa-phone"></i>
                                 </div>
                                 <div>
                                     <h5 class="mb-1">Teléfono</h5>
-                                    <p class="text-muted mb-0">+1 (555) 123-4567</p>
+                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($config['telefono']); ?></p>
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($config['email'])): ?>
                         <div class="col-12">
                             <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
                                     <i class="fas fa-envelope"></i>
                                 </div>
                                 <div>
                                     <h5 class="mb-1">Email</h5>
-                                    <p class="text-muted mb-0">info@mcstore.com</p>
+                                    <p class="text-muted mb-0"><?php echo htmlspecialchars($config['email']); ?></p>
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
+                        
+                        <?php if (!empty($config['horarios'])): ?>
                         <div class="col-12">
                             <div class="d-flex align-items-center">
-                                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                                <div class="rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
                                     <i class="fas fa-clock"></i>
                                 </div>
                                 <div>
                                     <h5 class="mb-1">Horarios</h5>
-                                    <p class="text-muted mb-0">Lun - Vie: 9:00 AM - 6:00 PM<br>Sáb: 9:00 AM - 4:00 PM</p>
+                                    <p class="text-muted mb-0"><?php echo nl2br(htmlspecialchars($config['horarios'])); ?></p>
                                 </div>
                             </div>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
                 <div class="col-lg-6">
-                    <form class="bg-light p-4 rounded">
-                        <div class="mb-3">
-                            <label for="nombre" class="form-label">Nombre completo</label>
-                            <input type="text" class="form-control" id="nombre" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Correo electrónico</label>
-                            <input type="email" class="form-control" id="email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="asunto" class="form-label">Asunto</label>
-                            <input type="text" class="form-control" id="asunto" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="mensaje" class="form-label">Mensaje</label>
-                            <textarea class="form-control" id="mensaje" rows="5" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-lg w-100">Enviar Mensaje</button>
-                    </form>
                 </div>
             </div>
         </div>

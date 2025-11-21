@@ -1,0 +1,134 @@
+INSTRUCCIONES DE CONFIGURACIÓN DEL SITIO
+=========================================
+
+1. PRIMERO: Ejecutar el script de instalación
+================================================
+Abre en tu navegador:
+http://localhost/Proyecto-Sin-IA-main/php/crear_tabla_configuracion.php
+
+Esto creará las tablas necesarias en la base de datos.
+Una vez que veas el mensaje "✓ Base de datos configurada correctamente", 
+puedes ELIMINAR este archivo (crear_tabla_configuracion.php) por seguridad.
+
+2. ACCESO A LA CONFIGURACIÓN
+=============================
+- Entra al panel de administración
+- Ve a "Configuración" en el menú lateral
+- Encontrarás 4 pestañas:
+
+   📋 GENERAL
+   ---------
+   • Nombre del Sitio: Cambia el nombre que aparece en todo el sitio
+   • Logo: Sube tu logo personalizado
+   • Texto "Nosotros": Contenido que aparecerá en la sección de nosotros
+
+   🎨 COLORES
+   ----------
+   • Color Primario: Color principal de botones y elementos destacados
+   • Color Secundario: Color para títulos y encabezados
+   • Color Fondo Encabezado: Fondo de la barra de navegación
+   • Color Texto General: Color del texto en todo el sitio
+
+   📞 CONTACTO
+   -----------
+   • Dirección
+   • Teléfono
+   • Email
+   • WhatsApp
+   • Facebook (URL completa)
+   • Instagram (URL completa)
+   • Horarios de atención
+
+   🖼️ CARRUSEL
+   -----------
+   • Agregar nuevas imágenes para el carrusel del inicio
+   • Editar títulos y descripciones
+   • Activar/Desactivar imágenes
+   • Cambiar orden de las imágenes
+
+3. CARACTERÍSTICAS PRINCIPALES
+===============================
+
+✓ Sistema centralizado de configuración
+  → Todos los cambios se aplican automáticamente en todo el sitio
+
+✓ Colores dinámicos
+  → Los colores que configures se aplican en:
+    - Encabezado/Navbar
+    - Botones
+    - Títulos y encabezados
+    - Texto general
+
+✓ Gestión de contenido
+  → Actualiza texto sin editar código
+  → Sección "Nosotros" configurable
+  → Datos de contacto dinámicos
+
+✓ Carrusel dinámico
+  → Sube imágenes directamente
+  → Reordena sin código
+  → Activa/desactiva según necesites
+
+✓ Logo personalizable
+  → Cambia tu logo desde el admin
+  → Se aplica en toda la página
+
+4. DÓNDE SE APLICA LA CONFIGURACIÓN
+===================================
+
+✅ index.php
+   - Carrusel con imágenes dinámicas
+   - Sección "Nosotros" con contenido configurable
+   - Datos de contacto dinámicos
+   - Colores personalizados
+
+✅ pages/header.php
+   - Nombre del sitio
+   - Logo
+   - Colores de encabezado
+
+✅ Todas las páginas
+   - Colores dinámicos (CSS generado automáticamente)
+   - Logo consistente
+   - Datos de contacto (cuando se incluya en footer)
+
+5. ARCHIVOS CREADOS/MODIFICADOS
+================================
+
+Nuevos archivos:
+- pages/admin/functions/f_configuracion.php (funciones principales)
+- pages/admin/functions/f_gestion_carrusel.php (gestión de carrusel)
+- php/crear_tabla_configuracion.php (script de instalación)
+
+Modificados:
+- pages/admin/configuracion.php (página principal)
+- index.php (integración de configuración)
+- pages/header.php (logo y colores dinámicos)
+
+6. BASE DE DATOS
+================
+
+Tablas creadas:
+- configuraciones: almacena la configuración general del sitio
+- carrusel_imagenes: almacena las imágenes del carrusel
+
+Ambas tablas se crean automáticamente al ejecutar el script de instalación.
+
+7. TIPS ÚTILES
+==============
+
+• Los colores deben estar en formato hexadecimal (#XXXXXX)
+• Las imágenes del carrusel pueden ser JPG, PNG, GIF o WebP
+• Máximo 5MB para logo, máximo 10MB para imágenes del carrusel
+• Los horarios se pueden escribir en múltiples líneas
+• Solo se muestran las imágenes del carrusel que están "Activas"
+
+8. SOPORTE
+==========
+
+Si algo no funciona:
+1. Verifica que las tablas se crearon correctamente
+2. Comprueba los permisos de la carpeta pages/img/slider/
+3. Revisa que la conexión a BD esté correcta
+
+¡Listo! Ahora puedes administrar toda tu página desde un solo lugar.

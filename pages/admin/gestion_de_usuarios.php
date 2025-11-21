@@ -50,7 +50,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-people-fill"></i>
                     <span>Usuarios</span>
                 </a>
-                <a href="#" class="menu-item" data-section="categorias">
+                <a href="gestion_catalogo.php" class="menu-item" data-section="categorias">
                     <i class="bi bi-tag"></i>
                     <span>Categorias</span>
                 </a>
@@ -72,15 +72,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
         <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Buscar ...">
-                    <button class="search-btn"><i class="bi bi-search"></i></button>
-                </div>
-                <div class="top-bar-right">
-                    <select class="region-select">
-                        <option>Pancho</option>
-                    </select>
-                </div>
+                
             </header>
 
             <!-- Content -->

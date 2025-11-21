@@ -4,6 +4,9 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 require_once 'functions/f_header.php';
+require_once 'admin/functions/f_configuracion.php';
+
+$config = obtenerConfiguracion();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -15,11 +18,11 @@ require_once 'functions/f_header.php';
 </head>
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+<nav class="navbar navbar-expand-lg navbar-light sticky-top" style="background-color: <?php echo htmlspecialchars($config['color_encabezado']); ?>; color: <?php echo htmlspecialchars($config['color_texto']); ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
     <div class="container-fluid px-4">
         <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="../pages/img/logo-mcstore.png" alt="MC Store" width="40" height="40" class="me-2 rounded-circle">
-            <span class="fw-bold text-primary fs-4">MC Store</span>
+            <img src="../pages/img/logo-mcstore.png" alt="<?php echo htmlspecialchars($config['nombre_sitio']); ?>" width="40" height="40" class="me-2 rounded-circle">
+            <span class="fw-bold fs-4" style="color: <?php echo htmlspecialchars($config['color_primario']); ?>;"><?php echo htmlspecialchars($config['nombre_sitio']); ?></span>
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
