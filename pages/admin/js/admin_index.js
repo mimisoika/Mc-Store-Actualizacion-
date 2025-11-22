@@ -4,14 +4,20 @@ $(document).ready(function() {
     
     // Activar enlace del menú
     $('.menu-item[data-section]').on('click', function(e) {
-        e.preventDefault();
-        
-        $('.menu-item').removeClass('active');
-        $(this).addClass('active');
-        
-        const section = $(this).data('section');
-        console.log('Sección seleccionada:', section);
+    e.preventDefault();
+    $('.menu-item').removeClass('active');
+    $(this).addClass('active');
+
+    const href = $(this).attr('href'); // o data-file
+    $('.content').load(href, function(response, status) {
+        if (status === 'error') {
+            console.error('Error cargando', href);
+        } else {
+            console.log('Sección cargada:', href);
+        }
     });
+    });
+
     
     // Paginación de puntos
     $('.dot').on('click', function() {

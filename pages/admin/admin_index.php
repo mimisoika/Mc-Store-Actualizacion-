@@ -20,7 +20,7 @@
             </div>
             
             <nav class="sidebar-menu">
-                <a href="#" class="menu-item active" data-section="dashboard">
+                <a href="admin_index.php" class="menu-item active">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
@@ -28,7 +28,7 @@
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
-                <a href="#" class="menu-item" data-section="pedidos">
+                <a href="gestion_pedidos.php" class="menu-item">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Pedidos</span>
                 </a>
@@ -36,11 +36,11 @@
                     <i class="bi bi-people-fill"></i>
                     <span>Usuarios</span>
                 </a>
-                <a href="#" class="menu-item" data-section="categorias">
+                <a href="gestion_catalogo.php" class="menu-item">
                     <i class="bi bi-tag"></i>
                     <span>Categorias</span>
                 </a>
-                <a href="#" class="menu-item" data-section="configuracion">
+                <a href="configuracion.php" class="menu-item">
                     <i class="bi bi-gear"></i>
                     <span>Configuracion</span>
                 </a>
@@ -49,7 +49,7 @@
             <div class="sidebar-footer">
                 <a href="../../index.php" class="menu-item">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Volver a Pagina Principal</span>
                 </a>
             </div>
         </aside>

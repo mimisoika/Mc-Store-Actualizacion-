@@ -33,7 +33,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
             
             <nav class="sidebar-menu">
-                <a href="#" class="menu-item" data-section="dashboard">
+                <a href="admin_index.php" class="menu-item">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
@@ -41,7 +41,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
-                <a href="#" class="menu-item" data-section="pedidos">
+                <a href="gestion_pedidos.php" class="menu-item">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Pedidos</span>
                 </a>
@@ -49,11 +49,11 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-people-fill"></i>
                     <span>Usuarios</span>
                 </a>
-                <a href="gestion_catalogo.php" class="menu-item" data-section="categorias">
+                <a href="gestion_catalogo.php" class="menu-item">
                     <i class="bi bi-tag"></i>
                     <span>Categorias</span>
                 </a>
-                <a href="configuracion.php" class="menu-item" data-section="configuracion">
+                <a href="configuracion.php" class="menu-item">
                     <i class="bi bi-gear"></i>
                     <span>Configuracion</span>
                 </a>
@@ -62,7 +62,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             <div class="sidebar-footer">
                 <a href="../../index.php" class="menu-item">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Volver a Pagina Principal</span>
                 </a>
             </div>
         </aside>
@@ -85,9 +85,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                         <p class="text-muted mb-0">Sistema de gestión de productos</p>
                     </div>
                     <div>
-                        <a href="admin_index.php" class="btn btn-outline-secondary me-2">
-                            <i class="bi bi-arrow-left"></i> Volver al Panel
-                        </a>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#agregarProductoModal">
                             <i class="bi bi-plus-circle"></i> Agregar Producto
                         </button>
@@ -96,9 +93,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
 
                 <!-- Filtros -->
                 <div class="card mb-4">
-                    <div class="card-header bg-white">
-                        <h5 class="mb-0"><i class="bi bi-funnel"></i> Filtros</h5>
-                    </div>
+
                     <div class="card-body">
                         <div class="row g-3">
                             <div class="col-md-4">

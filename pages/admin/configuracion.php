@@ -93,11 +93,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestions_de_productos.php" class="menu-item">
+                <a href="gestion_de_productos.php" class="menu-item">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
-                <a href="#" class="menu-item" data-section="pedidos">
+                <a href="gestion_pedidos.php" class="menu-item">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Pedidos</span>
                 </a>
@@ -107,18 +107,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </a>
                 <a href="gestion_catalogo.php" class="menu-item">
                     <i class="bi bi-tag"></i>
-                    <span>Categorías</span>
+                    <span>Categorias</span>
                 </a>
                 <a href="configuracion.php" class="menu-item active">
                     <i class="bi bi-gear"></i>
-                    <span>Configuración</span>
+                    <span>Configuracion</span>
                 </a>
             </nav>
             
             <div class="sidebar-footer">
                 <a href="../../index.php" class="menu-item">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar Sesión</span>
+                    <span>Volver a Pagina Principal</span>
                 </a>
             </div>
         </aside>
@@ -128,7 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Top Bar -->
             <header class="top-bar">
                 <div class="search-container">
-                    <h4 class="mb-0">Configuración del Sitio</h4>
+
                 </div>
             </header>
             
@@ -264,6 +264,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
     <script src="js/admin_index.js"></script>
     <script src="js/gestion_catalogo.js"></script>
 </body>
