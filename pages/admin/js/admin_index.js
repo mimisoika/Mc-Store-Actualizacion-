@@ -1,58 +1,22 @@
 $(document).ready(function() {
-    // Inicializar gráfica de pedidos
-    crearGraficaPedidos();
+    // Inicializar gráficas
+    crearGraficaVentasCategoria();
+    crearGraficaVentasMes();
     
     // Activar enlace del menú
     $('.menu-item[data-section]').on('click', function(e) {
-    e.preventDefault();
-    $('.menu-item').removeClass('active');
-    $(this).addClass('active');
-
-    const href = $(this).attr('href'); // o data-file
-    $('.content').load(href, function(response, status) {
-        if (status === 'error') {
-            console.error('Error cargando', href);
-        } else {
-            console.log('Sección cargada:', href);
-        }
-    });
-    });
-
-    
-    // Paginación de puntos
-    $('.dot').on('click', function() {
-        $('.dot').removeClass('active');
+        e.preventDefault();
+        $('.menu-item').removeClass('active');
         $(this).addClass('active');
-    });
-    
-    // Botones de paginación
-    $('.pagination-btn').on('click', function() {
-        const dots = $('.dot');
-        const currentActive = dots.index(dots.filter('.active'));
-        const isNext = $(this).index() === 1;
-        
-        let nextIndex = isNext ? currentActive + 1 : currentActive - 1;
-        
-        if (nextIndex >= dots.length) {
-            nextIndex = 0;
-        } else if (nextIndex < 0) {
-            nextIndex = dots.length - 1;
-        }
-        
-        dots.removeClass('active');
-        dots.eq(nextIndex).addClass('active');
-    });
-    
-    // Botones de acciones de tarjetas
-    $('.action-btn').on('click', function() {
-        const icon = $(this).find('i');
-        const isEdit = icon.hasClass('bi-pencil');
-        
-        if (isEdit) {
-            console.log('Editar categoría');
-        } else {
-            console.log('Ver detalles');
-        }
+
+        const href = $(this).attr('href');
+        $('.content').load(href, function(response, status) {
+            if (status === 'error') {
+                console.error('Error cargando', href);
+            } else {
+                console.log('Sección cargada:', href);
+            }
+        });
     });
     
     // Búsqueda
@@ -70,29 +34,21 @@ $(document).ready(function() {
     });
 });
 
-// Función para crear la gráfica de pastel de pedidos
-function crearGraficaPedidos() {
-    const ctx = document.getElementById('pedidosChart');
-    if (!ctx) return;
+// Gráfica de Ventas por Categoría (Pastel)
+function crearGraficaVentasCategoria() {
+    const ctx = document.getElementById('ventasCategoriaChart');
+    if (!ctx || !ventasCategoriaData) return;
+    
+    const colores = ['#FF8B66', '#FFB366', '#FFCC66', '#66B2FF', '#9966FF'];
     
     new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: ['Pendientes', 'Completados', 'En Proceso', 'Cancelados'],
+            labels: ventasCategoriaData.categorias,
             datasets: [{
-                data: [45, 120, 80, 25],
-                backgroundColor: [
-                    '#0052cc',
-                    '#28a745',
-                    '#ffc107',
-                    '#dc3545'
-                ],
-                borderColor: [
-                    '#0052cc',
-                    '#28a745',
-                    '#ffc107',
-                    '#dc3545'
-                ],
+                data: ventasCategoriaData.cantidades,
+                backgroundColor: colores.slice(0, ventasCategoriaData.categorias.length),
+                borderColor: '#fff',
                 borderWidth: 2
             }]
         },
@@ -108,7 +64,75 @@ function crearGraficaPedidos() {
                             family: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif"
                         },
                         color: '#333',
+                        padding: 10,
+                        usePointStyle: true
+                    }
+                }
+            }
+        }
+    });
+}
+
+// Gráfica de Ventas del Mes (Línea/Área)
+function crearGraficaVentasMes() {
+    const ctx = document.getElementById('ventasMesChart');
+    if (!ctx || !ventasMesData) return;
+    
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ventasMesData.fechas,
+            datasets: [{
+                label: 'Ventas del mes',
+                data: ventasMesData.montos,
+                borderColor: '#FF8B66',
+                backgroundColor: 'rgba(255, 139, 102, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 5,
+                pointBackgroundColor: '#FF8B66',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true,
+                    labels: {
+                        font: {
+                            size: 12
+                        },
+                        color: '#333',
                         padding: 15
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: '#666',
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0,0,0,0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#666',
+                        font: {
+                            size: 11
+                        }
+                    },
+                    grid: {
+                        display: false
                     }
                 }
             }
