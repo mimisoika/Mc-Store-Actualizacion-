@@ -1,3 +1,14 @@
+<?php
+include('functions/f_admin_index.php');
+
+$productoMasVendido = obtenerProductoMasVendido();
+$margenGanancias = obtenerMargenGanancias();
+$numeroPedidos = obtenerNumeroPedidos();
+$ventasPorCategoria = obtenerVentasPorCategoria();
+$alertasProductos = obtenerAlertasProductos();
+$ventasMes = obtenerVentasMes();
+$pedidosPorEstado = obtenerPedidosPorEstado();
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -20,15 +31,15 @@
             </div>
             
             <nav class="sidebar-menu">
-                <a href="#" class="menu-item active" data-section="dashboard">
+                <a href="admin_index.php" class="menu-item active">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestions_de_productos.php" class="menu-item">
+                <a href="gestion_de_productos.php" class="menu-item">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
-                <a href="#" class="menu-item" data-section="pedidos">
+                <a href="gestion_pedidos.php" class="menu-item">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Pedidos</span>
                 </a>
@@ -36,11 +47,11 @@
                     <i class="bi bi-people-fill"></i>
                     <span>Usuarios</span>
                 </a>
-                <a href="#" class="menu-item" data-section="categorias">
+                <a href="gestion_catalogo.php" class="menu-item">
                     <i class="bi bi-tag"></i>
                     <span>Categorias</span>
                 </a>
-                <a href="#" class="menu-item" data-section="configuracion">
+                <a href="configuracion.php" class="menu-item">
                     <i class="bi bi-gear"></i>
                     <span>Configuracion</span>
                 </a>
@@ -49,7 +60,7 @@
             <div class="sidebar-footer">
                 <a href="../../index.php" class="menu-item">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Volver a Pagina Principal</span>
                 </a>
             </div>
         </aside>
@@ -62,11 +73,6 @@
                     <input type="text" class="search-input" placeholder="Buscar ...">
                     <button class="search-btn"><i class="bi bi-search"></i></button>
                 </div>
-                <div class="top-bar-right">
-                    <select class="region-select">
-                        <option>Pancho</option>
-                    </select>
-                </div>
             </header>
             
             <!-- Content -->
@@ -75,13 +81,84 @@
                     <h2>Dashboard</h2>
                 </div>
                 
-                <!-- Sección de Gráficos -->
-                <div class="dashboard-section">
-                    <h3>Resumen de Pedidos</h3>
-                    <div class="chart-container">
-                        <div class="chart-wrapper">
-                            <canvas id="pedidosChart"></canvas>
+                <!-- Tarjetas de Estadísticas -->
+                <div class="stats-container">
+                    <!-- Producto más vendido -->
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <h4>Producto mas vendido</h4>
+                            <div class="stat-image">
+                                <img id="imgProducto" src="<?php echo $productoMasVendido ? '../../../img_productos/' . $productoMasVendido['imagen'] : ''; ?>" alt="Producto">
+                            </div>
+                            <p class="stat-value" id="productoNombre"><?php echo $productoMasVendido ? $productoMasVendido['nombre'] : 'No hay datos'; ?></p>
+                            <small class="stat-label">Precio</small>
+                            <p class="stat-value" id="productoPrecio"><?php echo $productoMasVendido ? '$' . number_format($productoMasVendido['precio'], 2) : '-'; ?></p>
                         </div>
+                    </div>
+                    
+                    <!-- Margen de ganancias -->
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <h4>Margen de ganancias</h4>
+                            <p class="stat-percentage" id="margenGanancias"><?php echo $margenGanancias; ?>%</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Número de pedidos -->
+                    <div class="stat-card">
+                        <div class="stat-content">
+                            <h4>Numeros de pedidos</h4>
+                            <p class="stat-number" id="numeroPedidos"><?php echo $numeroPedidos; ?></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Segunda fila de gráficos -->
+                <div class="charts-row">
+                    <!-- Ventas por categoría -->
+                    <div class="chart-card">
+                        <h4>Ventas por categoria</h4>
+                        <div class="chart-wrapper">
+                            <canvas id="ventasCategoriaChart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Alertas de productos -->
+                    <div class="alerts-card">
+                        <h4>Alerta de productos</h4>
+                        <div class="alerts-list" id="alertasProductos">
+                            <?php if (!empty($alertasProductos)): ?>
+                                <?php foreach ($alertasProductos as $alerta): ?>
+                                    <div class="alert-item">
+                                        <p class="alert-name"><?php echo htmlspecialchars($alerta['nombre']); ?></p>
+                                        <?php
+                                            // Priorizar el campo 'estado' si está presente; también considerar cantidad == 0
+                                            $estado = isset($alerta['estado']) ? $alerta['estado'] : null;
+                                            $cantidad = isset($alerta['cantidad']) ? intval($alerta['cantidad']) : null;
+                                            if ($estado === 'agotado' || $cantidad === 0) {
+                                        ?>
+                                            <span class="badge badge-danger">Agotado</span>
+                                        <?php
+                                            } else {
+                                        ?>
+                                            <span class="badge badge-warning">Stock Bajo</span>
+                                        <?php
+                                            }
+                                        ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <p class="no-alerts">Sin alertas</p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ventas del mes -->
+                <div class="chart-section">
+                    <h4>Ventas del mes</h4>
+                    <div class="chart-wrapper large">
+                        <canvas id="ventasMesChart"></canvas>
                     </div>
                 </div>
                 
@@ -92,6 +169,31 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    
+    <!-- Datos para gráficos -->
+    <script>
+        // Datos de ventas por categoría
+        const ventasCategoriaData = <?php 
+            $categorias = array_column($ventasPorCategoria, 'nombre');
+            $cantidades = array_column($ventasPorCategoria, 'cantidad');
+            echo json_encode(['categorias' => $categorias, 'cantidades' => $cantidades]);
+        ?>;
+        
+        // Datos de ventas del mes
+        const ventasMesData = <?php 
+            $fechas = array_column($ventasMes, 'fecha');
+            $montos = array_column($ventasMes, 'monto_total');
+            echo json_encode(['fechas' => $fechas, 'montos' => $montos]);
+        ?>;
+        
+        // Datos de pedidos por estado
+        const pedidosPorEstadoData = <?php 
+            $estados = array_column($pedidosPorEstado, 'estado');
+            $cantidadesEstado = array_column($pedidosPorEstado, 'cantidad');
+            echo json_encode(['estados' => $estados, 'cantidades' => $cantidadesEstado]);
+        ?>;
+    </script>
+    
     <script src="js/admin_index.js"></script>
 </body>
 </html>

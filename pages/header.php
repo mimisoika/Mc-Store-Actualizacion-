@@ -8,6 +8,20 @@ require_once 'admin/functions/f_configuracion.php';
 
 $config = obtenerConfiguracion();
 ?>
+<?php
+// Base URL dinámico para construir rutas que funcionen tanto desde la raíz del proyecto
+// como desde subdirectorios (evita usar ../ en los href que causan 404)
+$baseDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+if ($baseDir === '/' || $baseDir === '.') {
+    $baseDir = '';
+}
+
+function url_path($path) {
+    global $baseDir;
+    $path = ltrim($path, '/');
+    return $baseDir ? $baseDir . '/' . $path : $path;
+}
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -43,40 +57,40 @@ $config = obtenerConfiguracion();
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="../index.php#inicio">
+                    <a class="nav-link" href="<?php echo url_path('index.php#inicio'); ?>">
                         <i class="fas fa-home me-1"></i>Inicio
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../index.php#productos">
+                    <a class="nav-link" href="<?php echo url_path('index.php#productos'); ?>">
                         <i class="fas fa-th-large me-1"></i>Productos Destacados
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../pages/catalogo.php">
+                    <a class="nav-link" href="<?php echo url_path('pages/catalogo.php'); ?>">
                         <i class="fas fa-th-large me-1"></i>Catalogo
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../index.php#acerca">
+                    <a class="nav-link" href="<?php echo url_path('index.php#acerca'); ?>">
                         <i class="fas fa-users me-1"></i>Nosotros
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="../index.php#contacto">
+                    <a class="nav-link" href="<?php echo url_path('index.php#contacto'); ?>">
                         <i class="fas fa-envelope me-1"></i>Contacto
                     </a>
                 </li>
                 
                 <li class="nav-item">
-                    <a class="nav-link position-relative" href="../pages/carrito.php">
+                    <a class="nav-link position-relative" href="<?php echo url_path('pages/carrito.php'); ?>">
                         <i class="fas fa-shopping-cart me-1"></i>
                         <span>Carrito</span>
                     </a>
                 </li>
                 
                 <li class="nav-item d-lg-none mt-2">
-                    <form class="d-flex" action="pages/products.php" method="GET" role="search">
+                    <form class="d-flex" action="<?php echo url_path('pages/products.php'); ?>" method="GET" role="search">
                         <div class="input-group">
                             <input class="form-control" type="search" name="search" placeholder="Buscar productos..." aria-label="Buscar">
                             <button class="btn btn-outline-primary" type="submit">

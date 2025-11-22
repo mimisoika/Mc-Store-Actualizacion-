@@ -23,7 +23,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
 </head>
 <body>
     <div class="admin-container">
-       
+
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -33,15 +33,15 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
             
             <nav class="sidebar-menu">
-                <a href="#" class="menu-item" data-section="dashboard">
+                <a href="admin_index.php" class="menu-item">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestions_de_productos.php" class="menu-item">
+                <a href="gestion_de_productos.php" class="menu-item">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
-                <a href="#" class="menu-item" data-section="pedidos">
+                <a href="gestion_pedidos.php" class="menu-item">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Pedidos</span>
                 </a>
@@ -53,7 +53,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-tag"></i>
                     <span>Categorias</span>
                 </a>
-                <a href="#" class="menu-item" data-section="configuracion">
+                <a href="configuracion.php" class="menu-item">
                     <i class="bi bi-gear"></i>
                     <span>Configuracion</span>
                 </a>
@@ -62,13 +62,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             <div class="sidebar-footer">
                 <a href="../../index.php" class="menu-item">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Volver a Pagina Principal</span>
                 </a>
             </div>
         </aside>
         
         <!-- Main Content -->
-        <main class="main-content --">
+        <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
                 <div class="top-bar-right">

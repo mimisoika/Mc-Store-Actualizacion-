@@ -1,6 +1,9 @@
 <?php 
 include '../php/database.php';
 include 'functions/f_perfil.php';
+include 'functions/f_detalles_pedido.php';
+include 'functions/f_favoritos.php';
+
 
 // Iniciar sesión y verificar autenticación
 iniciarSesionSegura();
@@ -16,6 +19,7 @@ $usuario_id = $_SESSION['usuario_id'];
 $datosUsuario = obtenerDatosCompletos($usuario_id);
 $pedidos = obtenerPedidosUsuario($usuario_id);
 $direcciones = obtenerDireccionesUsuario($usuario_id);
+$favoritos = obtenerProductosFavoritos($usuario_id);
 
 // Manejar actualización de datos
 $resultadoActualizacion = manejarActualizacionDatos($usuario_id);
@@ -31,6 +35,31 @@ if (isset($_POST['cerrar_sesion'])) {
     header('Location: login.php');
     exit();
 }
+
+// Guadar una nueva direccion
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['guardar_direccion'])) {
+    guardarDireccion(); 
+}
+
+// Editar la direccion que se marca como principal
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPrincipal'])) {
+    $usuario_id = $_POST['usuario_id'];
+    $direccion_id = $_POST['direccion_id'];
+    marcarDireccionComoPrincipal($usuario_id, $direccion_id);
+  
+}
+
+$tabla_detalles_html = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
+    $pedido_id = intval($_POST['ver_detalles']);
+    $tabla_detalles_html = obtenerDetallesPedido($pedido_id);
+}
+
+
+
+
+//eliminar favorito
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -115,6 +144,11 @@ if (isset($_POST['cerrar_sesion'])) {
                                     <i class="fas fa-shopping-bag me-2"></i>Mis Pedidos
                                 </a>
                             </li>
+                            <li class="nav-item mb-2">
+                                <a class="nav-link text-white" data-bs-toggle="pill" href="#favoritos">
+                                    <i class="fas fa-heart me-2"></i>Mis Favoritos
+                                </a>
+                            </li>
                         </ul>
                         <hr class="my-4">
                         <form method="POST" class="d-grid">
@@ -187,8 +221,8 @@ if (isset($_POST['cerrar_sesion'])) {
                             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">
                                     <i class="fas fa-map-marker-alt me-2"></i>Mis Direcciones
-                                </h5>
-                                <button class="btn btn-light btn-sm">
+                                </h5>                           
+                                <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalAgregar">
                                     <i class="fas fa-plus me-1"></i>Agregar
                                 </button>
                             </div>
@@ -198,9 +232,6 @@ if (isset($_POST['cerrar_sesion'])) {
                                         <i class="fas fa-map-marker-alt fs-1 text-muted mb-3"></i>
                                         <h5 class="text-muted">No tienes direcciones registradas</h5>
                                         <p class="text-muted">Agrega tu primera dirección para realizar pedidos</p>
-                                        <button class="btn btn-primary">
-                                            <i class="fas fa-plus me-2"></i>Agregar Dirección
-                                        </button>
                                     </div>
                                 <?php else: ?>
                                     <div class="row">
@@ -210,15 +241,14 @@ if (isset($_POST['cerrar_sesion'])) {
                                                     <div class="card-body">
                                                         <div class="d-flex justify-content-between align-items-start mb-2">
                                                             <h6 class="card-title mb-0"><?php echo htmlspecialchars($direccion['alias']); ?></h6>
-                                                            <div class="dropdown">
-                                                                <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="dropdown">
-                                                                    <i class="fas fa-ellipsis-v"></i>
+                                                            <form action="perfil.php" method="POST" class="d-inline">
+                                                                <!--Estos datos proporcionan la informacion necesaria para poder hacer la consulta -->
+                                                                <input type="hidden" name="usuario_id" value="<?php echo $_SESSION['usuario_id']; ?>">
+                                                                <input type="hidden" name="direccion_id" value="<?php echo $direccion['id']; ?>">
+                                                                <button type="submit" name="nuevoPrincipal" class="btn btn-light btn-sm">
+                                                                    <i class="fas fa-check me-1"></i>Principal
                                                                 </button>
-                                                                <ul class="dropdown-menu">
-                                                                    <li><a class="dropdown-item" href="#"><i class="fas fa-edit me-2"></i>Editar</a></li>
-                                                                    <li><a class="dropdown-item text-danger" href="#"><i class="fas fa-trash me-2"></i>Eliminar</a></li>
-                                                                </ul>
-                                                            </div>
+                                                            </form>
                                                         </div>
                                                         <p class="card-text text-muted mb-1">
                                                             <i class="fas fa-map-marker-alt me-1"></i>
@@ -285,9 +315,12 @@ if (isset($_POST['cerrar_sesion'])) {
                                                             <?php echo generarBadgeEstado($pedido['estado']); ?>
                                                         </td>
                                                         <td>
-                                                            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Ver detalles">
-                                                                <i class="fas fa-eye"></i>
-                                                            </button>
+                                                            <form method="POST" class="d-inline ver-detalles">
+                                                                <input type="hidden" name="ver_detalles" value="<?php echo $pedido['id']; ?>">
+                                                                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetallesPedido">
+                                                                    <i class="fas fa-eye"></i>
+                                                                </button>
+                                                            </form>
                                                             <?php if ($pedido['estado'] == 'pendiente'): ?>
                                                                 <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="tooltip" title="Cancelar">
                                                                     <i class="fas fa-times"></i>
@@ -303,12 +336,151 @@ if (isset($_POST['cerrar_sesion'])) {
                             </div>
                         </div>
                     </div>
+
+                    <!-- Productos Favoritos -->
+                    <div class="tab-pane fade" id="favoritos">
+                        <div class="card shadow">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-heart me-2"></i>Mis Productos Favoritos
+                                </h5>
+                            </div>
+                            <div class="card-body p-4">
+                                <?php if (empty($favoritos)): ?>
+                                    <div class="text-center py-5">
+                                        <i class="fas fa-heart fs-1 text-muted mb-3"></i>
+                                        <h5 class="text-muted">No tienes productos favoritos</h5>
+                                        <p class="text-muted">Agrega productos a tu lista de favoritos para verlos aquí</p>
+                                        <a href="catalogo.php" class="btn btn-primary">
+                                            <i class="fas fa-heart me-2"></i>Explorar Productos
+                                        </a>
+                                    </div>
+                                <?php else: ?>
+                                    <div class="row g-4">
+                                        <?php foreach ($favoritos as $producto): 
+                                            // Imagen segura
+                                            $imagen = !empty($producto['imagen']) 
+                                                ? '../img_productos/' . htmlspecialchars($producto['imagen']) 
+                                                : '../img_productos/producto-default.jpg';?>
+                                            
+                                            
+                                            <div class="col-lg-4 col-md-6">
+                                                <div class="card h-100 shadow-sm">
+                                                    <div class="position-relative overflow-hidden" style="height: 200px;">
+                                                        <img src="<?php echo $imagen; ?>" 
+                                                        class="card-img-top" 
+                                                        style="height: 200px; object-fit: cover;"
+                                                        alt="<?php echo htmlspecialchars($producto['nombre']); ?>">
+
+                                                             
+                                                        <!--Este boton debe de eliminar de favoritos si se presiona -->
+                                                        <div class="position-absolute top-0 end-0 p-2">
+                                                            <button class="btn btn-sm btn-danger btn-remove-fav" 
+                                                                    data-id="<?php echo $producto['id']; ?>" 
+                                                                    title="Quitar de favoritos">
+                                                                <i class="fas fa-heart"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-body d-flex flex-column">
+                                                        <h5 class="card-title"><?php echo htmlspecialchars($producto['nombre']); ?></h5>
+                                                        <p class="card-text text-muted flex-grow-1"><?php echo htmlspecialchars(substr($producto['descripcion'], 0, 100) . '...'); ?></p>
+                                                        <div class="d-flex justify-content-between align-items-center mt-3">
+                                                            <span class="h6 text-primary mb-0">$<?php echo number_format($producto['precio'], 2); ?></span>
+                                                            <a href="producto.php?id=<?php echo $producto['id']; ?>" class="btn btn-sm btn-primary">
+                                                                <i class="fas fa-eye me-1"></i>Ver
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+<!-- Modal para agregar dirección -->
+<!-- Modal para agregar dirección -->
+<div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <form action="perfil.php" method="POST" id="formDireccion">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modalAgregarLabel">Nueva dirección</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="alias" placeholder="Alias (Ej: Casa, Trabajo)" required>
+            </div>
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="ciudad" placeholder="Ciudad" required>
+            </div>
+            <div class="col-12">
+              <textarea class="form-control" name="direccion" placeholder="Dirección completa" rows="2" required></textarea>
+            </div>
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="codigo_postal" id="codigo_postal" 
+                     placeholder="Código Postal (Ej: 23600)" required 
+                     pattern="23\d{3}" maxlength="5"
+                     title="El código postal debe empezar con 23 y tener 5 dígitos">
+              <div class="form-text">Debe empezar con 23 y tener 5 dígitos</div>
+            </div>
+            <div class="col-md-6">
+              <input type="text" class="form-control" name="estado" placeholder="Estado" required>
+            </div>
+            <div class="col-12">
+              <div id="info_cp" class="alert alert-info d-none">
+                <small><strong>Asentamiento:</strong> <span id="asentamiento_info"></span></small>
+              </div>
+            </div>
+            <div class="col-12">
+              <textarea class="form-control" name="instrucciones_entrega" placeholder="Instrucciones para entrega" rows="2"></textarea>
+            </div>
+            <div class="col-12">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" name="es_principal" id="es_principal" value="1">
+                <label class="form-check-label" for="es_principal">Establecer como dirección principal</label>
+              </div>
+            </div>
+            <input type="hidden" name="usuario_id" value="<?php echo $_SESSION['usuario_id']; ?>">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary btn-Nueva-Direccion" name="guardar_direccion" id="btnGuardarDireccion">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de Detalles del Pedido -->
+<div class="modal fade" id="modalDetallesPedido" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetallesLabel">Detalles del Pedido</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <?php echo $tabla_detalles_html ?: '<p>Selecciona un pedido para ver los detalles.</p>'; ?>
+    </div>
+    </div>
+  </div>
+</div>
+    
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <script src="js/perfil.js"></script>
+    <script src="js/favoritos.js"></script>
+    <script src="js/validacion-cp.js"></script>
 </body>
 </html>

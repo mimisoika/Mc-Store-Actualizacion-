@@ -17,7 +17,7 @@
                 </div>
             </div>
             
-            <div class="col-lg-2 col-md-6 mb-4">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <h6 class="fw-bold mb-3">Enlaces Rápidos</h6>
                 <ul class="list-unstyled">
                     <li class="mb-2"><a href="#inicio" class="text-light text-decoration-none">Inicio</a></li>
@@ -28,18 +28,7 @@
                 </ul>
             </div>
             
-            <div class="col-lg-3 col-md-6 mb-4">
-                <h6 class="fw-bold mb-3">Categorías</h6>
-                <ul class="list-unstyled">
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Moldes y Bandejas</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Utensilios</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Ingredientes</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Decoraciones</a></li>
-                    <li class="mb-2"><a href="#" class="text-light text-decoration-none">Colorantes</a></li>
-                </ul>
-            </div>
-            
-            <div class="col-lg-3 col-md-6 mb-4">
+            <div class="col-lg-4 col-md-6 mb-4">
                 <h6 class="fw-bold mb-3">Contacto</h6>
                 <?php if (!empty($config['direccion'])): ?>
                 <div class="d-flex align-items-center mb-2">
@@ -74,12 +63,7 @@
             <div class="col-md-6">
                 <p class="mb-0 text-light">&copy; 2024 <?php echo htmlspecialchars($config['nombre_sitio']); ?>. Todos los derechos reservados.</p>
             </div>
-            <div class="col-md-6 text-md-end">
-                <small class="text-light">
-                    <a href="#" class="text-light text-decoration-none me-3">Política de Privacidad</a>
-                    <a href="#" class="text-light text-decoration-none">Términos y Condiciones</a>
-                </small>
-            </div>
+            
         </div>
     </div>
 </footer>

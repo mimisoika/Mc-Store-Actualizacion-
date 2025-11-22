@@ -9,11 +9,12 @@
     ?>
     <title><?php echo htmlspecialchars($config['nombre_sitio']); ?> | Inicio</title>
     <!-- Bootstrap CSS -->
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- CSS personalizado -->
-    <link rel="stylesheet" href="pages/css/header.css">
     <link rel="stylesheet" href="css/index.css">
     <!-- CSS Dinámico -->
     <style>
@@ -25,6 +26,9 @@
     
     <?php
     require_once 'pages/functions/f_index.php';
+    require_once 'pages/functions/f_catalogo.php';
+    require_once 'pages/functions/f_favoritos.php';
+
     ?>
     
     <section class="inicio" id="inicio">
@@ -67,11 +71,38 @@
                         </button>
                     </div>
                 </div>
+
+                <!-- Controles -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselInicio" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Anterior</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselInicio" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Siguiente</span>
+                </button>
             </div>
         </div>
     </section>
 
+    <!-- Sección Productos Aleatorios por Categoría -->
+    <section class="productos-aleatorios py-5" id="productos-aleatorios">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 text-center mb-5">
+                    <h2 class="display-5 fw-bold">Productos</h2>
+                    <p class="lead text-muted">Explora una selección aleatoria de productos por categoría</p>
+                </div>
+            </div>
+
+            <?php
+            mostrarProductosAleatorios();
+            ?>
+        </div>
+    </section>
+
     <section class="productos-destacados py-5" id="productos">
+        <!-- EN ESTA SECCION QUIERO QUE SEA UN CARRUCEL CON LOS PRODUCTOS -->
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center mb-5">
@@ -92,8 +123,8 @@
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center mb-5">
-                    <h2 class="display-5 fw-bold">Nuestros Servicios</h2>
-                    <p class="lead text-muted">Beneficios que ofrecemos a nuestros clientes</p>
+                    <h2 class="display-5 fw-bold">Explora nuestros productos...</h2>
+                    <p class="lead text-muted">Un poco de nuestro catalogo</p>
                 </div>
                 
             </div>
@@ -130,7 +161,7 @@
         </div>
     </section>
 
-    <!-- Sección Acerca de -->
+    <!-- Sección acerca de  -->
     <section class="acerca-de py-5" id="acerca">
         <div class="container">
             <div class="row align-items-center">
@@ -158,7 +189,7 @@
             </div>
         </div>
     </section>
-
+    <!-- Contacto -->
     <section class="contacto py-5" id="contacto">
         <div class="container">
             <div class="row">
@@ -237,6 +268,8 @@
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="pages/js/index.js"></script>
+    <script src="pages/js/favoritos.js"></script>
+
 
 </body>
 </html>
