@@ -406,10 +406,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
     </div>
 
 <!-- Modal para agregar dirección -->
+<!-- Modal para agregar dirección -->
 <div class="modal fade" id="modalAgregar" tabindex="-1" aria-labelledby="modalAgregarLabel" aria-hidden="true">
   <div class="modal-dialog modal-lg">
     <div class="modal-content">
-      <form action="perfil.php" method="POST">
+      <form action="perfil.php" method="POST" id="formDireccion">
         <div class="modal-header">
           <h5 class="modal-title" id="modalAgregarLabel">Nueva dirección</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
@@ -426,10 +427,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
               <textarea class="form-control" name="direccion" placeholder="Dirección completa" rows="2" required></textarea>
             </div>
             <div class="col-md-6">
-              <input type="text" class="form-control" name="codigo_postal" placeholder="Código Postal" required>
+              <input type="text" class="form-control" name="codigo_postal" id="codigo_postal" 
+                     placeholder="Código Postal (Ej: 23600)" required 
+                     pattern="23\d{3}" maxlength="5"
+                     title="El código postal debe empezar con 23 y tener 5 dígitos">
+              <div class="form-text">Debe empezar con 23 y tener 5 dígitos</div>
             </div>
             <div class="col-md-6">
               <input type="text" class="form-control" name="estado" placeholder="Estado" required>
+            </div>
+            <div class="col-12">
+              <div id="info_cp" class="alert alert-info d-none">
+                <small><strong>Asentamiento:</strong> <span id="asentamiento_info"></span></small>
+              </div>
             </div>
             <div class="col-12">
               <textarea class="form-control" name="instrucciones_entrega" placeholder="Instrucciones para entrega" rows="2"></textarea>
@@ -445,8 +455,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="submit" class="btn btn-primary btn-Nueva-Direccion" name="guardar_direccion">Guardar</button>
-
+          <button type="submit" class="btn btn-primary btn-Nueva-Direccion" name="guardar_direccion" id="btnGuardarDireccion">Guardar</button>
         </div>
       </form>
     </div>
@@ -472,5 +481,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
 
     <script src="js/perfil.js"></script>
     <script src="js/favoritos.js"></script>
+    <script src="js/validacion-cp.js"></script>
 </body>
 </html>
