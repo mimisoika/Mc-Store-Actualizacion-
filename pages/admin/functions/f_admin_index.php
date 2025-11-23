@@ -90,7 +90,7 @@ function obtenerAlertasProductos() {
               FROM productos 
               WHERE cantidad <= 5 OR estado IN ('agotado','poco_stock')
               ORDER BY cantidad ASC
-              LIMIT 3";
+              LIMIT 50";
     
     $resultado = mysqli_query($conexion, $query);
     $datos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
