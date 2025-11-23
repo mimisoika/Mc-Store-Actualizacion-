@@ -38,7 +38,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestions_de_productos.php" class="menu-item">
+                <a href="gestion_de_productos.php" class="menu-item">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
