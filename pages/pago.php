@@ -162,7 +162,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPedido'])) {
                         <label class="list-group-item d-flex justify-content-between align-items-center">
                         <div class="form-check">
                             <input class="form-check-input me-2" type="radio" name="metodo_pago" value="tarjeta" required>
-                            <span class="fw-semibold">Tarjeta</span>
+                            <span class="fw-semibold">Mercado Pago</span>
                         </div>
                         </label>
 
