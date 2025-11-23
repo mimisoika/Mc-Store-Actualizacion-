@@ -139,3 +139,31 @@ function crearGraficaVentasMes() {
         }
     });
 }
+
+// Mover modales fuera de contenedores con overflow para evitar que queden "recortadas"
+$(function(){
+    // Mover modales ya presentes dentro de .content al body
+    $('.content').find('.modal').each(function(){
+        $(this).appendTo('body');
+    });
+
+    // Observar cambios en .content para mover modales añadidos dinámicamente
+    const contentEl = document.querySelector('.content');
+    if (contentEl && window.MutationObserver) {
+        const observer = new MutationObserver(mutations => {
+            mutations.forEach(m => {
+                m.addedNodes.forEach(node => {
+                    if (node.nodeType === 1) {
+                        $(node).find('.modal').each(function(){
+                            $(this).appendTo('body');
+                        });
+                        if ($(node).hasClass('modal')) {
+                            $(node).appendTo('body');
+                        }
+                    }
+                });
+            });
+        });
+        observer.observe(contentEl, { childList: true, subtree: true });
+    }
+});
