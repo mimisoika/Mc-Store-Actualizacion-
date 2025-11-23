@@ -2,7 +2,7 @@
 include('functions/f_admin_index.php');
 
 $productoMasVendido = obtenerProductoMasVendido();
-$margenGanancias = obtenerMargenGanancias();
+$usuariosActivos = obtenerUsuariosActivos();
 $numeroPedidos = obtenerNumeroPedidos();
 $ventasPorCategoria = obtenerVentasPorCategoria();
 $alertasProductos = obtenerAlertasProductos();
@@ -99,8 +99,8 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                     <!-- Margen de ganancias -->
                     <div class="stat-card">
                         <div class="stat-content">
-                            <h4>Margen de ganancias</h4>
-                            <p class="stat-percentage" id="margenGanancias"><?php echo $margenGanancias; ?>%</p>
+                            <h4>Usuarios Activos</h4>
+                            <p class="stat-percentage" id="usuarios Activos"><?php echo $usuariosActivos; ?>%</p>
                         </div>
                     </div>
                     

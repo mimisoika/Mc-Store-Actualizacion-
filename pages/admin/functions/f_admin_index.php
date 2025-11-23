@@ -18,18 +18,31 @@ function obtenerProductoMasVendido() {
     return mysqli_fetch_assoc($resultado);
 }
 
-// Obtener margen de ganancias (porcentaje basado en productos totales)
-function obtenerMargenGanancias() {
+function obtenerUsuariosActivos() {
     global $conexion;
-    
-    $query = "SELECT COUNT(id) as total_productos FROM productos WHERE estado = 'disponible'";
-    $resultado = mysqli_query($conexion, $query);
-    $datos = mysqli_fetch_assoc($resultado);
-    
-    // Porcentaje estimado basado en disponibilidad
-    $porcentaje = min(round(($datos['total_productos'] / 10) * 100, 1), 100);
-    return $porcentaje > 0 ? $porcentaje : 19;
+
+    // Obtener total de usuarios
+    $queryTotal = "SELECT COUNT(id) AS total FROM usuarios";
+    $resultadoTotal = mysqli_query($conexion, $queryTotal);
+    $total = mysqli_fetch_assoc($resultadoTotal)['total'];
+
+    // Obtener solo usuarios activos
+    $queryActivos = "SELECT COUNT(id) AS activos FROM usuarios WHERE usuario_estado = 'Activo'";
+    $resultadoActivos = mysqli_query($conexion, $queryActivos);
+    $activos = mysqli_fetch_assoc($resultadoActivos)['activos'];
+
+    // Evitar división por cero
+    if ($total == 0) {
+        return 0;
+    }
+
+    // Calcular porcentaje real
+    $porcentaje = round(($activos / $total) * 100, 1);
+
+    return $porcentaje;
 }
+
+
 
 // Obtener número total de pedidos completados
 function obtenerNumeroPedidos() {
