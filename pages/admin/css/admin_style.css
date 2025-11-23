@@ -933,3 +933,17 @@ body {
     opacity: 0.5;
 }
 
+/* Asegurar que las modales del admin aparezcan por encima del layout */
+.modal {
+    z-index: 20000;
+}
+
+.modal-backdrop {
+    z-index: 19900;
+}
+
+/* Limitar ancho de diálogo modal para mejor apariencia */
+.modal-dialog {
+    max-width: 820px;
+}
+
