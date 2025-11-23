@@ -69,10 +69,6 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
         <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Buscar ...">
-                    <button class="search-btn"><i class="bi bi-search"></i></button>
-                </div>
             </header>
             
             <!-- Content -->
