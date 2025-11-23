@@ -96,13 +96,7 @@ function toggleFavorito(productoId, btn) {
     });
 }
 
-// Opcional: Agregar funcionalidad para cambiar cantidad
-document.addEventListener('DOMContentLoaded', function() {
-    // Aquí puedes agregar más funcionalidades como:
-    // - Búsqueda en tiempo real
-    // - Filtros adicionales
-    // - Vista de detalles del producto
-});
+
 
 // Debounce helper para AJAX
 function debounce(fn, delay) {
