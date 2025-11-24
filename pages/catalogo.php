@@ -85,7 +85,6 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
                             </div>
 
                             <div class="d-grid gap-2">
-                                <button type="submit" class="btn btn-primary">Aplicar filtros</button>
                                 <a href="catalogo.php" class="btn btn-outline-secondary">Limpiar filtros</a>
                             </div>
                         </form>
@@ -95,7 +94,7 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
 
             <div class="col-lg-9">
                 <!-- Productos -->
-                <div class="row">
+                <div id="productosGrid" class="row">
             <?php if (empty($productos)): ?>
                 <div class="col-12 text-center py-5">
                     <div class="alert alert-info">No se encontraron productos en esta categoría.</div>
