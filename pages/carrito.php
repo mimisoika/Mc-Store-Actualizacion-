@@ -58,6 +58,8 @@ manejarAccionesCarrito();
                             echo '<p class="text-muted">Inicia sesión para ver el resumen</p>';
                         }
                         ?>
+                        <a href="pago.php" class="btn btn-warning w-100"> Procededer al Pago</a>';
+
                     </div>
                 </div>
             </div>

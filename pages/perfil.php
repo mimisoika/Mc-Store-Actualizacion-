@@ -49,17 +49,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPrincipal'])) {
   
 }
 
-$tabla_detalles_html = '';
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
-    $pedido_id = intval($_POST['ver_detalles']);
-    $tabla_detalles_html = obtenerDetallesPedido($pedido_id);
-}
-
-
-
-z
-//eliminar favorito
-
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -315,12 +304,12 @@ z
                                                             <?php echo generarBadgeEstado($pedido['estado']); ?>
                                                         </td>
                                                         <td>
-                                                            <form method="POST" class="d-inline ver-detalles">
-                                                                <input type="hidden" name="ver_detalles" value="<?php echo $pedido['id']; ?>">
-                                                                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalDetallesPedido">
-                                                                    <i class="fas fa-eye"></i>
-                                                                </button>
-                                                            </form>
+                                                            <button class="btn btn-light btn-sm btn-ver-detalles" 
+                                                                    data-pedido-id="<?php echo $pedido['id']; ?>"
+                                                                    data-bs-toggle="modal" 
+                                                                    data-bs-target="#modalDetallesPedido">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
                                                             <?php if ($pedido['estado'] == 'pendiente'): ?>
                                                                 <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="tooltip" title="Cancelar">
                                                                     <i class="fas fa-times"></i>
@@ -464,23 +453,35 @@ z
 
 <!-- Modal de Detalles del Pedido -->
 <div class="modal fade" id="modalDetallesPedido" tabindex="-1" aria-labelledby="modalDetallesLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalDetallesLabel">Detalles del Pedido</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <?php echo $tabla_detalles_html ?: '<p>Selecciona un pedido para ver los detalles.</p>'; ?>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetallesLabel">Detalles del Pedido #<span id="numeroPedido"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <div id="contenidoDetalles">
+                    <div class="text-center py-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Cargando...</span>
+                        </div>
+                        <p class="mt-2">Cargando detalles del pedido...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
     </div>
-    </div>
-  </div>
 </div>
-    
+
+    <?php include 'footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script src="js/perfil.js"></script>
     <script src="js/favoritos.js"></script>
     <script src="js/validacion-cp.js"></script>
+    <script src="js/detalles-pedido.js"></script>
 </body>
 </html>

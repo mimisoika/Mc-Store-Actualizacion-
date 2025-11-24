@@ -2,7 +2,7 @@
 include('functions/f_admin_index.php');
 
 $productoMasVendido = obtenerProductoMasVendido();
-$margenGanancias = obtenerMargenGanancias();
+$usuariosActivos = obtenerUsuariosActivos();
 $numeroPedidos = obtenerNumeroPedidos();
 $ventasPorCategoria = obtenerVentasPorCategoria();
 $alertasProductos = obtenerAlertasProductos();
@@ -69,10 +69,13 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
         <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
+<<<<<<< HEAD
                 <div class="search-container">
                     <input type="text" class="search-input" placeholder="Buscar ...">
                     <button class="search-btn"><i class="bi bi-search"></i></button>
                 </div>
+=======
+>>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
             </header>
             
             <!-- Content -->
@@ -99,8 +102,13 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                     <!-- Margen de ganancias -->
                     <div class="stat-card">
                         <div class="stat-content">
+<<<<<<< HEAD
                             <h4>Margen de ganancias</h4>
                             <p class="stat-percentage" id="margenGanancias"><?php echo $margenGanancias; ?>%</p>
+=======
+                            <h4>Usuarios Activos</h4>
+                            <p class="stat-percentage" id="usuarios Activos"><?php echo $usuariosActivos; ?>%</p>
+>>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
                         </div>
                     </div>
                     
@@ -124,6 +132,7 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                     </div>
                     
                     <!-- Alertas de productos -->
+<<<<<<< HEAD
                     <div class="alerts-card">
                         <h4>Alerta de productos</h4>
                         <div class="alerts-list" id="alertasProductos">
@@ -145,6 +154,28 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                                         <?php
                                             }
                                         ?>
+=======
+                     <div class="alerts-card">
+                        <h4>Alerta de productos</h4>
+
+                        <!-- Contenedor con altura fija y scroll -->
+                        <div class="alerts-list" id="alertasProductos" style="max-height: 220px; overflow-y: auto;">
+                            <?php if (!empty($alertasProductos)): ?>
+                                <?php foreach ($alertasProductos as $alerta): ?>
+                                    <div class="alert-item d-flex justify-content-between align-items-center p-2 border-bottom">
+                                        <p class="alert-name mb-0"><?php echo htmlspecialchars($alerta['nombre']); ?></p>
+
+                                        <?php
+                                            $estado = $alerta['estado'] ?? null;
+                                            $cantidad = intval($alerta['cantidad'] ?? 0);
+                                        ?>
+
+                                        <?php if ($estado === 'agotado' || $cantidad === 0): ?>
+                                            <span class="badge bg-danger">Agotado</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-warning text-dark">Stock Bajo</span>
+                                        <?php endif; ?>
+>>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -152,6 +183,11 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                             <?php endif; ?>
                         </div>
                     </div>
+<<<<<<< HEAD
+=======
+
+
+>>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
                 </div>
                 
                 <!-- Ventas del mes -->
