@@ -3,7 +3,7 @@ require_once '../functions/f_login.php';
 
 // Verificar que el usuario sea admin
 if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../index.php');
     exit();
 }
 ?>
