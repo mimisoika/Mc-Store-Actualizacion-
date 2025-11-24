@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['ver_detalles'])) {
 
 
 
-
+z
 //eliminar favorito
 
 ?>

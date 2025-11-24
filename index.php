@@ -35,7 +35,7 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-10 col-lg-7">
-                    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
                         <div class="carousel-indicators">
                             <?php
                             $imagenes = obtenerImagenesCarrusel();
@@ -49,12 +49,14 @@
                         <div class="carousel-inner">
                             <?php foreach ($imagenes as $key => $imagen): ?>
                                 <div class="carousel-item <?php echo $key === 0 ? 'active' : ''; ?>">
-                                    <img src="<?php echo htmlspecialchars($imagen['imagen_url']); ?>" class="d-block w-100" alt="<?php echo htmlspecialchars($imagen['titulo']); ?>">
-                                    <div class="carousel-caption">
-                                        <h1 class="fw-bold"><?php echo htmlspecialchars($imagen['titulo']); ?></h1>
-                                        <p><?php echo htmlspecialchars($imagen['descripcion']); ?></p>
-                                        <div>
-                                            <a href="#productos" class="btn btn-light me-3">Ver Productos</a>
+                                    <img src="<?php echo htmlspecialchars($imagen['imagen_url']); ?>" loading="lazy" decoding="async" class="d-block w-100" alt="<?php echo htmlspecialchars($imagen['titulo']); ?>">
+                                    <div class="carousel-caption hero-caption">
+                                        <h2 class="hero-title fw-semibold"><?php echo htmlspecialchars($imagen['titulo']); ?></h2>
+                                        <?php if (!empty($imagen['descripcion'])): ?>
+                                            <p class="hero-subtitle"><?php echo htmlspecialchars($imagen['descripcion']); ?></p>
+                                        <?php endif; ?>
+                                        <div class="hero-buttons mt-3">
+                                            <a href="#productos" class="btn btn-outline-primary">Ver Productos</a>
                                             <a href="#contacto" class="btn btn-outline-light">Contáctanos</a>
                                         </div>
                                     </div>
@@ -72,15 +74,7 @@
                     </div>
                 </div>
 
-                <!-- Controles -->
-                <button class="carousel-control-prev" type="button" data-bs-target="#carouselInicio" data-bs-slide="prev">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Anterior</span>
-                </button>
-                <button class="carousel-control-next" type="button" data-bs-target="#carouselInicio" data-bs-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="visually-hidden">Siguiente</span>
-                </button>
+                <!-- (Controles duplicados eliminados) -->
             </div>
         </div>
     </section>
