@@ -107,13 +107,7 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
                             </div>
 
                             <div class="d-grid gap-2">
-<<<<<<< HEAD
-                                
-                                <button type="submit" class="btn btn-primary">Aplicar filtros</button>
-                                <button type="button" id="btnLimpiar" class="btn btn-outline-secondary">Limpiar filtros</button>
-=======
                                 <a href="catalogo.php" class="btn btn-outline-secondary">Limpiar filtros</a>
->>>>>>> a097ee6f5e15d3a83fb44636dd3ef4fb6aa9c614
                             </div>
                         </form>
                     </div>
