@@ -34,7 +34,8 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light pt-4">
-<?php include 'header.php'; ?>
+    
+    <?php include 'header.php'; ?>
     <div class="container">
         <!-- Header con colores de Bootstrap -->
         <div class="bg-primary text-white text-center py-4 mb-4 rounded">
@@ -131,7 +132,7 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
             </div> <!-- /.col-lg-9 -->
         </div> <!-- /.outer row -->
     </div>
-
+    <?php include 'footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/catalogo.js"></script>
     <script src="js/favoritos.js"></script>

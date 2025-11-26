@@ -37,11 +37,11 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
             
             <nav class="sidebar-menu">
-                <a href="admin_index.php" class="menu-item" data-section="dashboard">
+                <a href="admin_index.php" class="menu-item">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestions_de_productos.php" class="menu-item">
+                <a href="gestion_de_productos.php" class="menu-item">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
@@ -77,11 +77,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             <header class="top-bar">
                 <div class="search-container">
                     
-                </div>
-                <div class="top-bar-right">
-                    <select class="region-select">
-                        <option>Pancho</option>
-                    </select>
                 </div>
             </header>
 
