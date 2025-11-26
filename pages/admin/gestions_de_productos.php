@@ -17,8 +17,10 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" href="css/admin_style.css">
     <style>
-        /* pequeño ajuste para que el contenido principal tenga padding cuando se usa el layout */
         .main-content .content { padding: 24px; }
+        .product-card { transition: transform 0.2s; }
+        .product-card:hover { transform: translateY(-5px); }
+        .badge-stock { font-size: 0.8em; }
     </style>
 </head>
 <body>
@@ -72,9 +74,8 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             <!-- Top Bar -->
             <header class="top-bar">
                 <div class="search-container">
-                    
+                    <!-- Espacio para búsqueda si es necesario -->
                 </div>
-                
             </header>
             
             <!-- Content -->
@@ -82,7 +83,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                 <div class="content-header d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h2 class="mb-0"><i class="bi bi-box-seam"></i> Gestión de Productos</h2>
-                        <p class="text-muted mb-0">Sistema de gestión de productos</p>
+                        <p class="text-muted mb-0">Sistema de gestión de productos - Estado automático por stock</p>
                     </div>
                     <div>
                         <a href="admin_index.php" class="btn btn-outline-secondary me-2">
@@ -109,6 +110,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="galletas">Galletas</option>
                                     <option value="postres">Postres</option>
                                     <option value="bebidas">Bebidas</option>
+                                    <option value="electronicos">Electrónicos</option>
                                 </select>
                             </div>
                             <div class="col-md-4">
@@ -159,37 +161,44 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <div class="modal-body">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="nombre" class="form-label">Nombre del Producto</label>
+                                <label for="nombre" class="form-label">Nombre del Producto *</label>
                                 <input type="text" class="form-control" id="nombre" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="precio" class="form-label">Precio</label>
+                                <label for="precio" class="form-label">Precio *</label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
                                     <input type="number" class="form-control" id="precio" min="0" step="0.01" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="categoria" class="form-label">Categoría</label>
+                                <label for="stock" class="form-label">Stock *</label>
+                                <input type="number" class="form-control" id="stock" min="0" value="0" required>
+                                <div class="form-text">El estado se actualizará automáticamente: 0=Agotado, 1-9=Activo (poco stock), 10+=Activo</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="categoria" class="form-label">Categoría *</label>
                                 <select class="form-select" id="categoria" required>
                                     <option value="">Seleccionar categoría</option>
                                     <option value="pasteles">Pasteles</option>
                                     <option value="galletas">Galletas</option>
                                     <option value="postres">Postres</option>
                                     <option value="bebidas">Bebidas</option>
+                                    <option value="electronicos">Electrónicos</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="estado" class="form-label">Estado</label>
+                                <label for="estado" class="form-label">Estado *</label>
                                 <select class="form-select" id="estado" required>
                                     <option value="activo">Activo</option>
                                     <option value="inactivo">Inactivo</option>
                                     <option value="agotado">Agotado</option>
                                 </select>
+                                <div class="form-text text-warning">Nota: El estado puede cambiar automáticamente según el stock</div>
                             </div>
                             <div class="col-12">
                                 <label for="descripcion" class="form-label">Descripción</label>
-                                <textarea class="form-control" id="descripcion" rows="3"></textarea>
+                                <textarea class="form-control" id="descripcion" rows="3" placeholder="Descripción del producto..."></textarea>
                             </div>
                             <div class="col-md-6">
                                 <label for="imagen" class="form-label">Imagen del Producto</label>
@@ -198,7 +207,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Vista previa</label>
-                                <div class="border p-2 text-center">
+                                <div class="border p-2 text-center" style="min-height: 150px;">
                                     <img id="previewImagen" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" 
                                          alt="Vista previa de la imagen" 
                                          class="img-fluid" 
@@ -230,32 +239,39 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                         <input type="hidden" id="editId">
                         <div class="row g-3">
                             <div class="col-md-6">
-                                <label for="editNombre" class="form-label">Nombre del Producto</label>
+                                <label for="editNombre" class="form-label">Nombre del Producto *</label>
                                 <input type="text" class="form-control" id="editNombre" required>
                             </div>
                             <div class="col-md-6">
-                                <label for="editPrecio" class="form-label">Precio</label>
+                                <label for="editPrecio" class="form-label">Precio *</label>
                                 <div class="input-group">
                                     <span class="input-group-text">$</span>
                                     <input type="number" class="form-control" id="editPrecio" min="0" step="0.01" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <label for="editCategoria" class="form-label">Categoría</label>
+                                <label for="editStock" class="form-label">Stock *</label>
+                                <input type="number" class="form-control" id="editStock" min="0" required>
+                                <div class="form-text">Estado automático: 0=Agotado, 1-9=Activo, 10+=Activo</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editCategoria" class="form-label">Categoría *</label>
                                 <select class="form-select" id="editCategoria" required>
                                     <option value="pasteles">Pasteles</option>
                                     <option value="galletas">Galletas</option>
                                     <option value="postres">Postres</option>
                                     <option value="bebidas">Bebidas</option>
+                                    <option value="electronicos">Electrónicos</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
-                                <label for="editEstado" class="form-label">Estado</label>
+                                <label for="editEstado" class="form-label">Estado *</label>
                                 <select class="form-select" id="editEstado" required>
                                     <option value="activo">Activo</option>
                                     <option value="inactivo">Inactivo</option>
                                     <option value="agotado">Agotado</option>
                                 </select>
+                                <div class="form-text text-warning">Puede cambiar automáticamente según stock</div>
                             </div>
                             <div class="col-12">
                                 <label for="editDescripcion" class="form-label">Descripción</label>
@@ -288,7 +304,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="js/admin_index.js"></script>
     <script src="js/gestion_de_productos.js"></script>
 </body>
 </html>

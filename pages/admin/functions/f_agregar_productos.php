@@ -7,9 +7,50 @@ if (!$conexion) {
     exit();
 }
 
+// FUNCIONES NUEVAS PARA ACTUALIZACIÓN AUTOMÁTICA DE ESTADO
+// Función para actualizar estados automáticamente basado en stock
+function actualizarEstadosStock() {
+    global $conexion;
+    
+    try {
+        // Actualizar productos con cantidad 0 a "agotado" (excepto suspendidos)
+        $sql1 = "UPDATE productos SET estado = 'agotado' WHERE (cantidad = 0 OR cantidad IS NULL) AND estado != 'suspendido'";
+        mysqli_query($conexion, $sql1);
+        
+        // Actualizar productos con cantidad entre 1 y 9 a "poco_stock"
+        $sql2 = "UPDATE productos SET estado = 'poco_stock' WHERE cantidad BETWEEN 1 AND 9 AND estado != 'suspendido'";
+        mysqli_query($conexion, $sql2);
+        
+        // Actualizar productos con cantidad >= 10 a "disponible"
+        $sql3 = "UPDATE productos SET estado = 'disponible' WHERE cantidad >= 10 AND estado != 'suspendido'";
+        mysqli_query($conexion, $sql3);
+        
+        return true;
+    } catch (Exception $e) {
+        error_log("Error al actualizar estados de stock: " . $e->getMessage());
+        return false;
+    }
+}
+
+// Función para determinar estado automático basado en cantidad
+function determinarEstadoAutomatico($cantidad) {
+    $cantidad = intval($cantidad) || 0;
+    if ($cantidad === 0) {
+        return 'agotado';
+    } else if ($cantidad < 10) {
+        return 'poco_stock';
+    } else {
+        return 'disponible';
+    }
+}
+
+// FUNCIONES EXISTENTES (MODIFICADAS)
 // Función para obtener todos los productos
 function obtenerProductos() {
     global $conexion;
+    // Primero actualizar estados automáticamente
+    actualizarEstadosStock();
+    
     $sql = "SELECT p.*, c.nombre as categoria FROM productos p LEFT JOIN categorias c ON p.categoria_id = c.id ORDER BY p.id DESC";
     $resultado = mysqli_query($conexion, $sql);
     $productos = [];
@@ -31,9 +72,12 @@ function obtenerCategorias() {
     return $categorias;
 }
 
-// Función para agregar producto
+// Función para agregar producto (MODIFICADA)
 function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = '') {
     global $conexion;
+    
+    // Determinar estado automáticamente basado en cantidad
+    $estado = determinarEstadoAutomatico($cantidad);
     
     // Obtener ID de categoría
     $sql_cat = "SELECT id FROM categorias WHERE nombre = '$categoria'";
@@ -41,16 +85,26 @@ function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, 
     $categoria_data = mysqli_fetch_assoc($resultado_cat);
     $categoria_id = $categoria_data['id'];
     
-    // Insertar producto
+    // Insertar producto con estado automático
     $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen) 
-            VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad', 'disponible', '$imagen')";
+            VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad', '$estado', '$imagen')";
     
-    return mysqli_query($conexion, $sql);
+    $resultado = mysqli_query($conexion, $sql);
+    
+    // Actualizar estados después de agregar
+    if ($resultado) {
+        actualizarEstadosStock();
+    }
+    
+    return $resultado;
 }
 
-// Función para actualizar producto
+// Función para actualizar producto (MODIFICADA)
 function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = null) {
     global $conexion;
+    
+    // Determinar estado automáticamente basado en cantidad
+    $estado = determinarEstadoAutomatico($cantidad);
     
     // Obtener ID de categoría
     $sql_cat = "SELECT id FROM categorias WHERE nombre = '$categoria'";
@@ -60,13 +114,20 @@ function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $ca
     
     if ($imagen) {
         $sql = "UPDATE productos SET categoria_id='$categoria_id', nombre='$nombre', descripcion='$descripcion', 
-                precio='$precio', cantidad='$cantidad', imagen='$imagen' WHERE id='$id'";
+                precio='$precio', cantidad='$cantidad', estado='$estado', imagen='$imagen' WHERE id='$id'";
     } else {
         $sql = "UPDATE productos SET categoria_id='$categoria_id', nombre='$nombre', descripcion='$descripcion', 
-                precio='$precio', cantidad='$cantidad' WHERE id='$id'";
+                precio='$precio', cantidad='$cantidad', estado='$estado' WHERE id='$id'";
     }
     
-    return mysqli_query($conexion, $sql);
+    $resultado = mysqli_query($conexion, $sql);
+    
+    // Actualizar estados después de actualizar
+    if ($resultado) {
+        actualizarEstadosStock();
+    }
+    
+    return $resultado;
 }
 
 // Función para eliminar (suspender) producto
@@ -101,6 +162,9 @@ if ($_POST) {
     $accion = $_POST['accion'];
     
     if ($accion == 'obtener_productos') {
+        // Actualizar estados automáticamente antes de filtrar
+        actualizarEstadosStock();
+        
         $filtroCategoria = isset($_POST['filtroCategoria']) ? trim($_POST['filtroCategoria']) : '';
         $filtroEstado = isset($_POST['filtroEstado']) ? trim($_POST['filtroEstado']) : '';
         $busqueda = isset($_POST['busqueda']) ? trim($_POST['busqueda']) : '';
@@ -111,7 +175,8 @@ if ($_POST) {
             'inactivo' => 'suspendido',
             'disponible' => 'disponible',
             'suspendido' => 'suspendido',
-            'agotado' => 'agotado'
+            'agotado' => 'agotado',
+            'poco_stock' => 'poco_stock'
         ];
 
         if ($filtroEstado !== '' && $filtroEstado !== 'todos') {

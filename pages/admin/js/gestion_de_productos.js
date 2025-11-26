@@ -31,6 +31,18 @@ $(document).ready(function() {
     });
 });
 
+// Función para determinar estado automático basado en stock
+function determinarEstadoAutomatico(stock) {
+    stock = parseInt(stock) || 0;
+    if (stock === 0) {
+        return 'agotado';
+    } else if (stock < 10) {
+        return 'poco_stock';
+    } else {
+        return 'disponible';
+    }
+}
+
 function cargarProductos() {
     const filtroCategoria = $('#filtroCategoria').val();
     const filtroEstado = $('#filtroEstado').val();
@@ -51,10 +63,12 @@ function cargarProductos() {
                 mostrarProductos(response.productos);
             } else {
                 console.error('Error al cargar productos');
+                mostrarError('Error al cargar los productos');
             }
         },
         error: function() {
             console.error('Error de conexión');
+            mostrarError('Error de conexión al cargar productos');
         }
     });
 }
@@ -102,30 +116,34 @@ function mostrarProductos(productos) {
     let html = '';
     productos.forEach(producto => {
         const estadoBadge = getEstadoBadge(producto.estado);
+        const stockBadge = getStockBadge(producto.cantidad);
         const imagenSrc = producto.imagen ? `../../img_productos/${producto.imagen}` : 'data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==';
         
         html += `
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100">
-                    <img src="${imagenSrc}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="${producto.nombre}">
+                <div class="card h-100 product-card">
+                    <div class="position-relative">
+                        <img src="${imagenSrc}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="${producto.nombre}">
+                        <div class="position-absolute top-0 start-0 m-2">${stockBadge}</div>
+                        <div class="position-absolute top-0 end-0 m-2">${estadoBadge}</div>
+                    </div>
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">${producto.nombre}</h5>
                         <p class="card-text text-muted small">${producto.descripcion || 'Sin descripción'}</p>
                         <div class="mt-auto">
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <span class="h5 text-primary mb-0">$${parseFloat(producto.precio).toFixed(2)}</span>
-                                ${estadoBadge}
+                                <span class="badge bg-info">Stock: ${producto.cantidad || 0}</span>
                             </div>
                             <div class="d-flex justify-content-between align-items-center mb-2">
-                                <small class="text-muted">Stock: ${producto.cantidad || 0}</small>
                                 <small class="text-muted">${producto.categoria || 'Sin categoría'}</small>
                             </div>
                             <div class="btn-group w-100" role="group">
                                 <button class="btn btn-outline-primary btn-sm" onclick="editarProducto(${producto.id})">
-                                    <i class="bi bi-pencil"></i>
+                                    <i class="bi bi-pencil"></i> Editar
                                 </button>
                                 <button class="btn btn-outline-danger btn-sm" onclick="eliminarProducto(${producto.id}, '${producto.nombre}')">
-                                    <i class="bi bi-trash"></i>
+                                    <i class="bi bi-trash"></i> Eliminar
                                 </button>
                             </div>
                         </div>
@@ -148,20 +166,41 @@ function getEstadoBadge(estado) {
     return badges[estado] || '<span class="badge bg-secondary">Desconocido</span>';
 }
 
+function getStockBadge(stock) {
+    stock = parseInt(stock) || 0;
+    if (stock === 0) {
+        return '<span class="badge bg-danger">Agotado</span>';
+    } else if (stock < 10) {
+        return '<span class="badge bg-warning">Poco Stock</span>';
+    } else {
+        return '<span class="badge bg-success">Disponible</span>';
+    }
+}
+
 function agregarProducto() {
     const formData = new FormData();
     formData.append('accion', 'agregar_producto');
     formData.append('nombre', $('#nombre').val());
     formData.append('precio', $('#precio').val());
     formData.append('categoria', $('#categoria').val());
-    formData.append('estado', $('#estado').val());
+    
+    // Calcular estado automáticamente basado en stock
+    const cantidad = $('#cantidad').val() || 0;
+    const estadoAutomatico = determinarEstadoAutomatico(cantidad);
+    formData.append('estado', estadoAutomatico);
+    
     formData.append('descripcion', $('#descripcion').val());
-    formData.append('cantidad', $('#cantidad').val() || 0);
+    formData.append('cantidad', cantidad);
     
     const imagen = $('#imagen')[0].files[0];
     if (imagen) {
         formData.append('imagen', imagen);
     }
+    
+    // Mostrar loading
+    const submitBtn = $('#formAgregarProducto button[type="submit"]');
+    const originalText = submitBtn.html();
+    submitBtn.html('<i class="bi bi-hourglass-split"></i> Guardando...').prop('disabled', true);
     
     $.ajax({
         url: 'functions/f_agregar_productos.php',
@@ -177,13 +216,16 @@ function agregarProducto() {
                 $('#previewImagen').hide();
                 $('#sinImagen').show();
                 cargarProductos();
-                alert('Producto agregado exitosamente');
+                mostrarAlerta('Producto agregado exitosamente', 'success');
             } else {
-                alert('Error: ' + (response.mensaje || 'No se pudo agregar el producto'));
+                mostrarAlerta('Error: ' + (response.mensaje || 'No se pudo agregar el producto'), 'danger');
             }
         },
         error: function() {
-            alert('Error de conexión');
+            mostrarAlerta('Error de conexión', 'danger');
+        },
+        complete: function() {
+            submitBtn.html(originalText).prop('disabled', false);
         }
     });
 }
@@ -227,14 +269,24 @@ function actualizarProducto() {
     formData.append('nombre', $('#editNombre').val());
     formData.append('precio', $('#editPrecio').val());
     formData.append('categoria', $('#editCategoria').val());
-    formData.append('estado', $('#editEstado').val());
+    
+    // Calcular estado automáticamente basado en stock
+    const cantidad = $('#editCantidad').val() || 0;
+    const estadoAutomatico = determinarEstadoAutomatico(cantidad);
+    formData.append('estado', estadoAutomatico);
+    
     formData.append('descripcion', $('#editDescripcion').val());
-    formData.append('cantidad', $('#editCantidad').val() || 0);
+    formData.append('cantidad', cantidad);
     
     const imagen = $('#editImagen')[0].files[0];
     if (imagen) {
         formData.append('imagen', imagen);
     }
+    
+    // Mostrar loading
+    const submitBtn = $('#formEditarProducto button[type="submit"]');
+    const originalText = submitBtn.html();
+    submitBtn.html('<i class="bi bi-hourglass-split"></i> Guardando...').prop('disabled', true);
     
     $.ajax({
         url: 'functions/f_agregar_productos.php',
@@ -247,13 +299,16 @@ function actualizarProducto() {
             if (response.success) {
                 $('#editarProductoModal').modal('hide');
                 cargarProductos();
-                alert('Producto actualizado exitosamente');
+                mostrarAlerta('Producto actualizado exitosamente', 'success');
             } else {
-                alert('Error: ' + (response.mensaje || 'No se pudo actualizar el producto'));
+                mostrarAlerta('Error: ' + (response.mensaje || 'No se pudo actualizar el producto'), 'danger');
             }
         },
         error: function() {
-            alert('Error de conexión');
+            mostrarAlerta('Error de conexión', 'danger');
+        },
+        complete: function() {
+            submitBtn.html(originalText).prop('disabled', false);
         }
     });
 }
@@ -271,13 +326,13 @@ function eliminarProducto(id, nombre) {
             success: function(response) {
                 if (response.success) {
                     cargarProductos();
-                    alert('Producto suspendido exitosamente');
+                    mostrarAlerta('Producto suspendido exitosamente', 'success');
                 } else {
-                    alert('Error: ' + (response.mensaje || 'No se pudo suspender el producto'));
+                    mostrarAlerta('Error: ' + (response.mensaje || 'No se pudo suspender el producto'), 'danger');
                 }
             },
             error: function() {
-                alert('Error de conexión');
+                mostrarAlerta('Error de conexión', 'danger');
             }
         });
     }
@@ -294,4 +349,28 @@ function previewImagen(input, imgSelector, noImgSelector) {
         };
         reader.readAsDataURL(input.files[0]);
     }
+}
+
+// Función para mostrar alertas bonitas
+function mostrarAlerta(mensaje, tipo) {
+    // Remover alertas existentes
+    $('.alert-dismissible').remove();
+    
+    const alerta = $(`
+        <div class="alert alert-${tipo} alert-dismissible fade show position-fixed" style="top: 20px; right: 20px; z-index: 9999; min-width: 300px;">
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `);
+    
+    $('body').append(alerta);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+        alerta.alert('close');
+    }, 5000);
+}
+
+function mostrarError(mensaje) {
+    mostrarAlerta(mensaje, 'danger');
 }
