@@ -3,8 +3,14 @@ require_once 'functions/f_catalogo.php';
 require_once 'functions/f_favoritos.php';
 
 $categoriaSeleccionada = isset($_GET['categoria']) ? $_GET['categoria'] : 'todas';
-$minPrecio = isset($_GET['min_precio']) ? $_GET['min_precio'] : '';
-$maxPrecio = isset($_GET['max_precio']) ? $_GET['max_precio'] : '';
+$minPrecio = isset($_GET['min_precio']) && $_GET['min_precio'] !== '' 
+    ? floatval($_GET['min_precio']) 
+    : '';
+
+$maxPrecio = isset($_GET['max_precio']) && $_GET['max_precio'] !== '' 
+    ? floatval($_GET['max_precio']) 
+    : '';
+
 $orden = isset($_GET['orden']) ? $_GET['orden'] : '';
 
 $categorias = obtenerCategorias();
@@ -15,6 +21,8 @@ if ($minPrecio === '') $minPrecio = $rangoPrecios['min'];
 if ($maxPrecio === '') $maxPrecio = $rangoPrecios['max'];
 
 $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPrecio, $orden);
+
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -26,7 +34,8 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
 </head>
 <body class="bg-light pt-4">
-<?php include 'header.php'; ?>
+    
+    <?php include 'header.php'; ?>
     <div class="container">
         <!-- Header con colores de Bootstrap -->
         <div class="bg-primary text-white text-center py-4 mb-4 rounded">
@@ -61,12 +70,25 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
                                 <!-- Sliders -->
                                 <div class="mb-3">
                                     <label class="form-label small">Precio Mínimo: $<span id="minPrecioVal"><?= number_format($minPrecio, 2) ?></span></label>
-                                    <input type="range" id="minPrecioRange" name="min_precio" min="1" max="<?= $rangoPrecios['max'] ?>" value="<?= htmlspecialchars($minPrecio) ?>" class="form-range" style="height: 6px; width: 100%;">
+                                    <input type="range" id="minPrecioRange" name="min_precio"
+                                        min="1"
+                                        max="<?= $rangoPrecios['max'] ?>"
+                                        value="<?= htmlspecialchars($minPrecio) ?>"
+                                        step="0.01"
+                                        class="form-range"
+                                        style="height: 6px; width: 100%;">
                                 </div>
                                 
                                 <div class="mb-3">
                                     <label class="form-label small">Precio Máximo: $<span id="maxPrecioVal"><?= number_format($maxPrecio, 2) ?></span></label>
-                                    <input type="range" id="maxPrecioRange" name="max_precio" min="1" max="<?= $rangoPrecios['max'] ?>" value="<?= htmlspecialchars($maxPrecio) ?>" class="form-range" style="height: 6px; width: 100%;">
+                                    <input type="range" id="maxPrecioRange" name="max_precio"
+                                        min="1"
+                                        max="<?= $rangoPrecios['max'] ?>"
+                                        value="<?= htmlspecialchars($maxPrecio) ?>"
+                                        step="0.01"
+                                        class="form-range"
+                                        style="height: 6px; width: 100%;">
+
                                 </div>
 
                                 <!-- Numeric inputs removed per request -->
@@ -85,8 +107,9 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
                             </div>
 
                             <div class="d-grid gap-2">
+                                
                                 <button type="submit" class="btn btn-primary">Aplicar filtros</button>
-                                <a href="catalogo.php" class="btn btn-outline-secondary">Limpiar filtros</a>
+                                <button type="button" id="btnLimpiar" class="btn btn-outline-secondary">Limpiar filtros</button>
                             </div>
                         </form>
                     </div>
@@ -95,21 +118,21 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
 
             <div class="col-lg-9">
                 <!-- Productos -->
-                <div class="row">
-            <?php if (empty($productos)): ?>
-                <div class="col-12 text-center py-5">
-                    <div class="alert alert-info">No se encontraron productos en esta categoría.</div>
-                </div>
-            <?php else: ?>
-                <?php foreach ($productos as $producto): 
-                    mostrarProducto($producto, $favoritosIds);
-                endforeach; ?>
-            <?php endif; ?>
+                <div class="row" id="listaProductos">                         
+                    <?php if (empty($productos)): ?>
+                        <div class="col-12 text-center py-5">
+                            <div class="alert alert-info">No se encontraron productos en esta categoría.</div>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($productos as $producto): 
+                            mostrarProducto($producto, $favoritosIds);
+                        endforeach; ?>
+                    <?php endif; ?>
                 </div> <!-- /.inner row -->
             </div> <!-- /.col-lg-9 -->
         </div> <!-- /.outer row -->
     </div>
-
+    <?php include 'footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/catalogo.js"></script>
     <script src="js/favoritos.js"></script>

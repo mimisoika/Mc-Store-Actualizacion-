@@ -2,7 +2,7 @@
 include('functions/f_admin_index.php');
 
 $productoMasVendido = obtenerProductoMasVendido();
-$margenGanancias = obtenerMargenGanancias();
+$usuariosActivos = obtenerUsuariosActivos();
 $numeroPedidos = obtenerNumeroPedidos();
 $ventasPorCategoria = obtenerVentasPorCategoria();
 $alertasProductos = obtenerAlertasProductos();
@@ -69,10 +69,6 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
         <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Buscar ...">
-                    <button class="search-btn"><i class="bi bi-search"></i></button>
-                </div>
             </header>
             
             <!-- Content -->
@@ -99,8 +95,8 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                     <!-- Margen de ganancias -->
                     <div class="stat-card">
                         <div class="stat-content">
-                            <h4>Margen de ganancias</h4>
-                            <p class="stat-percentage" id="margenGanancias"><?php echo $margenGanancias; ?>%</p>
+                            <h4>Usuarios Activos</h4>
+                            <p class="stat-percentage" id="usuarios Activos"><?php echo $usuariosActivos; ?>%</p>
                         </div>
                     </div>
                     
@@ -124,27 +120,26 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                     </div>
                     
                     <!-- Alertas de productos -->
-                    <div class="alerts-card">
+                     <div class="alerts-card">
                         <h4>Alerta de productos</h4>
-                        <div class="alerts-list" id="alertasProductos">
+
+                        <!-- Contenedor con altura fija y scroll -->
+                        <div class="alerts-list" id="alertasProductos" style="max-height: 220px; overflow-y: auto;">
                             <?php if (!empty($alertasProductos)): ?>
                                 <?php foreach ($alertasProductos as $alerta): ?>
-                                    <div class="alert-item">
-                                        <p class="alert-name"><?php echo htmlspecialchars($alerta['nombre']); ?></p>
+                                    <div class="alert-item d-flex justify-content-between align-items-center p-2 border-bottom">
+                                        <p class="alert-name mb-0"><?php echo htmlspecialchars($alerta['nombre']); ?></p>
+
                                         <?php
-                                            // Priorizar el campo 'estado' si está presente; también considerar cantidad == 0
                                             $estado = isset($alerta['estado']) ? $alerta['estado'] : null;
-                                            $cantidad = isset($alerta['cantidad']) ? intval($alerta['cantidad']) : null;
-                                            if ($estado === 'agotado' || $cantidad === 0) {
+                                            $cantidad = intval(isset($alerta['cantidad']) ? $alerta['cantidad'] : 0);
                                         ?>
-                                            <span class="badge badge-danger">Agotado</span>
-                                        <?php
-                                            } else {
-                                        ?>
-                                            <span class="badge badge-warning">Stock Bajo</span>
-                                        <?php
-                                            }
-                                        ?>
+
+                                        <?php if ($estado === 'agotado' || $cantidad === 0): ?>
+                                            <span class="badge bg-danger">Agotado</span>
+                                        <?php else: ?>
+                                            <span class="badge bg-warning text-dark">Stock Bajo</span>
+                                        <?php endif; ?>
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -152,6 +147,8 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                             <?php endif; ?>
                         </div>
                     </div>
+
+
                 </div>
                 
                 <!-- Ventas del mes -->
