@@ -1,7 +1,7 @@
 <?php
-$host = "31.220.96.192";
-$usuario = "admin_comercial";
-$contrasena = "ComerzialMC@12";
+$host = "localhost";
+$usuario = "root";
+$contrasena = "Ramirez034";
 $baseDeDatos = "comercializadora";
 
 $conexion = mysqli_connect($host, $usuario, $contrasena, $baseDeDatos);
