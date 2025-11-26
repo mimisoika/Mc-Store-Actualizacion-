@@ -23,15 +23,32 @@ $usuario_id = $_SESSION['usuario_id'];
 $direcciones = obtenerDireccionesUsuario($usuario_id);
    
 
-// Envio para datos del pedido y detalles del pedido
+// Procesar creación de pedido
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPedido'])) {
-    $usuario_id = $_POST['usuario_id'];
-    $direccion_id = $_POST['direccion_id'];
-    $total = $_POST['total'];
-    $metodo_pago = $_POST['metodo_pago'];
+    $usuario_id = $_SESSION['usuario_id'];
+    $direccion_id = isset($_POST['direccion_id']) ? trim($_POST['direccion_id']) : null;
+    $total = isset($_POST['total']) ? trim($_POST['total']) : 0;
+    $metodo_pago = isset($_POST['metodo_pago']) ? trim($_POST['metodo_pago']) : '';
 
-    enviarPedido($usuario_id, $direccion_id, $total, $metodo_pago);
-    exit();
+    // Si hay direcciones registradas en la cuenta, obligamos a seleccionar una
+    if (!empty($direcciones) && empty($direccion_id)) {
+        $error = 'Debes seleccionar una dirección antes de continuar.';
+    } else {
+        // Crear el pedido (estado: pendiente)
+        $pedido_id = crearPedido($usuario_id, $direccion_id, $total, $metodo_pago);
+    
+        // Redirigir a la página de pago de Mercado Pago
+        ?>
+        <form id="redirectForm" method="POST" action="mercado_pago_simulado.php" style="display:none;">
+            <input type="hidden" name="pedido_id" value="<?php echo htmlspecialchars($pedido_id); ?>">
+            <input type="hidden" name="total" value="<?php echo htmlspecialchars($total); ?>">
+        </form>
+        <script>
+            document.getElementById('redirectForm').submit();
+        </script>
+        <?php
+        exit();
+    }
 }
 
 ?>
@@ -49,6 +66,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPedido'])) {
     <?php include 'header.php';  ?>
 
     <div class="container py-4">
+        <?php if (isset($error) && !empty($error)): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
+        <?php endif; ?>
         <form action="pago.php" method="POST">
             <input type="hidden" name="usuario_id" value="<?php echo $_SESSION['usuario_id']; ?>">
             
