@@ -23,7 +23,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
 </head>
 <body>
     <div class="admin-container">
-       
+        
         <aside class="sidebar">
             <div class="sidebar-header">
                 <div class="logo">
@@ -67,9 +67,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
         </aside>
         
-        <!-- Main Content -->
         <main class="main-content">
-            <!-- Top Bar -->
             <header class="top-bar">
                 <div class="search-container">
                     
@@ -77,7 +75,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                 
             </header>
             
-            <!-- Content -->
             <div class="content">
                 <div class="content-header d-flex justify-content-between align-items-center mb-4">
                     <div>
@@ -91,12 +88,11 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     </div>
                 </div>
 
-                <!-- Filtros -->
                 <div class="card mb-4">
 
                     <div class="card-body">
                         <div class="row g-3">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="filtroCategoria" class="form-label">Categoría</label>
                                 <select id="filtroCategoria" class="form-select">
                                     <option value="todas">Todas las categorías</option>
@@ -106,7 +102,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="bebidas">Bebidas</option>
                                 </select>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <label for="filtroEstado" class="form-label">Estado</label>
                                 <select id="filtroEstado" class="form-select">
                                     <option value="todos">Todos los estados</option>
@@ -115,7 +111,25 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="agotado">Agotado</option>
                                 </select>
                             </div>
+                            <div class="col-md-3">
+                                <label for="filtroOrdenNombre" class="form-label">Ordenar por Nombre</label>
+                                <select id="filtroOrdenNombre" class="form-select">
+                                    <option value="default">Por defecto</option>
+                                    <option value="asc">Nombre (A-Z)</option>
+                                    <option value="desc">Nombre (Z-A)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filtroOrdenStock" class="form-label">Ordenar por Stock</label>
+                                <select id="filtroOrdenStock" class="form-select">
+                                    <option value="default">Por defecto</option>
+                                    <option value="asc">Stock (Menor a Mayor)</option>
+                                    <option value="desc">Stock (Mayor a Menor)</option>
+                                </select>
+                            </div>
                             <div class="col-md-4">
+                                </div>
+                            <div class="col-md-5">
                                 <label for="filtroBusqueda" class="form-label">Buscar</label>
                                 <div class="input-group">
                                     <input type="text" id="filtroBusqueda" class="form-control" placeholder="Nombre o descripción">
@@ -128,9 +142,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     </div>
                 </div>
 
-                <!-- Lista de productos -->
                 <div class="row" id="productos-container">
-                    <!-- Los productos se cargarán aquí dinámicamente -->
                     <div class="col-12 text-center py-5">
                         <div class="spinner-border text-primary" role="status">
                             <span class="visually-hidden">Cargando...</span>
@@ -142,7 +154,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
         </main>
     </div>
 
-    <!-- Modal para agregar producto -->
     <div class="modal fade" id="agregarProductoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -156,6 +167,10 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="nombre" class="form-label">Nombre del Producto</label>
                                 <input type="text" class="form-control" id="nombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="stock" class="form-label">Stock / Existencias</label>
+                                <input type="number" class="form-control" id="stock" min="0" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="precio" class="form-label">Precio</label>
@@ -182,6 +197,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="agotado">Agotado</option>
                                 </select>
                             </div>
+                            <div class="col-md-6">
+                                <label for="destacado" class="form-label">Destacado</label>
+                                <select class="form-select" id="destacado">
+                                    <option value="no">No</option>
+                                    <option value="si">Si</option>
+                                </select>
+                            </div>
                             <div class="col-12">
                                 <label for="descripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="descripcion" rows="3"></textarea>
@@ -195,9 +217,9 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                 <label class="form-label">Vista previa</label>
                                 <div class="border p-2 text-center">
                                     <img id="previewImagen" src="data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACH5BAEAAAAALAAAAAABAAEAAAICRAEAOw==" 
-                                         alt="Vista previa de la imagen" 
-                                         class="img-fluid" 
-                                         style="max-height: 150px; display: none;">
+                                            alt="Vista previa de la imagen" 
+                                            class="img-fluid" 
+                                            style="max-height: 150px; display: none;">
                                     <p id="sinImagen" class="text-muted mb-0">No hay imagen seleccionada</p>
                                 </div>
                             </div>
@@ -211,8 +233,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
         </div>
     </div>
-
-    <!-- Modal para editar producto -->
     <div class="modal fade" id="editarProductoModal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -227,6 +247,10 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="editNombre" class="form-label">Nombre del Producto</label>
                                 <input type="text" class="form-control" id="editNombre" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editStock" class="form-label">Stock / Existencias</label>
+                                <input type="number" class="form-control" id="editStock" min="0" required>
                             </div>
                             <div class="col-md-6">
                                 <label for="editPrecio" class="form-label">Precio</label>
@@ -252,6 +276,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="agotado">Agotado</option>
                                 </select>
                             </div>
+                            <div class="col-md-6">
+                                <label for="editDestacado" class="form-label">Destacado</label>
+                                <select class="form-select" id="editDestacado">
+                                    <option value="no">No</option>
+                                    <option value="si">Si</option>
+                                </select>
+                            </div>
                             <div class="col-12">
                                 <label for="editDescripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="editDescripcion" rows="3"></textarea>
@@ -264,10 +295,10 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label class="form-label">Imagen Actual</label>
                                 <div class="border p-2 text-center">
-                                    <img id="editPreviewImagen" src="" 
-                                         alt="Imagen actual del producto" 
-                                         class="img-fluid" 
-                                         style="max-height: 150px;">
+                                    <img id="editPreviewImagen" src="/placeholder.svg" 
+                                            alt="Imagen actual del producto" 
+                                            class="img-fluid" 
+                                            style="max-height: 150px;">
                                 </div>
                             </div>
                         </div>
@@ -280,7 +311,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/admin_index.js"></script>

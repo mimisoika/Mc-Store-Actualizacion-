@@ -32,7 +32,7 @@ function obtenerCategorias() {
 }
 
 // Función para agregar producto
-function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = '') {
+function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = '', $destacado = 'no') {
     global $conexion;
     
     // Obtener ID de categoría
@@ -42,14 +42,14 @@ function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, 
     $categoria_id = $categoria_data['id'];
     
     // Insertar producto
-    $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen) 
-            VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad', 'disponible', '$imagen')";
+    $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen, destacado) 
+            VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad', 'disponible', '$imagen', '$destacado')";
     
     return mysqli_query($conexion, $sql);
 }
 
 // Función para actualizar producto
-function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = null) {
+function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = null, $destacado = 'no') {
     global $conexion;
     
     // Obtener ID de categoría
@@ -58,12 +58,13 @@ function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $ca
     $categoria_data = mysqli_fetch_assoc($resultado_cat);
     $categoria_id = $categoria_data['id'];
     
+    // Actualizar producto
     if ($imagen) {
         $sql = "UPDATE productos SET categoria_id='$categoria_id', nombre='$nombre', descripcion='$descripcion', 
-                precio='$precio', cantidad='$cantidad', imagen='$imagen' WHERE id='$id'";
+                precio='$precio', cantidad='$cantidad', imagen='$imagen', destacado='$destacado' WHERE id='$id'";
     } else {
         $sql = "UPDATE productos SET categoria_id='$categoria_id', nombre='$nombre', descripcion='$descripcion', 
-                precio='$precio', cantidad='$cantidad' WHERE id='$id'";
+                precio='$precio', cantidad='$cantidad', destacado='$destacado' WHERE id='$id'";
     }
     
     return mysqli_query($conexion, $sql);
@@ -163,13 +164,14 @@ if ($_POST) {
         $categoria = $_POST['categoria'];
         $descripcion = $_POST['descripcion'];
         $cantidad = $_POST['cantidad'];
+        $destacado = isset($_POST['destacado']) ? $_POST['destacado'] : 'no';
         
         $imagen = '';
         if ($_FILES['imagen']['name']) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $imagen);
+        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $imagen, $destacado);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto agregado correctamente']);
@@ -185,13 +187,14 @@ if ($_POST) {
         $categoria = $_POST['categoria'];
         $descripcion = $_POST['descripcion'];
         $cantidad = $_POST['cantidad'];
+        $destacado = isset($_POST['destacado']) ? $_POST['destacado'] : 'no';
         
         $imagen = null;
         if ($_FILES['imagen']['name']) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $imagen);
+        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $imagen, $destacado);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto actualizado correctamente']);
