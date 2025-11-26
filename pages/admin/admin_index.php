@@ -69,16 +69,6 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
         <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Buscar ...">
-                    <button class="search-btn"><i class="bi bi-search"></i></button>
-                </div>
-=======
->>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
->>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
             </header>
             
             <!-- Content -->
@@ -105,18 +95,8 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                     <!-- Margen de ganancias -->
                     <div class="stat-card">
                         <div class="stat-content">
-<<<<<<< HEAD
                             <h4>Usuarios Activos</h4>
                             <p class="stat-percentage" id="usuarios Activos"><?php echo $usuariosActivos; ?>%</p>
-=======
-<<<<<<< HEAD
-                            <h4>Margen de ganancias</h4>
-                            <p class="stat-percentage" id="margenGanancias"><?php echo $margenGanancias; ?>%</p>
-=======
-                            <h4>Usuarios Activos</h4>
-                            <p class="stat-percentage" id="usuarios Activos"><?php echo $usuariosActivos; ?>%</p>
->>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
->>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
                         </div>
                     </div>
                     
@@ -140,32 +120,6 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                     </div>
                     
                     <!-- Alertas de productos -->
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-                    <div class="alerts-card">
-                        <h4>Alerta de productos</h4>
-                        <div class="alerts-list" id="alertasProductos">
-                            <?php if (!empty($alertasProductos)): ?>
-                                <?php foreach ($alertasProductos as $alerta): ?>
-                                    <div class="alert-item">
-                                        <p class="alert-name"><?php echo htmlspecialchars($alerta['nombre']); ?></p>
-                                        <?php
-                                            // Priorizar el campo 'estado' si está presente; también considerar cantidad == 0
-                                            $estado = isset($alerta['estado']) ? $alerta['estado'] : null;
-                                            $cantidad = isset($alerta['cantidad']) ? intval($alerta['cantidad']) : null;
-                                            if ($estado === 'agotado' || $cantidad === 0) {
-                                        ?>
-                                            <span class="badge badge-danger">Agotado</span>
-                                        <?php
-                                            } else {
-                                        ?>
-                                            <span class="badge badge-warning">Stock Bajo</span>
-                                        <?php
-                                            }
-                                        ?>
-=======
->>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
                      <div class="alerts-card">
                         <h4>Alerta de productos</h4>
 
@@ -177,13 +131,8 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                                         <p class="alert-name mb-0"><?php echo htmlspecialchars($alerta['nombre']); ?></p>
 
                                         <?php
-<<<<<<< HEAD
-                                            $estado = isset($alerta['estado']) ? $alerta['estado'] : null;
-                                            $cantidad = intval(isset($alerta['cantidad']) ? $alerta['cantidad'] : 0);
-=======
                                             $estado = $alerta['estado'] ?? null;
                                             $cantidad = intval($alerta['cantidad'] ?? 0);
->>>>>>> 8d6c6c61bbb59358d33a9635ef765b79374207d8
                                         ?>
 
                                         <?php if ($estado === 'agotado' || $cantidad === 0): ?>
@@ -191,10 +140,6 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                                         <?php else: ?>
                                             <span class="badge bg-warning text-dark">Stock Bajo</span>
                                         <?php endif; ?>
-<<<<<<< HEAD
-=======
->>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
->>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
                                     </div>
                                 <?php endforeach; ?>
                             <?php else: ?>
@@ -202,16 +147,8 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                             <?php endif; ?>
                         </div>
                     </div>
-<<<<<<< HEAD
 
 
-=======
-<<<<<<< HEAD
-=======
-
-
->>>>>>> d5f13350ec8480c3857f2873b58733ba07e20381
->>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
                 </div>
                 
                 <!-- Ventas del mes -->
