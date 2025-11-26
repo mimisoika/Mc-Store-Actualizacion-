@@ -107,9 +107,13 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
                             </div>
 
                             <div class="d-grid gap-2">
+<<<<<<< HEAD
                                 
                                 <button type="submit" class="btn btn-primary">Aplicar filtros</button>
                                 <button type="button" id="btnLimpiar" class="btn btn-outline-secondary">Limpiar filtros</button>
+=======
+                                <a href="catalogo.php" class="btn btn-outline-secondary">Limpiar filtros</a>
+>>>>>>> 8d6c6c61bbb59358d33a9635ef765b79374207d8
                             </div>
                         </form>
                     </div>
@@ -118,6 +122,7 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
 
             <div class="col-lg-9">
                 <!-- Productos -->
+<<<<<<< HEAD
                 <div class="row" id="listaProductos">                         
                     <?php if (empty($productos)): ?>
                         <div class="col-12 text-center py-5">
@@ -128,6 +133,18 @@ $productos = obtenerProductosCatalogo($categoriaSeleccionada, $minPrecio, $maxPr
                             mostrarProducto($producto, $favoritosIds);
                         endforeach; ?>
                     <?php endif; ?>
+=======
+                <div id="productosGrid" class="row">
+            <?php if (empty($productos)): ?>
+                <div class="col-12 text-center py-5">
+                    <div class="alert alert-info">No se encontraron productos en esta categoría.</div>
+                </div>
+            <?php else: ?>
+                <?php foreach ($productos as $producto): 
+                    mostrarProducto($producto, $favoritosIds);
+                endforeach; ?>
+            <?php endif; ?>
+>>>>>>> 8d6c6c61bbb59358d33a9635ef765b79374207d8
                 </div> <!-- /.inner row -->
             </div> <!-- /.col-lg-9 -->
         </div> <!-- /.outer row -->

@@ -1,4 +1,14 @@
 <?php
+<<<<<<< HEAD
+=======
+require_once '../functions/f_login.php';
+
+// Verificar que el usuario sea admin
+if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
+    header('Location: ../../index.php');
+    exit();
+}
+>>>>>>> 8d6c6c61bbb59358d33a9635ef765b79374207d8
 include('functions/f_admin_index.php');
 
 $productoMasVendido = obtenerProductoMasVendido();
@@ -131,8 +141,13 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                                         <p class="alert-name mb-0"><?php echo htmlspecialchars($alerta['nombre']); ?></p>
 
                                         <?php
+<<<<<<< HEAD
                                             $estado = isset($alerta['estado']) ? $alerta['estado'] : null;
                                             $cantidad = intval(isset($alerta['cantidad']) ? $alerta['cantidad'] : 0);
+=======
+                                            $estado = $alerta['estado'] ?? null;
+                                            $cantidad = intval($alerta['cantidad'] ?? 0);
+>>>>>>> 8d6c6c61bbb59358d33a9635ef765b79374207d8
                                         ?>
 
                                         <?php if ($estado === 'agotado' || $cantidad === 0): ?>
