@@ -3,7 +3,7 @@ require_once '../functions/f_login.php';
 
 // Verificar que el usuario sea admin
 if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../index.php');
     exit();
 }
 ?>
@@ -131,8 +131,8 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <table class="table table-hover align-middle" id="tablaPedidos">
                                 <thead class="table-dark">
                                     <tr>
-                                        <th>Fecha <i class="bi bi-arrow-down-up"></i></th>
-                                        <th>Usuario <i class="bi bi-arrow-down-up"></i></th>
+                                        <th>Fecha</th>
+                                        <th>Usuario</th>
                                         <th>Método Pago</th>
                                         <th>Total</th>
                                         <th>Estatus</th>
@@ -140,28 +140,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <!-- Ejemplo de pedido -->
-                                    <tr>
-                                        <td>2025-10-11 10:2:23</td>
-                                        <td>Maria Guadalupe</td>
-                                        <td>Mercado Pago</td>
-                                        <td>$1046.45</td>
-                                        <td>
-                                            <select class="form-select form-select-sm badge-pendiente" style="width: auto; min-width: 130px;">
-                                                <option value="Pendiente" selected>Pendiente</option>
-                                                <option value="Confirmado">Confirmado</option>
-                                                <option value="Preparando">Preparando</option>
-                                                <option value="En camino">En camino</option>
-                                                <option value="Entregado">Entregado</option>
-                                            </select>
-                                        </td>
-                                        <td>
-                                            <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#detallesPedidoModal" onclick="cargarDetallesPedido(1)">
-                                                <i class="bi bi-eye"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    <!-- Más pedidos se cargarían dinámicamente aquí -->
+                                    <!-- Los pedidos se cargarán aquí dinámicamente -->
                                 </tbody>
                             </table>
                         </div>
@@ -185,19 +164,19 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                         <div class="col-md-6">
                             <h6 class="fw-bold text-primary"><i class="bi bi-info-circle"></i> Información del Pedido</h6>
                             <div class="bg-light p-3 rounded">
-                                <p class="mb-2"><span class="fw-bold">Fecha:</span> <span id="detalleFecha">2025-10-11 10:2:23</span></p>
-                                <p class="mb-2"><span class="fw-bold">Usuario:</span> <span id="detalleUsuario">Maria Guadalupe</span></p>
-                                <p class="mb-2"><span class="fw-bold">Método de Pago:</span> <span id="detalleMetodoPago">Mercado Pago</span></p>
-                                <p class="mb-0"><span class="fw-bold">Total:</span> <span id="detalleTotal" class="text-success fw-bold">$1046.45</span></p>
+                                <p class="mb-2"><span class="fw-bold">Fecha:</span> <span id="detalleFecha">-</span></p>
+                                <p class="mb-2"><span class="fw-bold">Usuario:</span> <span id="detalleUsuario">-</span></p>
+                                <p class="mb-2"><span class="fw-bold">Método de Pago:</span> <span id="detalleMetodoPago">-</span></p>
+                                <p class="mb-0"><span class="fw-bold">Total:</span> <span id="detalleTotal" class="text-success fw-bold">-</span></p>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <h6 class="fw-bold text-primary"><i class="bi bi-geo-alt"></i> Dirección de entrega</h6>
                             <div class="bg-light p-3 rounded">
-                                <p class="mb-2"><span class="fw-bold">Alias:</span> <span id="detalleAlias">Casa</span></p>
-                                <p class="mb-2"><span class="fw-bold">Dirección:</span> <span id="detalleDireccion">Av. Insurgentes 123, Col. Condesa</span></p>
-                                <p class="mb-2"><span class="fw-bold">Ciudad:</span> <span id="detalleCiudad">Loreto</span></p>
-                                <p class="mb-0"><span class="fw-bold">CP:</span> <span id="detalleCP">236700</span></p>
+                                <p class="mb-2"><span class="fw-bold">Alias:</span> <span id="detalleAlias">-</span></p>
+                                <p class="mb-2"><span class="fw-bold">Dirección:</span> <span id="detalleDireccion">-</span></p>
+                                <p class="mb-2"><span class="fw-bold">Ciudad:</span> <span id="detalleCiudad">-</span></p>
+                                <p class="mb-0"><span class="fw-bold">CP:</span> <span id="detalleCP">-</span></p>
                             </div>
                         </div>
                     </div>
@@ -215,12 +194,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     </tr>
                                 </thead>
                                 <tbody id="detalleProductos">
-                                    <tr>
-                                        <td>harina</td>
-                                        <td class="text-center">4</td>
-                                        <td class="text-end">$225</td>
-                                    </tr>
-                                    <!-- Más productos se cargarían dinámicamente aquí -->
+                                    <!-- Los productos se cargarán aquí dinámicamente -->
                                 </tbody>
                             </table>
                         </div>
@@ -238,50 +212,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/admin_index.js"></script>
-    <script>
-        // Función para cargar los detalles de un pedido específico
-        function cargarDetallesPedido(pedidoId) {
-            // Aquí iría la lógica AJAX para cargar los datos del pedido desde el servidor
-            // Por ahora solo muestra los datos de ejemplo que ya están en el modal
-            console.log('[v0] Cargando detalles del pedido:', pedidoId);
-        }
-
-        // Evento para cambiar el estatus del pedido
-        $(document).on('change', '#tablaPedidos select', function() {
-            const nuevoEstatus = $(this).val();
-            const select = $(this);
-            
-            // Remover todas las clases de badge
-            select.removeClass('badge-pendiente badge-confirmado badge-preparando badge-en-camino badge-entregado');
-            
-            // Agregar la clase correspondiente al nuevo estatus
-            switch(nuevoEstatus) {
-                case 'Pendiente':
-                    select.addClass('badge-pendiente');
-                    break;
-                case 'Confirmado':
-                    select.addClass('badge-confirmado');
-                    break;
-                case 'Preparando':
-                    select.addClass('badge-preparando');
-                    break;
-                case 'En camino':
-                    select.addClass('badge-en-camino');
-                    break;
-                case 'Entregado':
-                    select.addClass('badge-entregado');
-                    break;
-            }
-            
-            // Aquí iría la lógica AJAX para actualizar el estatus en el servidor
-            console.log('[v0] Actualizando estatus del pedido a:', nuevoEstatus);
-        });
-
-        // Filtros
-        $('#filtroUsuario, #filtroEstatus, #filtroFecha').on('change keyup', function() {
-            // Aquí iría la lógica para filtrar la tabla
-            console.log('[v0] Aplicando filtros...');
-        });
-    </script>
+    <script src="js/administrar_pedidos.js"></script>
 </body>
 </html>
