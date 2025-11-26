@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
 function agregarAlCarrito(productoId) {
     const informacion = new FormData();
     informacion.append('producto_id', productoId);
@@ -20,6 +23,7 @@ document.addEventListener('DOMContentLoaded', function() {
             wrap: true
         });
     }
+<<<<<<< HEAD
 });
 =======
 function agregarAlCarrito(productoId) {
@@ -87,3 +91,6 @@ function toggleFavorito(productoId, btn) {
     });
 }
 >>>>>>> 8d6c6c61bbb59358d33a9635ef765b79374207d8
+=======
+});
+>>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae

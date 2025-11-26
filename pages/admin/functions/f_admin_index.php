@@ -1,4 +1,7 @@
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
 <?php
 require_once __DIR__ . '/../../../php/database.php';
 
@@ -163,6 +166,7 @@ function obtenerProductosFavoritosMasPopulares() {
     return mysqli_fetch_all($resultado, MYSQLI_ASSOC);
 }
 ?>
+<<<<<<< HEAD
 =======
 <?php
 require_once __DIR__ . '/../../../php/database.php';
@@ -329,3 +333,5 @@ function obtenerProductosFavoritosMasPopulares() {
 }
 ?>
 >>>>>>> 8d6c6c61bbb59358d33a9635ef765b79374207d8
+=======
+>>>>>>> f71af0d173fee0f7a0bc7db74245fa39d26c6eae
