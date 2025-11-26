@@ -5,23 +5,15 @@ if (session_status() === PHP_SESSION_NONE) {
 
 require_once 'functions/f_header.php';
 require_once 'admin/functions/f_configuracion.php';
+require_once 'functions/f_helpers.php';
 
 $config = obtenerConfiguracion();
-?>
-<?php
-// Base URL dinámico para construir rutas que funcionen tanto desde la raíz del proyecto
-// como desde subdirectorios (evita usar ../ en los href que causan 404)
-$baseDir = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-if ($baseDir === '/' || $baseDir === '.') {
-    $baseDir = '';
-}
 
-function url_path($path) {
-    global $baseDir;
-    $path = ltrim($path, '/');
-    return $baseDir ? $baseDir . '/' . $path : $path;
-}
+// Determinar si estamos en la raíz o en la carpeta pages
+$currentDir = dirname($_SERVER['SCRIPT_NAME']);
+$isInPages = strpos($currentDir, 'pages') !== false || basename($currentDir) === 'pages';
 ?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -34,8 +26,8 @@ function url_path($path) {
 
 <nav class="navbar navbar-expand-lg navbar-light sticky-top" style="background-color: <?php echo htmlspecialchars($config['color_encabezado']); ?>; color: <?php echo htmlspecialchars($config['color_texto']); ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
     <div class="container-fluid px-4">
-        <a class="navbar-brand d-flex align-items-center" href="index.php">
-            <img src="../pages/img/logo-mcstore.png" alt="<?php echo htmlspecialchars($config['nombre_sitio']); ?>" width="40" height="40" class="me-2 rounded-circle">
+        <a class="navbar-brand d-flex align-items-center" href="<?php echo $isInPages ? '../index.php' : 'index.php'; ?>">
+            <img src="<?php echo $isInPages ? '../pages/img/logo-mcstore.png' : 'pages/img/logo-mcstore.png'; ?>" alt="<?php echo htmlspecialchars($config['nombre_sitio']); ?>" width="40" height="40" class="me-2 rounded-circle">
             <span class="fw-bold fs-4" style="color: <?php echo htmlspecialchars($config['color_primario']); ?>;"><?php echo htmlspecialchars($config['nombre_sitio']); ?></span>
         </a>
 
@@ -47,40 +39,40 @@ function url_path($path) {
 
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo url_path('index.php#inicio'); ?>">
+                    <a class="nav-link" href="<?php echo $isInPages ? '../index.php#inicio' : 'index.php#inicio'; ?>">
                         <i class="fas fa-home me-1"></i>Inicio
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo url_path('index.php#productos'); ?>">
+                    <a class="nav-link" href="<?php echo $isInPages ? '../index.php#productos' : 'index.php#productos'; ?>">
                         <i class="fas fa-th-large me-1"></i>Productos Destacados
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo url_path('pages/catalogo.php'); ?>">
+                    <a class="nav-link" href="<?php echo $isInPages ? 'catalogo.php' : 'pages/catalogo.php'; ?>">
                         <i class="fas fa-th-large me-1"></i>Catalogo
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo url_path('index.php#acerca'); ?>">
+                    <a class="nav-link" href="<?php echo $isInPages ? '../index.php#acerca' : 'index.php#acerca'; ?>">
                         <i class="fas fa-users me-1"></i>Nosotros
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?php echo url_path('index.php#contacto'); ?>">
+                    <a class="nav-link" href="<?php echo $isInPages ? '../index.php#contacto' : 'index.php#contacto'; ?>">
                         <i class="fas fa-envelope me-1"></i>Contacto
                     </a>
                 </li>
                 
                 <li class="nav-item">
-                    <a class="nav-link position-relative" href="<?php echo url_path('pages/carrito.php'); ?>">
+                    <a class="nav-link position-relative" href="<?php echo $isInPages ? 'carrito.php' : 'pages/carrito.php'; ?>">
                         <i class="fas fa-shopping-cart me-1"></i>
                         <span>Carrito</span>
                     </a>
                 </li>
                 
                 <li class="nav-item d-lg-none mt-2">
-                    <form class="d-flex" action="<?php echo url_path('pages/products.php'); ?>" method="GET" role="search">
+                    <form class="d-flex" action="<?php echo $isInPages ? 'products.php' : 'pages/products.php'; ?>" method="GET" role="search">
                         <div class="input-group">
                             <input class="form-control" type="search" name="search" placeholder="Buscar productos..." aria-label="Buscar">
                             <button class="btn btn-outline-primary" type="submit">
