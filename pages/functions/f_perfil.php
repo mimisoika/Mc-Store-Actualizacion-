@@ -338,4 +338,43 @@ function marcarDireccionComoPrincipal($usuario_id, $direccion_id) {
         exit();
     }
 }
+
+/**
+ * Cancela un pedido si está en estado pendiente
+ */
+function cancelarPedido($pedido_id, $usuario_id) {
+    global $conexion;
+    
+    $resultado = ['exito' => false, 'mensaje' => ''];
+    
+    // Verificar que el pedido existe y pertenece al usuario
+    $consulta_verificar = "SELECT estado FROM pedidos WHERE id = ? AND usuario_id = ?";
+    $stmt_verificar = mysqli_prepare($conexion, $consulta_verificar);
+    mysqli_stmt_bind_param($stmt_verificar, "ii", $pedido_id, $usuario_id);
+    mysqli_stmt_execute($stmt_verificar);
+    $resultado_verificar = mysqli_stmt_get_result($stmt_verificar);
+    
+    if ($pedido = mysqli_fetch_assoc($resultado_verificar)) {
+        // Verificar que el pedido esté pendiente
+        if ($pedido['estado'] == 'pendiente') {
+            // Actualizar el estado a cancelado
+            $consulta_actualizar = "UPDATE pedidos SET estado = 'cancelado' WHERE id = ?";
+            $stmt_actualizar = mysqli_prepare($conexion, $consulta_actualizar);
+            mysqli_stmt_bind_param($stmt_actualizar, "i", $pedido_id);
+            
+            if (mysqli_stmt_execute($stmt_actualizar)) {
+                $resultado['exito'] = true;
+                $resultado['mensaje'] = "Pedido #$pedido_id cancelado correctamente";
+            } else {
+                $resultado['mensaje'] = "Error al cancelar el pedido";
+            }
+        } else {
+            $resultado['mensaje'] = "No se puede cancelar un pedido que ya ha sido procesado";
+        }
+    } else {
+        $resultado['mensaje'] = "Pedido no encontrado";
+    }
+    
+    return $resultado;
+}
 ?>
