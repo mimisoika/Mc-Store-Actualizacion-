@@ -3,7 +3,7 @@ $(document).ready(function() {
     cargarUsuarios();
     
     // Event listeners
-    $('#filtroEstado').change(function() {
+    $('#filtroEstado, #filtroRol').change(function() {
         cargarUsuarios();
     });
     
@@ -18,12 +18,13 @@ $(document).ready(function() {
     });
     
     $('#btnGuardarCambios').click(function() {
-        actualizarUsuario();
+        confirmarActualizarUsuario();
     });
 });
 
 function cargarUsuarios() {
     const filtroEstado = $('#filtroEstado').val();
+    const filtroRol = $('#filtroRol').val();
     const busqueda = $('#busqueda').val();
     
     // Mostrar loading
@@ -36,6 +37,7 @@ function cargarUsuarios() {
         data: {
             accion: 'obtener_usuarios',
             filtroEstado: filtroEstado,
+            filtroRol: filtroRol,
             busqueda: busqueda
         },
         dataType: 'json',
@@ -73,6 +75,7 @@ function mostrarUsuarios(usuarios) {
         usuarios.forEach(function(usuario) {
             const estadoBadge = getEstadoBadge(usuario.estado);
             const rolBadge = getRolBadge(usuario.rol);
+            const botonEstado = getBotonEstado(usuario.estado, usuario.id, usuario.nombre);
             const fila = `
                 <tr>
                     <td>${usuario.id}</td>
@@ -86,15 +89,13 @@ function mostrarUsuarios(usuarios) {
                             <button class="btn btn-sm btn-info" onclick="verDetalleUsuario(${usuario.id})" title="Ver detalles">
                                 <i class="bi bi-eye"></i>
                             </button>
-                            <button class="btn btn-sm btn-warning" onclick="editarUio(${usuario.id}, '${usuario.nombre}', '${usuario.email}', '${usuario.estado}', '${usuario.rol}')" title="Editar usuario">
+                            <button class="btn btn-sm btn-warning" onclick="editarUsuario(${usuario.id}, '${escapeHtml(usuario.nombre)}', '${escapeHtml(usuario.email)}', '${usuario.estado}', '${usuario.rol}')" title="Editar usuario">
                                 <i class="bi bi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-secondary" onclick="confirmarSuspender(${usuario.id}, '${usuario.nombre}')" title="Suspender usuario">
+                            <button class="btn btn-sm btn-secondary" onclick="confirmarSuspender(${usuario.id}, '${escapeHtml(usuario.nombre)}')" title="Suspender usuario">
                                 <i class="bi bi-pause-circle"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger" onclick="confirmarEliminar(${usuario.id}, '${usuario.nombre}')" title="Desactivar usuario">
-                                <i class="bi bi-x-circle"></i>
-                            </button>
+                            ${botonEstado}
                         </div>
                     </td>
                 </tr>
@@ -104,6 +105,17 @@ function mostrarUsuarios(usuarios) {
     }
     
     $('#tUsuarios').removeClass('d-none');
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, function(m) { return map[m]; });
 }
 
 function getEstadoBadge(estado) {
@@ -130,6 +142,18 @@ function getRolBadge(rol) {
     }
 }
 
+function getBotonEstado(estado, id, nombre) {
+    if (estado === 'activo') {
+        return `<button class="btn btn-sm btn-danger" onclick="confirmarToggleEstado(${id}, '${escapeHtml(nombre)}', 'desactivar')" title="Desactivar usuario">
+                    <i class="bi bi-x-circle"></i>
+                </button>`;
+    } else {
+        return `<button class="btn btn-sm btn-success" onclick="confirmarToggleEstado(${id}, '${escapeHtml(nombre)}', 'activar')" title="Activar usuario">
+                    <i class="bi bi-check-circle"></i>
+                </button>`;
+    }
+}
+
 function editarUsuario(id, nombre, email, estado, rol) {
     $('#usuarioId').val(id);
     $('#usuarioNombre').text(nombre);
@@ -138,6 +162,20 @@ function editarUsuario(id, nombre, email, estado, rol) {
     $('#nuevoRol').val(rol);
     
     $('#editarModal').modal('show');
+}
+
+// Nueva función para confirmar antes de actualizar
+function confirmarActualizarUsuario() {
+    const id = $('#usuarioId').val();
+    const nuevoEstado = $('#nuevoEstado').val();
+    const nuevoRol = $('#nuevoRol').val();
+    const nombre = $('#usuarioNombre').text();
+    
+    const mensaje = `¿Estás seguro de que quieres actualizar los datos del usuario "${nombre}"?\n\nNuevo estado: ${nuevoEstado}\nNuevo rol: ${nuevoRol}`;
+    
+    if (confirm(mensaje)) {
+        actualizarUsuario();
+    }
 }
 
 function actualizarUsuario() {
@@ -159,14 +197,42 @@ function actualizarUsuario() {
             if (response.success) {
                 $('#editarModal').modal('hide');
                 cargarUsuarios(); // Recargar la tabla
+                // Mostrar mensaje de éxito
+                mostrarMensaje('success', 'Usuario actualizado correctamente');
             } else {
                 console.error(response.mensaje || 'Error al actualizar usuario');
+                mostrarMensaje('error', response.mensaje || 'Error al actualizar usuario');
             }
         },
         error: function() {
             console.error('Error de conexión al servidor');
+            mostrarMensaje('error', 'Error de conexión al servidor');
         }
     });
+}
+
+// Función para mostrar mensajes bonitos
+function mostrarMensaje(tipo, mensaje) {
+    // Remover mensajes anteriores
+    $('.alert-message').remove();
+    
+    const icon = tipo === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+    const bgClass = tipo === 'success' ? 'alert-success' : 'alert-danger';
+    
+    const alertHtml = `
+        <div class="alert ${bgClass} alert-dismissible fade show alert-message position-fixed top-0 start-50 translate-middle-x mt-3" style="z-index: 9999; min-width: 300px;" role="alert">
+            <i class="bi ${icon} me-2"></i>
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+    
+    $('body').append(alertHtml);
+    
+    // Auto-remover después de 5 segundos
+    setTimeout(() => {
+        $('.alert-message').alert('close');
+    }, 5000);
 }
 
 function verDetalleUsuario(id) {
@@ -192,10 +258,12 @@ function verDetalleUsuario(id) {
                 $('#infoModal').modal('show');
             } else {
                 console.error('Error al obtener detalles del usuario');
+                mostrarMensaje('error', 'Error al obtener detalles del usuario');
             }
         },
         error: function() {
             console.error('Error de conexión al servidor');
+            mostrarMensaje('error', 'Error de conexión al servidor');
         }
     });
 }
@@ -218,40 +286,51 @@ function suspenderUsuario(id) {
         success: function(response) {
             if (response.success) {
                 cargarUsuarios(); // Recargar la lista
+                mostrarMensaje('success', 'Usuario suspendido correctamente');
             } else {
                 console.error(response.mensaje || 'Error al suspender usuario');
+                mostrarMensaje('error', response.mensaje || 'Error al suspender usuario');
             }
         },
         error: function() {
             console.error('Error de conexión al servidor');
+            mostrarMensaje('error', 'Error de conexión al servidor');
         }
     });
 }
 
-function confirmarEliminar(id, nombre) {
-    if (confirm(`¿Estás seguro de que quieres desactivar al usuario "${nombre}"?`)) {
-        eliminarUsuario(id);
+function confirmarToggleEstado(id, nombre, accion) {
+    const mensaje = accion === 'activar' 
+        ? `¿Estás seguro de que quieres activar al usuario "${nombre}"?`
+        : `¿Estás seguro de que quieres desactivar al usuario "${nombre}"?`;
+    
+    if (confirm(mensaje)) {
+        toggleEstadoUsuario(id);
     }
 }
 
-function eliminarUsuario(id) {
+function toggleEstadoUsuario(id) {
     $.ajax({
         url: 'functions/f_gestion_de_usuarios.php',
         method: 'POST',
         data: {
-            accion: 'eliminar_usuario',
+            accion: 'toggle_estado_usuario',
             id: id
         },
         dataType: 'json',
         success: function(response) {
             if (response.success) {
                 cargarUsuarios(); // Recargar la tabla
+                const mensaje = response.mensaje || 'Estado del usuario actualizado correctamente';
+                mostrarMensaje('success', mensaje);
             } else {
-                console.error(response.mensaje || 'Error al eliminar usuario');
+                console.error(response.mensaje || 'Error al cambiar estado del usuario');
+                mostrarMensaje('error', response.mensaje || 'Error al cambiar estado del usuario');
             }
         },
         error: function() {
             console.error('Error de conexión al servidor');
+            mostrarMensaje('error', 'Error de conexión al servidor');
         }
     });
 }
