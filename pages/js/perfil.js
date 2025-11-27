@@ -60,39 +60,3 @@ if (btnCancelar) {
     });
 }
 
-// Manejar cancelación de pedidos
-document.addEventListener('DOMContentLoaded', function() {
-    const botonesCancelar = document.querySelectorAll('.btn-cancelar-pedido');
-    
-    botonesCancelar.forEach(boton => {
-        boton.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const pedidoId = this.getAttribute('data-pedido-id');
-            
-            // Confirmar cancelación
-            if (confirm('¿Estás seguro de que deseas cancelar el pedido #' + pedidoId + '?')) {
-                // Crear formulario para enviar la solicitud
-                const form = document.createElement('form');
-                form.method = 'POST';
-                form.action = 'perfil.php';
-                
-                const inputPedidoId = document.createElement('input');
-                inputPedidoId.type = 'hidden';
-                inputPedidoId.name = 'pedido_id';
-                inputPedidoId.value = pedidoId;
-                
-                const inputAccion = document.createElement('input');
-                inputAccion.type = 'hidden';
-                inputAccion.name = 'cancelar_pedido';
-                inputAccion.value = '1';
-                
-                form.appendChild(inputPedidoId);
-                form.appendChild(inputAccion);
-                document.body.appendChild(form);
-                
-                form.submit();
-            }
-        });
-    });
-});

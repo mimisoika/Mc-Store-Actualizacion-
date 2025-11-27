@@ -51,7 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Activar/Desactivar
         if ($action === 'toggle') {
             $id = isset($_POST['id']) ? $_POST['id'] : '';
-            $activa = isset($_POST['activa']) ? 1 : 0;
+            // Leer explícitamente el valor enviado ('0' o '1') y convertir a entero
+            $activa = isset($_POST['activa']) ? intval($_POST['activa']) : 0;
+            $activa = $activa ? 1 : 0;
             if (activarDesactivarImagenCarrusel($id, $activa)) {
                 header('Location: configuracion.php');
                 exit();
