@@ -1,4 +1,11 @@
 <?php
+require_once '../functions/f_login.php';
+
+// Verificar que el usuario sea admin
+if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
+    header('Location: ../../index.php');
+    exit();
+}
 include('functions/f_admin_index.php');
 
 $productoMasVendido = obtenerProductoMasVendido();

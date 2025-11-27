@@ -96,7 +96,6 @@
     </section>
 
     <section class="productos-destacados py-5" id="productos">
-        <!-- EN ESTA SECCION QUIERO QUE SEA UN CARRUCEL CON LOS PRODUCTOS -->
         <div class="container">
             <div class="row">
                 <div class="col-12 text-center mb-5">

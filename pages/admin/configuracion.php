@@ -1,14 +1,11 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
 require_once '../functions/f_login.php';
 require_once 'functions/f_configuracion.php';
 
+
 // Verificar que el usuario sea admin
 if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../index.php');
     exit();
 }
 
