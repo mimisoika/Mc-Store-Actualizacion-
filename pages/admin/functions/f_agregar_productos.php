@@ -1,16 +1,27 @@
 <?php
-require_once '../../../php/database.php';
+// Asegúrate de que esta ruta sea correcta para tu conexión MySQLi
+require_once '../../../php/database.php'; 
 
-// Verificar conexión
+// Encabezado para la respuesta JSON
+header('Content-Type: application/json');
+
+// Verificar conexión (asumiendo que $conexion viene de database.php)
 if (!$conexion) {
     echo json_encode(['success' => false, 'mensaje' => 'Error de conexión']);
     exit();
 }
 
+// --- FUNCIONES CRUD ---
+
 // Función para obtener todos los productos
 function obtenerProductos() {
     global $conexion;
-    $sql = "SELECT p.*, c.nombre as categoria FROM productos p LEFT JOIN categorias c ON p.categoria_id = c.id ORDER BY p.id DESC";
+    // La consulta original es correcta para traer todos los datos
+    $sql = "SELECT p.*, c.nombre as categoria 
+            FROM productos p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            ORDER BY p.id DESC";
+    
     $resultado = mysqli_query($conexion, $sql);
     $productos = [];
     while ($fila = mysqli_fetch_assoc($resultado)) {
@@ -22,7 +33,7 @@ function obtenerProductos() {
 // Función para obtener categorías
 function obtenerCategorias() {
     global $conexion;
-    $sql = "SELECT * FROM categorias ORDER BY nombre";
+    $sql = "SELECT id, nombre FROM categorias ORDER BY nombre"; // Incluyo el ID para el frontend
     $resultado = mysqli_query($conexion, $sql);
     $categorias = [];
     while ($fila = mysqli_fetch_assoc($resultado)) {
@@ -32,39 +43,91 @@ function obtenerCategorias() {
 }
 
 // Función para agregar producto
-function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = '') {
+function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = '') {
     global $conexion;
     
-    // Obtener ID de categoría
-    $sql_cat = "SELECT id FROM categorias WHERE nombre = '$categoria'";
+    // ** CORRECCIÓN: Sanitizar y asegurar que la cantidad sea un entero **
+    $cantidad_entero = intval($cantidad); 
+    
+    // Normalizar y validar estado contra los valores permitidos
+    $estado = strtolower(trim($estado));
+    $allowedEstados = ['disponible', 'suspendido', 'agotado'];
+    if (!in_array($estado, $allowedEstados, true)) {
+        $estado = 'disponible';
+    }
+
+    // Escapar cadenas para evitar errores y mitigar (ligeramente) inyección SQL
+    $nombre = mysqli_real_escape_string($conexion, $nombre);
+    $descripcion = mysqli_real_escape_string($conexion, $descripcion);
+    $precio = mysqli_real_escape_string($conexion, $precio);
+    $estado = mysqli_real_escape_string($conexion, $estado);
+    $imagen = mysqli_real_escape_string($conexion, $imagen);
+    
+    // Buscar el ID de la categoría usando el nombre
+    $sql_cat = "SELECT id FROM categorias WHERE nombre = '" . mysqli_real_escape_string($conexion, $categoria) . "'";
     $resultado_cat = mysqli_query($conexion, $sql_cat);
     $categoria_data = mysqli_fetch_assoc($resultado_cat);
+    
+    if (!$categoria_data) {
+        // Manejar el caso donde la categoría no existe
+        return false; 
+    }
     $categoria_id = $categoria_data['id'];
     
-    // Insertar producto
+    // Insertar producto, usando $cantidad_entero
     $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen) 
-            VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad', 'disponible', '$imagen')";
+             VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad_entero', '$estado', '$imagen')";
     
     return mysqli_query($conexion, $sql);
 }
 
 // Función para actualizar producto
-function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $imagen = null) {
+function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = null) {
     global $conexion;
     
-    // Obtener ID de categoría
-    $sql_cat = "SELECT id FROM categorias WHERE nombre = '$categoria'";
+    // ** CORRECCIÓN: Sanitizar y asegurar que la cantidad sea un entero **
+    $cantidad_entero = intval($cantidad); 
+    
+    // Normalizar y validar estado contra los valores permitidos
+    $estado = strtolower(trim($estado));
+    $allowedEstados = ['disponible', 'suspendido', 'agotado'];
+    if (!in_array($estado, $allowedEstados, true)) {
+        $estado = 'disponible';
+    }
+
+    // Escapar cadenas
+    $id = mysqli_real_escape_string($conexion, $id);
+    $nombre = mysqli_real_escape_string($conexion, $nombre);
+    $descripcion = mysqli_real_escape_string($conexion, $descripcion);
+    $precio = mysqli_real_escape_string($conexion, $precio);
+    $estado = mysqli_real_escape_string($conexion, $estado);
+    
+    // Buscar el ID de la categoría usando el nombre
+    $sql_cat = "SELECT id FROM categorias WHERE nombre = '" . mysqli_real_escape_string($conexion, $categoria) . "'";
     $resultado_cat = mysqli_query($conexion, $sql_cat);
     $categoria_data = mysqli_fetch_assoc($resultado_cat);
+    
+    if (!$categoria_data) {
+        return false;
+    }
     $categoria_id = $categoria_data['id'];
     
-    if ($imagen) {
-        $sql = "UPDATE productos SET categoria_id='$categoria_id', nombre='$nombre', descripcion='$descripcion', 
-                precio='$precio', cantidad='$cantidad', imagen='$imagen' WHERE id='$id'";
-    } else {
-        $sql = "UPDATE productos SET categoria_id='$categoria_id', nombre='$nombre', descripcion='$descripcion', 
-                precio='$precio', cantidad='$cantidad' WHERE id='$id'";
+    // Construir la consulta de actualización, usando $cantidad_entero
+    $set_parts = [
+        "categoria_id='$categoria_id'",
+        "nombre='$nombre'",
+        "descripcion='$descripcion'",
+        "precio='$precio'",
+        "cantidad='$cantidad_entero'", // <-- Usando la variable entera
+        "estado='$estado'"
+    ];
+    
+    if ($imagen !== null) {
+        $imagen_escapada = mysqli_real_escape_string($conexion, $imagen);
+        $set_parts[] = "imagen='$imagen_escapada'";
     }
+    
+    $sql = "UPDATE productos SET " . implode(', ', $set_parts) . " WHERE id='$id'";
     
     return mysqli_query($conexion, $sql);
 }
@@ -72,6 +135,7 @@ function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $ca
 // Función para eliminar (suspender) producto
 function eliminarProducto($id) {
     global $conexion;
+    $id = mysqli_real_escape_string($conexion, $id);
     $sql = "UPDATE productos SET estado = 'suspendido' WHERE id = '$id'";
     return mysqli_query($conexion, $sql);
 }
@@ -79,16 +143,25 @@ function eliminarProducto($id) {
 // Función para obtener un producto específico
 function obtenerProducto($id) {
     global $conexion;
-    $sql = "SELECT p.*, c.nombre as categoria FROM productos p LEFT JOIN categorias c ON p.categoria_id = c.id WHERE p.id = '$id'";
+    $id = mysqli_real_escape_string($conexion, $id);
+    $sql = "SELECT p.*, c.nombre as categoria FROM productos p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id 
+            WHERE p.id = '$id'";
     $resultado = mysqli_query($conexion, $sql);
     return mysqli_fetch_assoc($resultado);
 }
 
 // Función para subir imagen
 function subirImagen($archivo) {
+    // La ruta relativa debe ser correcta desde donde se ejecuta el script
     $carpeta = '../../../img_productos/';
-    $nombre = time() . '_' . $archivo['name'];
+    $nombre = time() . '_' . basename($archivo['name']);
     $ruta = $carpeta . $nombre;
+    
+    // Crear la carpeta si no existe (importante)
+    if (!is_dir($carpeta)) {
+        mkdir($carpeta, 0777, true);
+    }
     
     if (move_uploaded_file($archivo['tmp_name'], $ruta)) {
         return $nombre;
@@ -96,16 +169,17 @@ function subirImagen($archivo) {
     return false;
 }
 
-// Procesar peticiones AJAX
+// --- Procesar peticiones AJAX ---
+
 if ($_POST) {
-    $accion = $_POST['accion'];
+    $accion = $_POST['accion'] ?? '';
     
     if ($accion == 'obtener_productos') {
         $filtroCategoria = isset($_POST['filtroCategoria']) ? trim($_POST['filtroCategoria']) : '';
         $filtroEstado = isset($_POST['filtroEstado']) ? trim($_POST['filtroEstado']) : '';
         $busqueda = isset($_POST['busqueda']) ? trim($_POST['busqueda']) : '';
 
-        // Normalizar valores de estado enviados desde el frontend
+        // Mapeo de estados del frontend (activo/inactivo) a la DB (disponible/suspendido)
         $estadoMap = [
             'activo' => 'disponible',
             'inactivo' => 'suspendido',
@@ -115,29 +189,24 @@ if ($_POST) {
         ];
 
         if ($filtroEstado !== '' && $filtroEstado !== 'todos') {
-            $filtroEstado = isset($estadoMap[$filtroEstado]) ? $estadoMap[$filtroEstado] : $filtroEstado;
+            $filtroEstado = $estadoMap[$filtroEstado] ?? $filtroEstado;
         } else {
             $filtroEstado = '';
         }
 
-        // Obtener productos con filtros aplicados
         $productos = obtenerProductos();
 
-        // Filtrar por categoría (por nombre) si se especifica
+        // Aplicar filtros en PHP (como ya lo tienes)
         if ($filtroCategoria !== '' && $filtroCategoria !== 'todas') {
             $productos = array_filter($productos, function($p) use ($filtroCategoria) {
                 return isset($p['categoria']) && mb_strtolower($p['categoria']) === mb_strtolower($filtroCategoria);
             });
         }
-
-        // Filtrar por estado si se especifica
         if ($filtroEstado !== '') {
             $productos = array_filter($productos, function($p) use ($filtroEstado) {
                 return isset($p['estado']) && $p['estado'] === $filtroEstado;
             });
         }
-
-        // Filtrar por búsqueda en nombre o descripción
         if ($busqueda !== '') {
             $q = mb_strtolower($busqueda);
             $productos = array_filter($productos, function($p) use ($q) {
@@ -147,72 +216,86 @@ if ($_POST) {
             });
         }
 
-        // Reindexar array y devolver
         $productos = array_values($productos);
         echo json_encode(['success' => true, 'productos' => $productos]);
-    }
-    
-    elseif ($accion == 'obtener_categorias') {
+
+    } elseif ($accion == 'obtener_categorias') {
         $categorias = obtenerCategorias();
         echo json_encode(['success' => true, 'categorias' => $categorias]);
-    }
-    
-    elseif ($accion == 'agregar_producto') {
-        $nombre = $_POST['nombre'];
-        $precio = $_POST['precio'];
-        $categoria = $_POST['categoria'];
-        $descripcion = $_POST['descripcion'];
-        $cantidad = $_POST['cantidad'];
+
+    } elseif ($accion == 'agregar_producto') {
+        $nombre = $_POST['nombre'] ?? '';
+        $precio = $_POST['precio'] ?? 0;
+        $categoria = $_POST['categoria'] ?? ''; // Nombre de la categoría
+        $descripcion = $_POST['descripcion'] ?? '';
+        $cantidad = $_POST['stock'] ?? 0; // El JS envía 'stock'
+            $estado = $_POST['estado'] ?? 'disponible';
+            // Mapear valores comunes del frontend a los valores ENUM de la BD
+            $estadoMap = [
+                'activo' => 'disponible',
+                'inactivo' => 'suspendido',
+                'disponible' => 'disponible',
+                'suspendido' => 'suspendido',
+                'agotado' => 'agotado'
+            ];
+            $estado = $estadoMap[strtolower($estado)] ?? $estado;
         
         $imagen = '';
-        if ($_FILES['imagen']['name']) {
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $imagen);
+        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto agregado correctamente']);
         } else {
-            echo json_encode(['success' => false, 'mensaje' => 'Error al agregar producto']);
+            echo json_encode(['success' => false, 'mensaje' => 'Error al agregar producto: ' . mysqli_error($conexion)]);
         }
-    }
-    
-    elseif ($accion == 'actualizar_producto') {
-        $id = $_POST['id'];
-        $nombre = $_POST['nombre'];
-        $precio = $_POST['precio'];
-        $categoria = $_POST['categoria'];
-        $descripcion = $_POST['descripcion'];
-        $cantidad = $_POST['cantidad'];
+
+    } elseif ($accion == 'actualizar_producto') {
+        $id = $_POST['id'] ?? 0;
+        $nombre = $_POST['nombre'] ?? '';
+        $precio = $_POST['precio'] ?? 0;
+        $categoria = $_POST['categoria'] ?? ''; // Nombre de la categoría
+        $descripcion = $_POST['descripcion'] ?? '';
+        $cantidad = $_POST['stock'] ?? 0; // El JS envía 'stock'
+        $estado = $_POST['estado'] ?? 'disponible';
+        // Mapear valores comunes del frontend a los valores ENUM de la BD
+        $estadoMap = [
+            'activo' => 'disponible',
+            'inactivo' => 'suspendido',
+            'disponible' => 'disponible',
+            'suspendido' => 'suspendido',
+            'agotado' => 'agotado'
+        ];
+        $estado = $estadoMap[strtolower($estado)] ?? $estado;
         
         $imagen = null;
-        if ($_FILES['imagen']['name']) {
+        if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $imagen);
+        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto actualizado correctamente']);
         } else {
-            echo json_encode(['success' => false, 'mensaje' => 'Error al actualizar producto']);
+            echo json_encode(['success' => false, 'mensaje' => 'Error al actualizar producto: ' . mysqli_error($conexion)]);
         }
-    }
-    
-    elseif ($accion == 'eliminar_producto') {
-        $id = $_POST['id'];
+
+    } elseif ($accion == 'eliminar_producto') {
+        $id = $_POST['id'] ?? 0;
         $resultado = eliminarProducto($id);
         
         if ($resultado) {
-            echo json_encode(['success' => true, 'mensaje' => 'Producto eliminado correctamente']);
+            echo json_encode(['success' => true, 'mensaje' => 'Producto suspendido correctamente']);
         } else {
-            echo json_encode(['success' => false, 'mensaje' => 'Error al eliminar producto']);
+            echo json_encode(['success' => false, 'mensaje' => 'Error al suspender producto']);
         }
-    }
-    
-    elseif ($accion == 'obtener_producto') {
-        $id = $_POST['id'];
+
+    } elseif ($accion == 'obtener_producto') {
+        $id = $_POST['id'] ?? 0;
         $producto = obtenerProducto($id);
         
         if ($producto) {
@@ -221,5 +304,7 @@ if ($_POST) {
             echo json_encode(['success' => false, 'mensaje' => 'Producto no encontrado']);
         }
     }
+} else {
+    echo json_encode(['success' => false, 'mensaje' => 'Petición inválida']);
 }
 ?>
