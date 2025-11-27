@@ -96,10 +96,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                 <label for="filtroCategoria" class="form-label">Categoría</label>
                                 <select id="filtroCategoria" class="form-select">
                                     <option value="todas">Todas las categorías</option>
-                                    <option value="pasteles">Pasteles</option>
-                                    <option value="galletas">Galletas</option>
-                                    <option value="postres">Postres</option>
-                                    <option value="bebidas">Bebidas</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
