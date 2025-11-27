@@ -133,7 +133,8 @@ function generarHTMLResumenPedido($totales) {
         <li class="d-flex justify-content-between">IVA (16%): <span>$' . number_format($totales['iva'], 2) . '</span></li>
     </ul>
     <hr>
-    <p class="d-flex justify-content-between"><strong>Total: <span>$' . number_format($totales['total'], 2) . '</span></strong></p>';
+    <p class="d-flex justify-content-between"><strong>Total: <span>$' . number_format($totales['total'], 2) . '</span></strong></p>
+    <button class="btn btn-warning w-100">Proceder al Pago</button>';
 }
 
 function verificarSesionUsuario() {
