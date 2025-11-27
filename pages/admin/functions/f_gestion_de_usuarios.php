@@ -6,7 +6,7 @@ if (!$conexion) {
     exit();
 }
 
-function obtenerUsuarios($filtroEstado = 'todos', $busqueda = '') {
+function obtenerUsuarios($filtroEstado = 'todos', $filtroRol = 'todos', $busqueda = '') {
     global $conexion;
     
     $sql = "SELECT id, nombre, apellido_paterno, apellido_materno, email, usuario_estado as estado, rol, fecha_creacion as fecha_registro FROM usuarios WHERE 1=1";
@@ -16,6 +16,12 @@ function obtenerUsuarios($filtroEstado = 'todos', $busqueda = '') {
     if ($filtroEstado !== 'todos') {
         $sql .= " AND usuario_estado = ?";
         $params[] = ucfirst($filtroEstado);
+        $types .= "s";
+    }
+    
+    if ($filtroRol !== 'todos') {
+        $sql .= " AND rol = ?";
+        $params[] = $filtroRol;
         $types .= "s";
     }
     
@@ -60,9 +66,11 @@ function actualizarUsuario($id, $nuevoEstado, $nuevoRol) {
     return $resultado;
 }
 
-function eliminarUsuario($id) {
+function toggleEstadoUsuario($id) {
     global $conexion;
-    $sqlCheck = "SELECT rol FROM usuarios WHERE id = ?";
+    
+    // Verificar si es admin
+    $sqlCheck = "SELECT rol, usuario_estado FROM usuarios WHERE id = ?";
     $stmtCheck = mysqli_prepare($conexion, $sqlCheck);
     mysqli_stmt_bind_param($stmtCheck, "i", $id);
     mysqli_stmt_execute($stmtCheck);
@@ -71,9 +79,12 @@ function eliminarUsuario($id) {
     
     if ($usuario && $usuario['rol'] === 'admin') return false;
     
-    $sql = "UPDATE usuarios SET usuario_estado = 'Inactivo' WHERE id = ?";
+    // Cambiar estado (Activo/Inactivo)
+    $nuevoEstado = ($usuario['usuario_estado'] === 'Activo') ? 'Inactivo' : 'Activo';
+    
+    $sql = "UPDATE usuarios SET usuario_estado = ? WHERE id = ?";
     $stmt = mysqli_prepare($conexion, $sql);
-    mysqli_stmt_bind_param($stmt, "i", $id);
+    mysqli_stmt_bind_param($stmt, "si", $nuevoEstado, $id);
     $resultado = mysqli_stmt_execute($stmt);
     mysqli_stmt_close($stmt);
     return $resultado;
@@ -122,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     switch ($accion) {
         case 'obtener_usuarios':
-            $usuarios = obtenerUsuarios($_POST['filtroEstado'] ?? 'todos', $_POST['busqueda'] ?? '');
+            $usuarios = obtenerUsuarios($_POST['filtroEstado'] ?? 'todos', $_POST['filtroRol'] ?? 'todos', $_POST['busqueda'] ?? '');
             echo json_encode(['success' => true, 'usuarios' => $usuarios]);
             break;
             
@@ -131,9 +142,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['success' => $resultado, 'mensaje' => $resultado ? 'Usuario actualizado' : 'Error al actualizar']);
             break;
             
-        case 'eliminar_usuario':
-            $resultado = eliminarUsuario($_POST['id'] ?? 0);
-            echo json_encode(['success' => $resultado, 'mensaje' => $resultado ? 'Usuario desactivado' : 'Error al desactivar']);
+        case 'toggle_estado_usuario':
+            $resultado = toggleEstadoUsuario($_POST['id'] ?? 0);
+            echo json_encode(['success' => $resultado, 'mensaje' => $resultado ? 'Estado del usuario actualizado' : 'Error al cambiar estado']);
             break;
             
         case 'suspender_usuario':
