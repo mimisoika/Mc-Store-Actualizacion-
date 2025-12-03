@@ -3,7 +3,7 @@ require_once '../functions/f_login.php';
 
 // Verificar que el usuario sea admin
 if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../index.php');
     exit();
 }
 ?>
@@ -37,7 +37,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestion_de_productos.php" class="menu-item active">
+                <a href="gestions_de_productos.php" class="menu-item active">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
@@ -96,10 +96,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                 <label for="filtroCategoria" class="form-label">Categoría</label>
                                 <select id="filtroCategoria" class="form-select">
                                     <option value="todas">Todas las categorías</option>
-                                    <option value="pasteles">Pasteles</option>
-                                    <option value="galletas">Galletas</option>
-                                    <option value="postres">Postres</option>
-                                    <option value="bebidas">Bebidas</option>
                                 </select>
                             </div>
                             <div class="col-md-3">
@@ -197,13 +193,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="agotado">Agotado</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="destacado" class="form-label">Destacado</label>
-                                <select class="form-select" id="destacado">
-                                    <option value="no">No</option>
-                                    <option value="si">Si</option>
-                                </select>
-                            </div>
                             <div class="col-12">
                                 <label for="descripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="descripcion" rows="3"></textarea>
@@ -276,13 +265,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="agotado">Agotado</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label for="editDestacado" class="form-label">Destacado</label>
-                                <select class="form-select" id="editDestacado">
-                                    <option value="no">No</option>
-                                    <option value="si">Si</option>
-                                </select>
-                            </div>
                             <div class="col-12">
                                 <label for="editDescripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="editDescripcion" rows="3"></textarea>
@@ -295,7 +277,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label class="form-label">Imagen Actual</label>
                                 <div class="border p-2 text-center">
-                                    <img id="editPreviewImagen" src="/placeholder.svg" 
+                                    <img id="editPreviewImagen" src="" 
                                             alt="Imagen actual del producto" 
                                             class="img-fluid" 
                                             style="max-height: 150px;">

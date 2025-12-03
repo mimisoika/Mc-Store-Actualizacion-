@@ -70,15 +70,6 @@ function obtenerVentasPorCategoria() {
     $resultado = mysqli_query($conexion, $query);
     $datos = mysqli_fetch_all($resultado, MYSQLI_ASSOC);
     
-    // Si no hay datos, devolver datos de prueba
-    if (empty($datos)) {
-        return [
-            ['nombre' => 'Electrónicos', 'cantidad' => '25'],
-            ['nombre' => 'Hogar', 'cantidad' => '18'],
-            ['nombre' => 'Oficina', 'cantidad' => '12']
-        ];
-    }
-    return $datos;
 }
 
 // Obtener alertas de productos (stock bajo, agotados)

@@ -49,6 +49,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPrincipal'])) {
   
 }
 
+// Manejar cancelación de pedido
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_pedido'])) {
+    $pedido_id = $_POST['pedido_id'];
+    $resultado = cancelarPedido($pedido_id, $usuario_id);
+    
+    if ($resultado['exito']) {
+        header('Location: perfil.php?mensaje=' . urlencode($resultado['mensaje']));
+    } else {
+        header('Location: perfil.php?error=' . urlencode($resultado['mensaje']));
+    }
+    exit();
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -311,7 +324,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPrincipal'])) {
                                                                 <i class="fas fa-eye"></i>
                                                             </button>
                                                             <?php if ($pedido['estado'] == 'pendiente'): ?>
-                                                                <button class="btn btn-sm btn-outline-danger ms-1" data-bs-toggle="tooltip" title="Cancelar">
+                                                                <button class="btn btn-sm btn-outline-danger ms-1 btn-cancelar-pedido" 
+                                                                        data-pedido-id="<?php echo $pedido['id']; ?>"
+                                                                        data-bs-toggle="tooltip" 
+                                                                        title="Cancelar Pedido">
                                                                     <i class="fas fa-times"></i>
                                                                 </button>
                                                             <?php endif; ?>

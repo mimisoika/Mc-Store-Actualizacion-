@@ -3,7 +3,7 @@ require_once '../functions/f_login.php';
 
 // Verificar que el usuario sea admin
 if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../index.php');
     exit();
 }
 ?>
@@ -88,13 +88,21 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <!-- Filtros -->
                     <div class="bg-white p-3 rounded mb-3 shadow-sm">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="filtroEstado" class="form-label fw-bold">Filtrar por estado:</label>
                                 <select id="filtroEstado" class="form-select">
                                     <option value="todos">Todos los usuarios</option>
                                     <option value="activo">Activos</option>
                                     <option value="inactivo">Inactivos</option>
                                     <option value="suspendido">Suspendidos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filtroRol" class="form-label fw-bold">Filtrar por rol:</label>
+                                <select id="filtroRol" class="form-select">
+                                    <option value="todos">Todos los roles</option>
+                                    <option value="admin">Administrador</option>
+                                    <option value="cliente">Cliente</option>
                                 </select>
                             </div>
                             <div class="col-md-6">

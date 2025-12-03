@@ -1,4 +1,5 @@
 <?php
+     
 require_once __DIR__ . '/../../php/database.php';
 
 /**
@@ -116,5 +117,4 @@ function enviarPedido($usuario_id, $direccion_id, $total, $metodo_pago){
     header("Location: perfil.php");
     exit();
 }        
-        
 ?>
