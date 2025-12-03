@@ -43,7 +43,7 @@ function obtenerCategorias() {
 }
 
 // Función para agregar producto
-function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = '') {
+function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = '', $destacado = 'no') {
     global $conexion;
     
     // ** CORRECCIÓN: Sanitizar y asegurar que la cantidad sea un entero **
@@ -56,12 +56,18 @@ function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, 
         $estado = 'disponible';
     }
 
+    $destacado = strtolower(trim($destacado));
+    if (!in_array($destacado, ['si', 'no'], true)) {
+        $destacado = 'no';
+    }
+
     // Escapar cadenas para evitar errores y mitigar (ligeramente) inyección SQL
     $nombre = mysqli_real_escape_string($conexion, $nombre);
     $descripcion = mysqli_real_escape_string($conexion, $descripcion);
     $precio = mysqli_real_escape_string($conexion, $precio);
     $estado = mysqli_real_escape_string($conexion, $estado);
     $imagen = mysqli_real_escape_string($conexion, $imagen);
+    $destacado = mysqli_real_escape_string($conexion, $destacado);
     
     // Buscar el ID de la categoría usando el nombre
     $sql_cat = "SELECT id FROM categorias WHERE nombre = '" . mysqli_real_escape_string($conexion, $categoria) . "'";
@@ -74,15 +80,14 @@ function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, 
     }
     $categoria_id = $categoria_data['id'];
     
-    // Insertar producto, usando $cantidad_entero
-    $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen) 
-             VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad_entero', '$estado', '$imagen')";
+    $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen, destacado) 
+             VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad_entero', '$estado', '$imagen', '$destacado')";
     
     return mysqli_query($conexion, $sql);
 }
 
 // Función para actualizar producto
-function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = null) {
+function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = null, $destacado = 'no') {
     global $conexion;
     
     // ** CORRECCIÓN: Sanitizar y asegurar que la cantidad sea un entero **
@@ -95,12 +100,18 @@ function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $ca
         $estado = 'disponible';
     }
 
+    $destacado = strtolower(trim($destacado));
+    if (!in_array($destacado, ['si', 'no'], true)) {
+        $destacado = 'no';
+    }
+
     // Escapar cadenas
     $id = mysqli_real_escape_string($conexion, $id);
     $nombre = mysqli_real_escape_string($conexion, $nombre);
     $descripcion = mysqli_real_escape_string($conexion, $descripcion);
     $precio = mysqli_real_escape_string($conexion, $precio);
     $estado = mysqli_real_escape_string($conexion, $estado);
+    $destacado = mysqli_real_escape_string($conexion, $destacado);
     
     // Buscar el ID de la categoría usando el nombre
     $sql_cat = "SELECT id FROM categorias WHERE nombre = '" . mysqli_real_escape_string($conexion, $categoria) . "'";
@@ -112,14 +123,14 @@ function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $ca
     }
     $categoria_id = $categoria_data['id'];
     
-    // Construir la consulta de actualización, usando $cantidad_entero
     $set_parts = [
         "categoria_id='$categoria_id'",
         "nombre='$nombre'",
         "descripcion='$descripcion'",
         "precio='$precio'",
-        "cantidad='$cantidad_entero'", // <-- Usando la variable entera
-        "estado='$estado'"
+        "cantidad='$cantidad_entero'",
+        "estado='$estado'",
+        "destacado='$destacado'"
     ];
     
     if ($imagen !== null) {
@@ -229,23 +240,25 @@ if ($_POST) {
         $categoria = $_POST['categoria'] ?? ''; // Nombre de la categoría
         $descripcion = $_POST['descripcion'] ?? '';
         $cantidad = $_POST['stock'] ?? 0; // El JS envía 'stock'
-            $estado = $_POST['estado'] ?? 'disponible';
-            // Mapear valores comunes del frontend a los valores ENUM de la BD
-            $estadoMap = [
-                'activo' => 'disponible',
-                'inactivo' => 'suspendido',
-                'disponible' => 'disponible',
-                'suspendido' => 'suspendido',
-                'agotado' => 'agotado'
-            ];
-            $estado = $estadoMap[strtolower($estado)] ?? $estado;
+        $estado = $_POST['estado'] ?? 'disponible';
+        // Mapear valores comunes del frontend a los valores ENUM de la BD
+        $estadoMap = [
+            'activo' => 'disponible',
+            'inactivo' => 'suspendido',
+            'disponible' => 'disponible',
+            'suspendido' => 'suspendido',
+            'agotado' => 'agotado'
+        ];
+        $estado = $estadoMap[strtolower($estado)] ?? $estado;
+        
+        $destacado = $_POST['destacado'] ?? 'no';
         
         $imagen = '';
         if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen);
+        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen, $destacado);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto agregado correctamente']);
@@ -271,12 +284,14 @@ if ($_POST) {
         ];
         $estado = $estadoMap[strtolower($estado)] ?? $estado;
         
+        $destacado = $_POST['destacado'] ?? 'no';
+        
         $imagen = null;
         if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen);
+        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen, $destacado);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto actualizado correctamente']);

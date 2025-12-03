@@ -37,7 +37,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestions_de_productos.php" class="menu-item active">
+                <a href="gestion_de_productos.php" class="menu-item active">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
@@ -193,6 +193,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="agotado">Agotado</option>
                                 </select>
                             </div>
+                            <div class="col-md-6">
+                                <label for="destacado" class="form-label">Destacado</label>
+                                <select class="form-select" id="destacado" required>
+                                    <option value="no">No</option>
+                                    <option value="si">Sí</option>
+                                </select>
+                            </div>
                             <div class="col-12">
                                 <label for="descripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="descripcion" rows="3"></textarea>
@@ -265,6 +272,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="agotado">Agotado</option>
                                 </select>
                             </div>
+                            <div class="col-md-6">
+                                <label for="editDestacado" class="form-label">Destacado</label>
+                                <select class="form-select" id="editDestacado" required>
+                                    <option value="no">No</option>
+                                    <option value="si">Sí</option>
+                                </select>
+                            </div>
                             <div class="col-12">
                                 <label for="editDescripcion" class="form-label">Descripción</label>
                                 <textarea class="form-control" id="editDescripcion" rows="3"></textarea>
@@ -277,7 +291,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label class="form-label">Imagen Actual</label>
                                 <div class="border p-2 text-center">
-                                    <img id="editPreviewImagen" src="" 
+                                    <img id="editPreviewImagen" src="/placeholder.svg" 
                                             alt="Imagen actual del producto" 
                                             class="img-fluid" 
                                             style="max-height: 150px;">
