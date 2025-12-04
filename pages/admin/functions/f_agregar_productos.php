@@ -42,8 +42,8 @@ function obtenerCategorias() {
     return $categorias;
 }
 
-// Función para agregar producto
-function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = '') {
+// En la función agregarProducto(), agrega el parámetro $destacado:
+function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $destacado, $imagen = '') {
     global $conexion;
     
     // ** CORRECCIÓN: Sanitizar y asegurar que la cantidad sea un entero **
@@ -75,14 +75,14 @@ function agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, 
     $categoria_id = $categoria_data['id'];
     
     // Insertar producto, usando $cantidad_entero
-    $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen) 
-             VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad_entero', '$estado', '$imagen')";
+    $sql = "INSERT INTO productos (categoria_id, nombre, descripcion, precio, cantidad, estado, imagen, destacado) 
+             VALUES ('$categoria_id', '$nombre', '$descripcion', '$precio', '$cantidad_entero', '$estado', '$imagen', '$destacado')";
     
     return mysqli_query($conexion, $sql);
 }
 
-// Función para actualizar producto
-function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen = null) {
+// En la función actualizarProducto(), agrega el parámetro $destacado:
+function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $destacado, $imagen = null) {
     global $conexion;
     
     // ** CORRECCIÓN: Sanitizar y asegurar que la cantidad sea un entero **
@@ -112,14 +112,15 @@ function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $ca
     }
     $categoria_id = $categoria_data['id'];
     
-    // Construir la consulta de actualización, usando $cantidad_entero
+    // Construir la consulta de actualización, usando $cantidad_entero y
     $set_parts = [
         "categoria_id='$categoria_id'",
         "nombre='$nombre'",
         "descripcion='$descripcion'",
         "precio='$precio'",
         "cantidad='$cantidad_entero'", // <-- Usando la variable entera
-        "estado='$estado'"
+        "estado='$estado'",
+        "destacado='$destacado'"
     ];
     
     if ($imagen !== null) {
@@ -131,7 +132,6 @@ function actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $ca
     
     return mysqli_query($conexion, $sql);
 }
-
 // Función para eliminar (suspender) producto
 function eliminarProducto($id) {
     global $conexion;
@@ -229,23 +229,26 @@ if ($_POST) {
         $categoria = $_POST['categoria'] ?? ''; // Nombre de la categoría
         $descripcion = $_POST['descripcion'] ?? '';
         $cantidad = $_POST['stock'] ?? 0; // El JS envía 'stock'
-            $estado = $_POST['estado'] ?? 'disponible';
-            // Mapear valores comunes del frontend a los valores ENUM de la BD
-            $estadoMap = [
-                'activo' => 'disponible',
-                'inactivo' => 'suspendido',
-                'disponible' => 'disponible',
-                'suspendido' => 'suspendido',
-                'agotado' => 'agotado'
-            ];
-            $estado = $estadoMap[strtolower($estado)] ?? $estado;
+        $estado = $_POST['estado'] ?? 'disponible';
+        $destacado = $_POST['destacado'] ?? 'no'; // <-- FALTA ESTA LÍNEA
+        
+        // Mapear valores comunes del frontend a los valores ENUM de la BD
+        $estadoMap = [
+            'activo' => 'disponible',
+            'inactivo' => 'suspendido',
+            'disponible' => 'disponible',
+            'suspendido' => 'suspendido',
+            'agotado' => 'agotado'
+        ];
+        $estado = $estadoMap[strtolower($estado)] ?? $estado;
         
         $imagen = '';
         if (isset($_FILES['imagen']) && $_FILES['imagen']['error'] === UPLOAD_ERR_OK) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen);
+        // Agrega $destacado a la llamada de la función
+        $resultado = agregarProducto($nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $destacado, $imagen);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto agregado correctamente']);
@@ -261,6 +264,8 @@ if ($_POST) {
         $descripcion = $_POST['descripcion'] ?? '';
         $cantidad = $_POST['stock'] ?? 0; // El JS envía 'stock'
         $estado = $_POST['estado'] ?? 'disponible';
+        $destacado = $_POST['destacado'] ?? 'no'; // <-- FALTA ESTA LÍNEA
+        
         // Mapear valores comunes del frontend a los valores ENUM de la BD
         $estadoMap = [
             'activo' => 'disponible',
@@ -276,7 +281,8 @@ if ($_POST) {
             $imagen = subirImagen($_FILES['imagen']);
         }
         
-        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $imagen);
+        // Agrega $destacado a la llamada de la función
+        $resultado = actualizarProducto($id, $nombre, $precio, $categoria, $descripcion, $cantidad, $estado, $destacado, $imagen);
         
         if ($resultado) {
             echo json_encode(['success' => true, 'mensaje' => 'Producto actualizado correctamente']);
@@ -284,6 +290,7 @@ if ($_POST) {
             echo json_encode(['success' => false, 'mensaje' => 'Error al actualizar producto: ' . mysqli_error($conexion)]);
         }
 
+            
     } elseif ($accion == 'eliminar_producto') {
         $id = $_POST['id'] ?? 0;
         $resultado = eliminarProducto($id);

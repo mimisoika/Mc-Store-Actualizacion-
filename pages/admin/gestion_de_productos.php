@@ -178,11 +178,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="categoria" class="form-label">Categoría</label>
                                 <select class="form-select" id="categoria" required>
-                                    <option value="">Seleccionar categoría</option>
-                                    <option value="pasteles">Pasteles</option>
-                                    <option value="galletas">Galletas</option>
-                                    <option value="postres">Postres</option>
-                                    <option value="bebidas">Bebidas</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -191,6 +186,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="activo">Activo</option>
                                     <option value="inactivo">Inactivo</option>
                                     <option value="agotado">Agotado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="destacado" class="form-label">Destacado</label>
+                                <select class="form-select" id="destacado" required>
+                                    <option value="no">No</option>
+                                    <option value="si">Sí</option>
                                 </select>
                             </div>
                             <div class="col-12">
@@ -251,10 +253,6 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="editCategoria" class="form-label">Categoría</label>
                                 <select class="form-select" id="editCategoria" required>
-                                    <option value="pasteles">Pasteles</option>
-                                    <option value="galletas">Galletas</option>
-                                    <option value="postres">Postres</option>
-                                    <option value="bebidas">Bebidas</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
@@ -263,6 +261,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                                     <option value="activo">Activo</option>
                                     <option value="inactivo">Inactivo</option>
                                     <option value="agotado">Agotado</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="editDestacado" class="form-label">Destacado</label>
+                                <select class="form-select" id="editDestacado" required>
+                                    <option value="no">No</option>
+                                    <option value="si">Sí</option>
                                 </select>
                             </div>
                             <div class="col-12">
