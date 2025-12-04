@@ -15,10 +15,11 @@ $favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 function obtenerProductosCatalogo($categoria = null, $minPrecio = null, $maxPrecio = null, $orden = null) {
     global $conexion;
 
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria  
-            FROM productos p LEFT JOIN categorias c 
-            ON p.categoria_id = c.id
-            WHERE p.cantidad > 0 AND p.estado = 'disponible'";;
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, 
+                c.nombre as categoria  
+            FROM productos p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            WHERE p.estado IN ('disponible', 'poco_stock')";
 
     $params = [];
     $types = '';
@@ -100,7 +101,7 @@ function obtenerCategorias() {
     $sql = "SELECT DISTINCT c.nombre 
             FROM categorias c 
             INNER JOIN productos p ON c.id = p.categoria_id 
-            WHERE p.estado = 'disponible' 
+            WHERE p.estado IN ('disponible', 'poco_stock')
             ORDER BY c.nombre";
     $resultado = mysqli_query($conexion, $sql);
     
@@ -122,10 +123,10 @@ function agregarProductoAlCarrito($productoId, $cantidad = 1) {
  */
 function obtenerProductoPorId($id) {
     global $conexion;
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.cantidad, p.imagen, c.nombre as categoria
-            FROM productos p
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria  
+            FROM productos p 
             LEFT JOIN categorias c ON p.categoria_id = c.id
-            WHERE p.id = ? AND p.cantidad > 0 AND p.estado = 'disponible'";
+            WHERE p.estado IN ('disponible', 'poco_stock')";
 
     $stmt = mysqli_prepare($conexion, $sql);
     if (!$stmt) return null;
@@ -202,7 +203,7 @@ function mostrarProducto($producto, $favoritosIds = []) {
  */
 function obtenerRangoPrecios() {
     global $conexion;
-    $sql = "SELECT MIN(precio) as min_precio, MAX(precio) as max_precio FROM productos WHERE estado = 'disponible'";
+    $sql = "SELECT MIN(precio) as min_precio, MAX(precio) as max_precio FROM productos WHERE estado IN ('disponible', 'poco_stock')"; 
     $res = mysqli_query($conexion, $sql);
     if ($fila = mysqli_fetch_assoc($res)) {
         return [

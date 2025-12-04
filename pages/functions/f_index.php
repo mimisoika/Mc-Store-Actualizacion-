@@ -13,12 +13,12 @@ $usuario_id = $_SESSION['usuario_id'] ?? null;
 $favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 
 
-function obtenerProductosDestacados($limite = 4) {
+function obtenerProductosDestacados($limite = 10) {
     global $conexion;
     
     $sql = "SELECT id, nombre, descripcion, precio, imagen 
             FROM productos 
-            WHERE estado = 'disponible' AND cantidad > 0 AND destacado = 'si'
+            WHERE estado IN ('disponible', 'poco_stock') AND destacado = 'si'
             ORDER BY fecha_creacion DESC 
             LIMIT ?";
     
@@ -79,10 +79,10 @@ function agregarAlCarrito($productoId, $cantidad = 1) {
 function obtenerProductosAleatoriosPorCategoria($categoria = null, $limite = 4) {
     global $conexion;
 
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.cantidad, p.imagen, c.nombre as categoria
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria
         FROM productos p
         LEFT JOIN categorias c ON p.categoria_id = c.id
-        WHERE p.estado = 'disponible' AND p.cantidad > 0";
+        WHERE p.estado IN ('disponible', 'poco_stock')";
 
     if ($categoria && $categoria !== 'todas') {
         $sql .= " AND c.nombre = ?";
@@ -119,7 +119,7 @@ function obtenerProductosAleatoriosPorCategoria($categoria = null, $limite = 4) 
 function mostrarProductosDestacados() {
 
     global $usuario_id;
-    $productos = obtenerProductosDestacados(4);
+    $productos = obtenerProductosDestacados(10);
     
     if (empty($productos)) {
         echo '<div class="col-12 text-center">';
