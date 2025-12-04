@@ -183,10 +183,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="estado" class="form-label">Estado</label>
                                 <select class="form-select" id="estado" required>
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                    <option value="agotado">Agotado</option>
+                                    <option value="activo">Activo (se actualizará automáticamente por stock)</option>
+                                    <option value="inactivo">Inactivo (suspendido manualmente)</option>
+                                    <option value="agotado">Agotado (manual, se sobreescribe si stock > 0)</option>
                                 </select>
+                                <div class="form-text text-warning">
+                                    <small><i class="bi bi-info-circle"></i> El estado "Activo" se actualiza automáticamente: 0=Agotado, 1-9=Poco Stock, 10+=Disponible</small>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="destacado" class="form-label">Destacado</label>
@@ -258,10 +261,13 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="editEstado" class="form-label">Estado</label>
                                 <select class="form-select" id="editEstado" required>
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                    <option value="agotado">Agotado</option>
+                                    <option value="activo">Activo (se actualizará automáticamente por stock)</option>
+                                    <option value="inactivo">Inactivo (suspendido manualmente)</option>
+                                    <option value="agotado">Agotado (manual, se sobreescribe si stock > 0)</option>
                                 </select>
+                                <div class="form-text text-warning">
+                                    <small><i class="bi bi-info-circle"></i> El estado "Activo" se actualiza automáticamente según stock</small>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="editDestacado" class="form-label">Destacado</label>
