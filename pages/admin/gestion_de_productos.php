@@ -178,20 +178,18 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="categoria" class="form-label">Categoría</label>
                                 <select class="form-select" id="categoria" required>
-                                    <option value="">Seleccionar categoría</option>
-                                    <option value="pasteles">Pasteles</option>
-                                    <option value="galletas">Galletas</option>
-                                    <option value="postres">Postres</option>
-                                    <option value="bebidas">Bebidas</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="estado" class="form-label">Estado</label>
                                 <select class="form-select" id="estado" required>
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                    <option value="agotado">Agotado</option>
+                                    <option value="activo">Activo (se actualizará automáticamente por stock)</option>
+                                    <option value="inactivo">Inactivo (suspendido manualmente)</option>
+                                    <option value="agotado">Agotado (manual, se sobreescribe si stock > 0)</option>
                                 </select>
+                                <div class="form-text text-warning">
+                                    <small><i class="bi bi-info-circle"></i> El estado "Activo" se actualiza automáticamente: 0=Agotado, 1-9=Poco Stock, 10+=Disponible</small>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="destacado" class="form-label">Destacado</label>
@@ -258,19 +256,18 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label for="editCategoria" class="form-label">Categoría</label>
                                 <select class="form-select" id="editCategoria" required>
-                                    <option value="pasteles">Pasteles</option>
-                                    <option value="galletas">Galletas</option>
-                                    <option value="postres">Postres</option>
-                                    <option value="bebidas">Bebidas</option>
                                 </select>
                             </div>
                             <div class="col-md-6">
                                 <label for="editEstado" class="form-label">Estado</label>
                                 <select class="form-select" id="editEstado" required>
-                                    <option value="activo">Activo</option>
-                                    <option value="inactivo">Inactivo</option>
-                                    <option value="agotado">Agotado</option>
+                                    <option value="activo">Activo (se actualizará automáticamente por stock)</option>
+                                    <option value="inactivo">Inactivo (suspendido manualmente)</option>
+                                    <option value="agotado">Agotado (manual, se sobreescribe si stock > 0)</option>
                                 </select>
+                                <div class="form-text text-warning">
+                                    <small><i class="bi bi-info-circle"></i> El estado "Activo" se actualiza automáticamente según stock</small>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <label for="editDestacado" class="form-label">Destacado</label>
@@ -291,7 +288,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                             <div class="col-md-6">
                                 <label class="form-label">Imagen Actual</label>
                                 <div class="border p-2 text-center">
-                                    <img id="editPreviewImagen" src="/placeholder.svg" 
+                                    <img id="editPreviewImagen" src="" 
                                             alt="Imagen actual del producto" 
                                             class="img-fluid" 
                                             style="max-height: 150px;">

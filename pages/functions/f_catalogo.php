@@ -15,10 +15,11 @@ $favoritosIds = $usuario_id ? obtenerIdsFavoritos($usuario_id) : [];
 function obtenerProductosCatalogo($categoria = null, $minPrecio = null, $maxPrecio = null, $orden = null) {
     global $conexion;
 
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, c.nombre as categoria  
-            FROM productos p LEFT JOIN categorias c 
-            ON p.categoria_id = c.id
-            WHERE p.cantidad > 0 AND p.estado = 'disponible'";;
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, 
+                c.nombre as categoria  
+            FROM productos p 
+            LEFT JOIN categorias c ON p.categoria_id = c.id
+            WHERE p.estado IN ('disponible', 'poco_stock')";
 
     $params = [];
     $types = '';
@@ -100,7 +101,7 @@ function obtenerCategorias() {
     $sql = "SELECT DISTINCT c.nombre 
             FROM categorias c 
             INNER JOIN productos p ON c.id = p.categoria_id 
-            WHERE p.estado = 'disponible' 
+            WHERE p.estado IN ('disponible', 'poco_stock')
             ORDER BY c.nombre";
     $resultado = mysqli_query($conexion, $sql);
     
@@ -122,21 +123,48 @@ function agregarProductoAlCarrito($productoId, $cantidad = 1) {
  */
 function obtenerProductoPorId($id) {
     global $conexion;
-    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.cantidad, p.imagen, c.nombre as categoria
-            FROM productos p
+    
+    // Validar que el ID sea numérico
+    $id = intval($id);
+    if ($id <= 0) {
+        return null;
+    }
+    
+    // Consulta SQL corregida - incluye WHERE con el ID y condición de estado
+    $sql = "SELECT p.id, p.nombre, p.descripcion, p.precio, p.imagen, p.cantidad as stock, p.estado, 
+                   c.nombre as categoria  
+            FROM productos p 
             LEFT JOIN categorias c ON p.categoria_id = c.id
-            WHERE p.id = ? AND p.cantidad > 0 AND p.estado = 'disponible'";
-
+            WHERE p.id = ? AND p.estado IN ('disponible', 'poco_stock')";
+    
     $stmt = mysqli_prepare($conexion, $sql);
-    if (!$stmt) return null;
+    if (!$stmt) {
+        error_log("Error preparando consulta: " . mysqli_error($conexion));
+        return null;
+    }
+    
     mysqli_stmt_bind_param($stmt, "i", $id);
     mysqli_stmt_execute($stmt);
     $resultado = mysqli_stmt_get_result($stmt);
+    
+    if (!$resultado) {
+        error_log("Error obteniendo resultado: " . mysqli_error($conexion));
+        mysqli_stmt_close($stmt);
+        return null;
+    }
+    
     $producto = mysqli_fetch_assoc($resultado);
     mysqli_stmt_close($stmt);
+    
+    // Si no hay stock (cantidad = 0), marcar como no disponible para compra
+    if ($producto && isset($producto['stock']) && $producto['stock'] <= 0) {
+        $producto['disponible_para_compra'] = false;
+    } elseif ($producto) {
+        $producto['disponible_para_compra'] = true;
+    }
+    
     return $producto;
 }
-
 function mostrarProducto($producto, $favoritosIds = []) {
 
     // Imagen segura
@@ -202,7 +230,7 @@ function mostrarProducto($producto, $favoritosIds = []) {
  */
 function obtenerRangoPrecios() {
     global $conexion;
-    $sql = "SELECT MIN(precio) as min_precio, MAX(precio) as max_precio FROM productos WHERE estado = 'disponible'";
+    $sql = "SELECT MIN(precio) as min_precio, MAX(precio) as max_precio FROM productos WHERE estado IN ('disponible', 'poco_stock')"; 
     $res = mysqli_query($conexion, $sql);
     if ($fila = mysqli_fetch_assoc($res)) {
         return [
