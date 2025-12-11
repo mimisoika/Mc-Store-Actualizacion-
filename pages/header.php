@@ -19,15 +19,29 @@ $isInPages = strpos($currentDir, 'pages') !== false || basename($currentDir) ===
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="preload" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+          as="style" 
+          onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </noscript>
+
+    <!-- Font Awesome (optimizado con display=swap) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          integrity=""
+          referrerpolicy="no-referrer"
+          media="all">
+
 </head>
 <body>
 
 <nav class="navbar navbar-expand-lg navbar-light sticky-top" style="background-color: <?php echo htmlspecialchars($config['color_encabezado']); ?>; color: <?php echo htmlspecialchars($config['color_texto']); ?>; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
     <div class="container-fluid px-4">
         <a class="navbar-brand d-flex align-items-center" href="<?php echo $isInPages ? '../index.php' : 'index.php'; ?>">
-            <img src="<?php echo $isInPages ? '../pages/img/logo-mcstore.png' : 'pages/img/logo-mcstore.png'; ?>" alt="<?php echo htmlspecialchars($config['nombre_sitio']); ?>" width="40" height="40" class="me-2 rounded-circle">
+            <img src="<?php echo $isInPages ? '../pages/img/logo.jpg' : 'pages/img/logo.jpg'; ?>" alt="<?php echo htmlspecialchars($config['nombre_sitio']); ?>" width="40" height="40" class="me-2 rounded-circle">
             <span class="fw-bold fs-4" style="color: <?php echo htmlspecialchars($config['color_primario']); ?>;"><?php echo htmlspecialchars($config['nombre_sitio']); ?></span>
         </a>
 
@@ -83,7 +97,7 @@ $isInPages = strpos($currentDir, 'pages') !== false || basename($currentDir) ===
                 </li>
 
                 <li class="nav-item dropdown">
-                    <button class="btn btn-outline-primary dropdown-toggle ms-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="btn btn-outline-primary dropdown-toggle ms-2" type="button" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: white">
                         <i class="fas fa-user-circle me-1"></i>
                         <span class="d-none d-md-inline">Usuario</span>
                     </button>

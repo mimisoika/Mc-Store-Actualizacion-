@@ -3,23 +3,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <?php
-    require_once 'pages/admin/functions/f_configuracion.php';
-    $config = obtenerConfiguracion();
-    ?>
-    <title><?php echo htmlspecialchars($config['nombre_sitio']); ?> | Inicio</title>
-    <!-- Bootstrap CSS -->
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <?php
+        require_once 'pages/admin/functions/f_configuracion.php';
+        $config = obtenerConfiguracion();
+    ?>
+    <title><?= htmlspecialchars($config['nombre_sitio']) ?> | Inicio</title>
+
+    <!-- === OPTIMIZACIÓN DE RECURSOS === -->
+
+    <!-- Preconnect para acelerar carga de CSS/CDN -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+
+    <!-- Bootstrap Icons -->
+    <link rel="preload" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" 
+          as="style" 
+          onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    </noscript>
+
+    <!-- Bootstrap CSS -->
+    <link rel="preload" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+          as="style" 
+          onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </noscript>
+
+    <!-- Font Awesome (optimizado con display=swap) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          integrity=""
+          referrerpolicy="no-referrer"
+          media="all">
+
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="css/index.css">
+
     <!-- CSS Dinámico -->
     <style>
-        <?php echo generarCssDinamico(); ?>
+        <?= generarCssDinamico(); ?>
+
+        #heroCarousel .carousel-item img {
+            min-height: 500px;
+            object-fit: cover;
+        }
     </style>
+
 </head>
 <body>
     <?php include 'pages/header.php'; ?>
@@ -49,7 +83,21 @@
                         <div class="carousel-inner">
                             <?php foreach ($imagenes as $key => $imagen): ?>
                                 <div class="carousel-item <?php echo $key === 0 ? 'active' : ''; ?>">
-                                    <img src="<?php echo htmlspecialchars($imagen['imagen_url']); ?>" loading="lazy" decoding="async" class="d-block w-100" alt="<?php echo htmlspecialchars($imagen['titulo']); ?>">
+                                <picture>
+                                    <?php
+                                        $imagenOriginal = $imagen['imagen_url'];
+                                        $imagenWebP = str_replace(['.jpg','.jpeg','.png'], '.webp', $imagenOriginal);
+
+                                        if (file_exists($imagenWebP)) {
+                                            echo '<source srcset="' . $imagenWebP . '" type="image/webp">';
+                                        }
+                                    ?>
+                                    <img src="<?php echo htmlspecialchars($imagenOriginal); ?>" 
+                                        loading="lazy" decoding="async"
+                                        class="d-block w-100"
+                                        alt="<?php echo htmlspecialchars($imagen['titulo']); ?>">
+                                </picture>
+
                                     <div class="carousel-caption hero-caption">
                                         <h2 class="hero-title fw-semibold"><?php echo htmlspecialchars($imagen['titulo']); ?></h2>
                                         <?php if (!empty($imagen['descripcion'])): ?>
@@ -110,49 +158,6 @@
     </section>
 
 
-
-    <!-- Sección de Servicios -->
-    <section class="servicios bg-light py-5 text-center justify-content-center align-items-center" id="servicios">
-        <div class="container">
-            <div class="row">
-                <div class="col-12 text-center mb-5">
-                    <h2 class="display-5 fw-bold">Explora nuestros productos...</h2>
-                    <p class="lead text-muted">Un poco de nuestro catalogo</p>
-                </div>
-                
-            </div>
-            <div class="row g-4">
-                <div class="col-lg-3 col-md-6">
-                    <div class="text-center">
-                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
-                            <i class="fas fa-shipping-fast fs-2"></i>
-                        </div>
-                        <h4>Envío Gratis</h4>
-                        <p class="text-muted">En compras mayores a $500 MXN</p>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-6">
-                    <div class="text-center">
-                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
-                            <i class="fas fa-undo-alt fs-2"></i>
-                        </div>
-                        <h4>Devoluciones</h4>
-                        <p class="text-muted">30 días para devoluciones</p>
-                    </div>
-                </div>
-                
-                <div class="col-lg-3 col-md-6">
-                    <div class="text-center">
-                        <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px; background-color: <?php echo htmlspecialchars($config['color_primario']); ?>; color: white;">
-                            <i class="fas fa-shield-alt fs-2"></i>
-                        </div>
-                        <h4>Compra Segura</h4>
-                        <p class="text-muted">Pagos protegidos y seguros</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Sección acerca de  -->
     <section class="acerca-de py-5" id="acerca">
@@ -258,11 +263,10 @@
     </section>
 
     <?php include 'pages/footer.php'; ?>
-    
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="pages/js/index.js"></script>
-    <script src="pages/js/favoritos.js"></script>
-
+    <!-- === Scripts optimizados === -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="pages/js/index.js" defer></script>
+    <script src="pages/js/favoritos.js" defer></script>
 
 </body>
 </html>
