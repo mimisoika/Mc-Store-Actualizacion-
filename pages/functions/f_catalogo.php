@@ -167,15 +167,20 @@ function obtenerProductoPorId($id) {
 }
 function mostrarProducto($producto, $favoritosIds = []) {
 
-    // Imagen segura
-    $imagen = !empty($producto['imagen']) 
-        ? '../img_productos/' . htmlspecialchars($producto['imagen']) 
+    // Nombre de la imagen original
+    $imagenOriginal = !empty($producto['imagen']) 
+        ? '../img_productos/' . $producto['imagen'] 
         : '../img_productos/producto-default.jpg';
 
-    // Verificar si es favorito
-    $esFavorito = in_array($producto['id'], $favoritosIds);
+    // Imagen en WebP (si existe)
+    $imagenWebP = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $imagenOriginal);
 
-    // Clases para el icono
+    if (!file_exists($imagenWebP)) {
+        $imagenWebP = null; // No existe versión webp
+    }
+
+    // Verificar favoritos
+    $esFavorito = in_array($producto['id'], $favoritosIds);
     $icono = $esFavorito ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart';
 
     echo '
@@ -183,17 +188,26 @@ function mostrarProducto($producto, $favoritosIds = []) {
         <div class="card h-100 shadow-sm border-0 position-relative">
 
             <a href="producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
-                <img src="' . $imagen . '" 
-                     class="card-img-top" 
-                     style="height: 200px; object-fit: cover;" 
-                     alt="' . htmlspecialchars($producto['nombre']) . '">
+
+                <picture>
+                    ' . ($imagenWebP ? '<source srcset="' . $imagenWebP . '" type="image/webp">' : '') . '
+
+                    <img src="' . $imagenOriginal . '" 
+                        loading="lazy"
+                        decoding="async"
+                        width="300" height="200"
+                        class="card-img-top"
+                        style="height: 200px; object-fit: cover;"
+                        alt="' . htmlspecialchars($producto['nombre']) . '">
+                </picture>
+
             </a>
 
             <div class="card-body">
                 <a href="producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
                     <h5 class="card-title">' . htmlspecialchars($producto['nombre']) . '</h5>
                 </a>
-                <p class="card-text text-muted">' . htmlspecialchars($producto['descripcion']) . '</p>
+                <p class="text-muted card-text">' . htmlspecialchars($producto['descripcion']) . '</p>
             </div>
 
             <div class="card-footer bg-white border-0">
@@ -203,16 +217,11 @@ function mostrarProducto($producto, $favoritosIds = []) {
                         $' . number_format($producto['precio'], 2) . '
                     </div>
 
-                    <!-- BOTÓN CARRITO -->
-                    <button class="btn btn-outline-primary"
-                        onclick="agregarAlCarrito(' . $producto['id'] . ')">
+                    <button class="btn btn-outline-primary" onclick="agregarAlCarrito(' . $producto['id'] . ')">
                         <i class="bi bi-cart-plus"></i>
                     </button>
 
-                    <!-- BOTÓN FAVORITO -->
-                    <button class="btn btn-outline-primary btn-fav"
-                        data-id="' . $producto['id'] . '"
-                        title="Añadir a favoritos">
+                    <button class="btn btn-outline-primary btn-fav" data-id="' . $producto['id'] . '">
                         <i class="' . $icono . '" id="icono-fav-' . $producto['id'] . '"></i>
                     </button>
 

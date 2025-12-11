@@ -173,15 +173,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
 
                                 <div class="row mb-4">
-                                    <div class="col-md-6">
-                                        <label for="logo" class="form-label fw-bold">Logo del Sitio</label>
-                                        <input type="file" class="form-control" id="logo" name="logo" accept="image/*" onchange="previewLogo(this)">
-                                        <small class="text-muted">Formatos: JPG, PNG, GIF, WebP (máx. 5MB)</small>
-                                        <img src="../../<?php echo htmlspecialchars($config['logo_url']); ?>" alt="Logo actual" class="logo-preview d-block">
-                                    </div>
-                                </div>
-
-                                <div class="row mb-4">
                                     <div class="col-12">
                                         <label for="texto_nosotros" class="form-label fw-bold">Texto Sección "Nosotros"</label>
                                         <textarea class="form-control" id="texto_nosotros" name="texto_nosotros" rows="6"><?php echo htmlspecialchars($config['texto_nosotros']); ?></textarea>

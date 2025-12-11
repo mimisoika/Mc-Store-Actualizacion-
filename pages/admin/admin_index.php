@@ -91,7 +91,7 @@ $pedidosPorEstado = obtenerPedidosPorEstado();
                         <div class="stat-content">
                             <h4>Producto mas vendido</h4>
                             <div class="stat-image">
-                                <img id="imgProducto" src="<?php echo $productoMasVendido ? '../../../img_productos/' . $productoMasVendido['imagen'] : ''; ?>" alt="Producto">
+                                <img id="imgProducto" src="<?php echo $productoMasVendido ? '../../img_productos/' . $productoMasVendido['imagen'] : ''; ?>" alt="Producto">
                             </div>
                             <p class="stat-value" id="productoNombre"><?php echo $productoMasVendido ? $productoMasVendido['nombre'] : 'No hay datos'; ?></p>
                             <small class="stat-label">Precio</small>
