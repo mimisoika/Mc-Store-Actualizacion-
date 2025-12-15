@@ -103,10 +103,7 @@
                                         <?php if (!empty($imagen['descripcion'])): ?>
                                             <p class="hero-subtitle"><?php echo htmlspecialchars($imagen['descripcion']); ?></p>
                                         <?php endif; ?>
-                                        <div class="hero-buttons mt-3">
-                                            <a href="#productos" class="btn btn-outline-primary">Ver Productos</a>
-                                            <a href="#contacto" class="btn btn-outline-light">Contáctanos</a>
-                                        </div>
+                                        
                                     </div>
                                 </div>
                             <?php endforeach; ?>

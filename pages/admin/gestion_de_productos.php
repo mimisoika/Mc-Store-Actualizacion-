@@ -304,9 +304,9 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="js/admin_index.js"></script>
-    <script src="js/gestion_de_productos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defear></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" defear></script>
+    <script src="js/admin_index.js" defear></script>
+    <script src="js/gestion_de_productos.js" defear></script>
 </body>
 </html>

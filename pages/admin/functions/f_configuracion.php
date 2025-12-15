@@ -111,51 +111,118 @@ function obtenerTodasImagenesCarrusel() {
 
 function agregarImagenCarrusel($titulo, $descripcion, $archivo) {
     global $conexion;
-    
-    // Validar imagen
-    $tiposPermitidos = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
-    if (!in_array($archivo['type'], $tiposPermitidos)) {
-        return ['exito' => false, 'mensaje' => 'El archivo debe ser una imagen válida'];
-    }
-    
-    if ($archivo['size'] > 10000000) { // 10MB
-        return ['exito' => false, 'mensaje' => 'La imagen no debe superar 10MB'];
-    }
-    
-    // Crear nombre único
-    $extension = pathinfo($archivo['name'], PATHINFO_EXTENSION);
-    $nombreArchivo = 'slide_' . time() . '_' . rand(1000, 9999) . '.' . $extension;
-    $dirDestino = '../../pages/img/slider/';
-    $rutaCompleta = $dirDestino . $nombreArchivo;
-    
-    // Crear directorio si no existe
-    if (!is_dir($dirDestino)) {
-        mkdir($dirDestino, 0777, true);
-    }
-    
-    if (move_uploaded_file($archivo['tmp_name'], $rutaCompleta)) {
-        $titulo = mysqli_real_escape_string($conexion, $titulo);
-        $descripcion = mysqli_real_escape_string($conexion, $descripcion);
-        $rutaDB = 'pages/img/slider/' . $nombreArchivo;
-        
-        // Obtener el siguiente orden
-        $resultOrden = mysqli_query($conexion, "SELECT MAX(orden) as max_orden FROM carrusel_imagenes");
-        $rowOrden = mysqli_fetch_assoc($resultOrden);
-        $nuevoOrden = (isset($rowOrden['max_orden']) && $rowOrden['max_orden'] ? $rowOrden['max_orden'] : 0) + 1;
-        
-        $sql = "INSERT INTO carrusel_imagenes (titulo, descripcion, imagen_url, orden, activa) 
-                VALUES ('$titulo', '$descripcion', '$rutaDB', $nuevoOrden, 1)";
-        
-        if (mysqli_query($conexion, $sql)) {
-            return ['exito' => true, 'id' => mysqli_insert_id($conexion), 'ruta' => $rutaDB];
-        } else {
-            unlink($rutaCompleta); // Eliminar archivo si la BD falla
-            return ['exito' => false, 'mensaje' => 'Error al guardar en la base de datos'];
-        }
-    } else {
+
+    /* =========================
+       1. Validar subida
+    ==========================*/
+    if (!isset($archivo) || $archivo['error'] !== UPLOAD_ERR_OK) {
         return ['exito' => false, 'mensaje' => 'Error al subir la imagen'];
     }
+
+    if ($archivo['size'] > 10 * 1024 * 1024) {
+        return ['exito' => false, 'mensaje' => 'La imagen supera los 10MB'];
+    }
+
+    /* =========================
+       2. Validar imagen real
+    ==========================*/
+    $info = getimagesize($archivo['tmp_name']);
+    if ($info === false) {
+        return ['exito' => false, 'mensaje' => 'El archivo no es una imagen válida'];
+    }
+
+    $mime = $info['mime'];
+
+    $permitidos = [
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/webp'
+    ];
+
+    if (!in_array($mime, $permitidos)) {
+        return ['exito' => false, 'mensaje' => 'Formato de imagen no permitido'];
+    }
+
+    /* =========================
+       3. Crear imagen desde origen
+    ==========================*/
+    switch ($mime) {
+        case 'image/jpeg':
+            $imagen = imagecreatefromjpeg($archivo['tmp_name']);
+            break;
+        case 'image/png':
+            $imagen = imagecreatefrompng($archivo['tmp_name']);
+            break;
+        case 'image/gif':
+            $imagen = imagecreatefromgif($archivo['tmp_name']);
+            break;
+        case 'image/webp':
+            $imagen = imagecreatefromwebp($archivo['tmp_name']);
+            break;
+        default:
+            return ['exito' => false, 'mensaje' => 'Tipo no soportado'];
+    }
+
+    if (!$imagen) {
+        return ['exito' => false, 'mensaje' => 'No se pudo procesar la imagen'];
+    }
+
+    /* =========================
+       4. Redimensionar (optimizado carrusel)
+    ==========================*/
+    $anchoMax = 1920;
+    $ancho = imagesx($imagen);
+    $alto = imagesy($imagen);
+
+    if ($ancho > $anchoMax) {
+        $nuevoAlto = intval(($anchoMax / $ancho) * $alto);
+        $nueva = imagecreatetruecolor($anchoMax, $nuevoAlto);
+        imagecopyresampled($nueva, $imagen, 0, 0, 0, 0, $anchoMax, $nuevoAlto, $ancho, $alto);
+        imagedestroy($imagen);
+        $imagen = $nueva;
+    }
+
+    /* =========================
+       5. Guardar en WebP
+    ==========================*/
+    $nombreArchivo = 'slide_' . uniqid() . '.webp';
+    $dirDestino = __DIR__ . '/../../pages/img/slider/';
+
+    if (!is_dir($dirDestino)) {
+        mkdir($dirDestino, 0755, true);
+    }
+
+    $rutaFisica = $dirDestino . $nombreArchivo;
+
+    if (!imagewebp($imagen, $rutaFisica, 80)) {
+        imagedestroy($imagen);
+        return ['exito' => false, 'mensaje' => 'Error al guardar la imagen'];
+    }
+
+    imagedestroy($imagen);
+
+    /* =========================
+       6. Guardar en BD
+    ==========================*/
+    $titulo = mysqli_real_escape_string($conexion, $titulo);
+    $descripcion = mysqli_real_escape_string($conexion, $descripcion);
+    $rutaDB = 'pages/img/slider/' . $nombreArchivo;
+
+    $resOrden = mysqli_query($conexion, "SELECT COALESCE(MAX(orden),0)+1 AS nuevo FROM carrusel_imagenes");
+    $orden = mysqli_fetch_assoc($resOrden)['nuevo'];
+
+    $sql = "INSERT INTO carrusel_imagenes (titulo, descripcion, imagen_url, orden, activa)
+            VALUES ('$titulo', '$descripcion', '$rutaDB', $orden, 1)";
+
+    if (!mysqli_query($conexion, $sql)) {
+        unlink($rutaFisica);
+        return ['exito' => false, 'mensaje' => 'Error al guardar en la base de datos'];
+    }
+
+    return ['exito' => true];
 }
+
 
 function obtenerImagenCarrusel($id) {
     global $conexion;

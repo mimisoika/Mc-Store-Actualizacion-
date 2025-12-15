@@ -69,8 +69,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_pedido'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Mi Perfil - MC Store</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+      <!-- Bootstrap CSS -->
+    <link rel="preload" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+          as="style" 
+          onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </noscript>
+
+    <!-- Font Awesome (optimizado con display=swap) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          integrity=""
+          referrerpolicy="no-referrer"
+          media="all">
 </head>
 <body class="bg-light">
     <?php include 'header.php'; ?>
@@ -493,11 +506,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['cancelar_pedido'])) {
 </div>
 
     <?php include 'footer.php'; ?>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <script src="js/perfil.js"></script>
-    <script src="js/favoritos.js"></script>
-    <script src="js/validacion-cp.js"></script>
-    <script src="js/detalles-pedido.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/perfil.js" defear></script>
+    <script src="js/favoritos.js" defear></script>
+    <script src="js/validacion-cp.js" defear></script>
+    <script src="js/detalles-pedido.js" defear></script>
 </body>
 </html>
