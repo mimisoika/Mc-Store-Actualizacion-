@@ -4,6 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 require_once dirname(__DIR__, 2) . '/php/database.php';
+require_once __DIR__ . '/../../config.php';
 require_once 'f_favoritos.php';
 
 
@@ -167,19 +168,22 @@ function obtenerProductoPorId($id) {
 }
 function mostrarProducto($producto, $favoritosIds = []) {
 
-    // Nombre de la imagen original
-    $imagenOriginal = !empty($producto['imagen']) 
-        ? '../img_productos/' . $producto['imagen'] 
-        : '../img_productos/producto-default.jpg';
+    // Imagen normal
+    $imagenOriginal = !empty($producto['imagen'])
+        ? BASE_URL . 'img_productos/' . $producto['imagen']
+        : BASE_URL . 'img_productos/producto-default.jpg';
 
-    // Imagen en WebP (si existe)
+    // Imagen WebP
     $imagenWebP = preg_replace('/\.(jpg|jpeg|png)$/i', '.webp', $imagenOriginal);
 
-    if (!file_exists($imagenWebP)) {
-        $imagenWebP = null; // No existe versión webp
+    // Ruta física para file_exists (NO URL)
+    $rutaFisicaWebP = $_SERVER['DOCUMENT_ROOT'] . parse_url($imagenWebP, PHP_URL_PATH);
+
+    if (!file_exists($rutaFisicaWebP)) {
+        $imagenWebP = null;
     }
 
-    // Verificar favoritos
+    // Favoritos
     $esFavorito = in_array($producto['id'], $favoritosIds);
     $icono = $esFavorito ? 'fa-solid fa-heart text-danger' : 'fa-regular fa-heart';
 
@@ -187,12 +191,12 @@ function mostrarProducto($producto, $favoritosIds = []) {
     <div class="col-md-3 mb-3">
         <div class="card h-100 shadow-sm border-0 position-relative">
 
-            <a href="producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
+            <a href="' . BASE_URL . 'producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
 
                 <picture>
                     ' . ($imagenWebP ? '<source srcset="' . $imagenWebP . '" type="image/webp">' : '') . '
 
-                    <img src="' . $imagenOriginal . '" 
+                    <img src="' . $imagenOriginal . '"
                         loading="lazy"
                         decoding="async"
                         width="300" height="200"
@@ -204,7 +208,7 @@ function mostrarProducto($producto, $favoritosIds = []) {
             </a>
 
             <div class="card-body">
-                <a href="producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
+                <a href="' . BASE_URL . 'producto.php?id=' . $producto['id'] . '" class="text-decoration-none text-dark">
                     <h5 class="card-title">' . htmlspecialchars($producto['nombre']) . '</h5>
                 </a>
                 <p class="text-muted card-text">' . htmlspecialchars($producto['descripcion']) . '</p>

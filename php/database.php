@@ -1,8 +1,8 @@
 <?php
-$host = "31.220.96.192";
-$usuario = "admin_comercial";
-$contrasena = "ComerzialMC@12";
-$baseDeDatos = "comercializadora";
+$host = "92.112.184.134";          // IP del VPS Hostinger
+$usuario = "mc_user";              // Usuario MySQL del VPS
+$contrasena = "McStore2026!";       // Contraseña MySQL
+$baseDeDatos = "comercializadora";  // Base de datos
 
 $conexion = mysqli_connect($host, $usuario, $contrasena, $baseDeDatos);
 

@@ -4,6 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 require_once dirname(__DIR__, 2) . '/php/database.php';
+require_once __DIR__ . '/../../config.php';
 require_once 'f_catalogo.php';
 require_once 'f_favoritos.php';
 

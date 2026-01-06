@@ -56,13 +56,12 @@
 
 </head>
 <body>
-    <?php include 'pages/header.php'; ?>
-    
-    <?php
+    <?php 
+    include 'pages/header.php';
+    require_once __DIR__ . '/config.php';
     require_once 'pages/functions/f_index.php';
     require_once 'pages/functions/f_catalogo.php';
-    require_once 'pages/functions/f_favoritos.php';
-
+    require_once 'pages/functions/f_favoritos.php'; 
     ?>
     
     <section class="inicio" id="inicio">
@@ -98,13 +97,7 @@
                                         alt="<?php echo htmlspecialchars($imagen['titulo']); ?>">
                                 </picture>
 
-                                    <div class="carousel-caption hero-caption">
-                                        <h2 class="hero-title fw-semibold"><?php echo htmlspecialchars($imagen['titulo']); ?></h2>
-                                        <?php if (!empty($imagen['descripcion'])): ?>
-                                            <p class="hero-subtitle"><?php echo htmlspecialchars($imagen['descripcion']); ?></p>
-                                        <?php endif; ?>
-                                        
-                                    </div>
+                                    
                                 </div>
                             <?php endforeach; ?>
                         </div>
