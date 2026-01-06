@@ -3,7 +3,7 @@ require_once '../functions/f_login.php';
 
 // Verificar que el usuario sea admin
 if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
-    header('Location: ../login.php');
+    header('Location: ../../index.php');
     exit();
 }
 ?>
@@ -34,15 +34,15 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             </div>
             
             <nav class="sidebar-menu">
-                <a href="#" class="menu-item" data-section="dashboard">
+                <a href="admin_index.php" class="menu-item">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="gestions_de_productos.php" class="menu-item">
+                <a href="gestion_de_productos.php" class="menu-item">
                     <i class="bi bi-box-seam"></i>
                     <span>Productos</span>
                 </a>
-                <a href="#" class="menu-item" data-section="pedidos">
+                <a href="gestion_pedidos.php" class="menu-item">
                     <i class="bi bi-clipboard-check"></i>
                     <span>Pedidos</span>
                 </a>
@@ -50,11 +50,11 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <i class="bi bi-people-fill"></i>
                     <span>Usuarios</span>
                 </a>
-                <a href="#" class="menu-item" data-section="categorias">
+                <a href="gestion_catalogo.php" class="menu-item">
                     <i class="bi bi-tag"></i>
                     <span>Categorias</span>
                 </a>
-                <a href="#" class="menu-item" data-section="configuracion">
+                <a href="configuracion.php" class="menu-item">
                     <i class="bi bi-gear"></i>
                     <span>Configuracion</span>
                 </a>
@@ -63,7 +63,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
             <div class="sidebar-footer">
                 <a href="../../index.php" class="menu-item">
                     <i class="bi bi-box-arrow-right"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Volver a Pagina Principal</span>
                 </a>
             </div>
         </aside>
@@ -72,15 +72,7 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
         <main class="main-content">
             <!-- Top Bar -->
             <header class="top-bar">
-                <div class="search-container">
-                    <input type="text" class="search-input" placeholder="Buscar ...">
-                    <button class="search-btn"><i class="bi bi-search"></i></button>
-                </div>
-                <div class="top-bar-right">
-                    <select class="region-select">
-                        <option>Pancho</option>
-                    </select>
-                </div>
+                
             </header>
 
             <!-- Content -->
@@ -96,13 +88,21 @@ if (!estaLogueado() || obtenerUsuario()['rol'] !== 'admin') {
                     <!-- Filtros -->
                     <div class="bg-white p-3 rounded mb-3 shadow-sm">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-3">
                                 <label for="filtroEstado" class="form-label fw-bold">Filtrar por estado:</label>
                                 <select id="filtroEstado" class="form-select">
                                     <option value="todos">Todos los usuarios</option>
                                     <option value="activo">Activos</option>
                                     <option value="inactivo">Inactivos</option>
                                     <option value="suspendido">Suspendidos</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="filtroRol" class="form-label fw-bold">Filtrar por rol:</label>
+                                <select id="filtroRol" class="form-select">
+                                    <option value="todos">Todos los roles</option>
+                                    <option value="admin">Administrador</option>
+                                    <option value="cliente">Cliente</option>
                                 </select>
                             </div>
                             <div class="col-md-6">

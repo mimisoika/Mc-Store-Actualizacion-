@@ -23,15 +23,32 @@ $usuario_id = $_SESSION['usuario_id'];
 $direcciones = obtenerDireccionesUsuario($usuario_id);
    
 
-// Envio para datos del pedido y detalles del pedido
+// Procesar creación de pedido
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPedido'])) {
-    $usuario_id = $_POST['usuario_id'];
-    $direccion_id = $_POST['direccion_id'];
-    $total = $_POST['total'];
-    $metodo_pago = $_POST['metodo_pago'];
+    $usuario_id = $_SESSION['usuario_id'];
+    $direccion_id = isset($_POST['direccion_id']) ? trim($_POST['direccion_id']) : null;
+    $total = isset($_POST['total']) ? trim($_POST['total']) : 0;
+    $metodo_pago = isset($_POST['metodo_pago']) ? trim($_POST['metodo_pago']) : '';
 
-    enviarPedido($usuario_id, $direccion_id, $total, $metodo_pago);
-    exit();
+    // Si hay direcciones registradas en la cuenta, obligamos a seleccionar una
+    if (!empty($direcciones) && empty($direccion_id)) {
+        $error = 'Debes seleccionar una dirección antes de continuar.';
+    } else {
+        // Crear el pedido (estado: pendiente)
+        $pedido_id = crearPedido($usuario_id, $direccion_id, $total, $metodo_pago);
+    
+        // Redirigir a la página de pago de Mercado Pago
+        ?>
+        <form id="redirectForm" method="POST" action="mercado_pago_simulado.php" style="display:none;">
+            <input type="hidden" name="pedido_id" value="<?php echo htmlspecialchars($pedido_id); ?>">
+            <input type="hidden" name="total" value="<?php echo htmlspecialchars($total); ?>">
+        </form>
+        <script>
+            document.getElementById('redirectForm').submit();
+        </script>
+        <?php
+        exit();
+    }
 }
 
 ?>
@@ -41,14 +58,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPedido'])) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Carrito de Compras</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+      <!-- Bootstrap CSS -->
+    <link rel="preload" 
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" 
+          as="style" 
+          onload="this.rel='stylesheet'">
+    <noscript>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    </noscript>
+
+    <!-- Font Awesome (optimizado con display=swap) -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+          integrity=""
+          referrerpolicy="no-referrer"
+          media="all">
 
 </head>
 <body>
     <?php include 'header.php';  ?>
 
     <div class="container py-4">
+        <?php if (isset($error) && !empty($error)): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
+        <?php endif; ?>
         <form action="pago.php" method="POST">
             <input type="hidden" name="usuario_id" value="<?php echo $_SESSION['usuario_id']; ?>">
             
@@ -162,7 +197,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPedido'])) {
                         <label class="list-group-item d-flex justify-content-between align-items-center">
                         <div class="form-check">
                             <input class="form-check-input me-2" type="radio" name="metodo_pago" value="tarjeta" required>
-                            <span class="fw-semibold">Tarjeta</span>
+                            <span class="fw-semibold">Mercado Pago</span>
                         </div>
                         </label>
 
@@ -205,6 +240,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['nuevoPedido'])) {
     </div>
     <?php include 'footer.php'; ?>
     <!-- uso de boostrap para pagina responsiva-->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+
 </body>
 </html>

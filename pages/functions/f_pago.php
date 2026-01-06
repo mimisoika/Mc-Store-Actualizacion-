@@ -1,36 +1,65 @@
 <?php
+     
 require_once __DIR__ . '/../../php/database.php';
 
-function enviarPedido($usuario_id, $direccion_id, $total, $metodo_pago){
+/**
+ * Crea el pedido con estado inicial "pendiente"
+ * Retorna el ID del pedido creado
+ */
+function crearPedido($usuario_id, $direccion_id, $total, $metodo_pago){
     if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+        session_start();
     }
     global $conexion;
 
-    // Primero se hacer el envio de los datos a la tabla pedidos
+    // Obtener datos del formulario (si se llaman por POST)
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-        // Son los datos que se estan recibiendo en el form
         $usuario_id = $_SESSION['usuario_id'];
-        $direccion_id = trim($_POST['direccion_id']);
-        $total = trim($_POST['total']);
-        $metodo_pago = trim($_POST['metodo_pago']);
+        $direccion_id = isset($_POST['direccion_id']) ? trim($_POST['direccion_id']) : null;
+        $total = isset($_POST['total']) ? trim($_POST['total']) : 0;
+        $metodo_pago = isset($_POST['metodo_pago']) ? trim($_POST['metodo_pago']) : '';
     }
 
-    $sql = "INSERT INTO pedidos (
-            usuario_id, direccion_id, total, metodo_pago
-        ) VALUES (?, ?, ?, ?)";
+    // Insertar pedido con estado "pendiente"
+    // La tabla `pedidos` definida por el usuario usa las columnas:
+    // (usuario_id, direccion_id, total, metodo_pago, estado, fecha_pedido)
+    $estado = "pendiente";
 
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param('iids', $usuario_id, $direccion_id, $total, $metodo_pago);
+    // Si no hay direccion seleccionada (NULL o string vacío), insertamos NULL
+    // para evitar pasar una cadena vacía que rompe la FK.
+    if (empty($direccion_id)) {
+        $sql = "INSERT INTO pedidos (usuario_id, direccion_id, total, metodo_pago, estado)
+                VALUES (?, NULL, ?, ?, ?)";
+        $stmt = $conexion->prepare($sql);
+        if (!$stmt) {
+            die("Error en la consulta: " . $conexion->error);
+        }
+
+        // tipos: usuario_id (i), total (d), metodo_pago (s), estado (s)
+        $stmt->bind_param('idss', $usuario_id, $total, $metodo_pago, $estado);
+    } else {
+        // asegurarnos de que la dirección es un entero
+        $direccion_id = (int)$direccion_id;
+
+        $sql = "INSERT INTO pedidos (usuario_id, direccion_id, total, metodo_pago, estado)
+                VALUES (?, ?, ?, ?, ?)";
+        $stmt = $conexion->prepare($sql);
+        if (!$stmt) {
+            die("Error en la consulta: " . $conexion->error);
+        }
+
+        // tipos: usuario_id (i), direccion_id (i), total (d), metodo_pago (s), estado (s)
+        $stmt->bind_param('iidss', $usuario_id, $direccion_id, $total, $metodo_pago, $estado);
+    }
+
     if (!$stmt->execute()) {
         die("Error al crear el pedido: " . $stmt->error);
     }
 
-    $pedido_id = $stmt->insert_id; // ID del nuevo pedido
+    $pedido_id = $stmt->insert_id;
     $stmt->close();
 
-    //Luego se obtienen productos del carrito del usuario
+    // Obtener productos del carrito del usuario
     $sql = "SELECT c.producto_id, p.nombre, p.precio, c.cantidad
             FROM carrito c
             JOIN productos p ON c.producto_id = p.id
@@ -39,7 +68,6 @@ function enviarPedido($usuario_id, $direccion_id, $total, $metodo_pago){
     $stmt->bind_param('i', $usuario_id);
     $stmt->execute();
     $result = $stmt->get_result();
-
 
     $sql_insert_detalle = "INSERT INTO detalles_pedido (pedido_id, producto_id, nombre_producto, cantidad, precio_unitario, total)
                            VALUES (?, ?, ?, ?, ?, ?)";
@@ -68,17 +96,25 @@ function enviarPedido($usuario_id, $direccion_id, $total, $metodo_pago){
         $stmt_update->close();
     }
 
-    //Vaciar el carrito del usuario
+    $stmt_detalle->close();
+
+    // Vaciar el carrito del usuario
     $sql = "DELETE FROM carrito WHERE usuario_id = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param('i', $usuario_id);
     $stmt->execute();
     $stmt->close();
 
+    return $pedido_id;
+}
+
+/**
+ * Función antigua mantenida por compatibilidad
+ */
+function enviarPedido($usuario_id, $direccion_id, $total, $metodo_pago){
+    crearPedido($usuario_id, $direccion_id, $total, $metodo_pago);
     //Redirigir a página de confirmación
     header("Location: perfil.php");
     exit();
-
 }        
-        
 ?>
